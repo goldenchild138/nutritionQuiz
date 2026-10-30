@@ -62,7 +62,7 @@ h1, h2 { font-family: var(--display); text-wrap: balance; margin: 0 }
 .opt.wrong { border-color: var(--bad); background: var(--bad-bg) }
 .opt .tick { margin-left: auto; font-style: normal; font-weight: 800; font-size: 22px; line-height: 1; align-self: center }
 .opt.correct .tick { color: var(--good) }
-.opt .buddy { width: 32px; height: 32px; flex: none; margin-left: auto; align-self: center; image-rendering: pixelated; animation: hop .5s ease-out, bob .52s ease-in-out .5s infinite alternate }
+.opt .buddy { width: 48px; height: 48px; margin-block: -10px; flex: none; margin-left: auto; align-self: center; image-rendering: pixelated; animation: hop .5s ease-out, bob .52s ease-in-out .5s infinite alternate }
 @keyframes bob { from { transform: translateY(0) } to { transform: translateY(-3px) } }
 .opt .buddy + .tick { margin-left: 0 }
 @keyframes hop { 0% { transform: translateY(8px) scale(.4); opacity: 0 } 60% { transform: translateY(-6px) scale(1.1); opacity: 1 } 100% { transform: none } }
@@ -446,10 +446,11 @@ function pixelBuddy() {
   const N = 8, cv = document.createElement("canvas");
   cv.width = cv.height = N; cv.className = "buddy"; cv.setAttribute("aria-hidden", "true");
   const g = cv.getContext("2d"), hue = Math.floor(Math.random() * 360);
-  const body = `hsl(${hue} 70% 50%)`, shade = `hsl(${hue} 70% 35%)`;
+  const body = `hsl(${hue} 80% 45%)`, shade = `hsl(${hue} 80% 28%)`;
   // Random body (rows 1-5, columns 1-3), mirrored so it looks like a creature
   const cells = [];
   for (let y = 1; y <= 5; y++) for (let x = 1; x < N / 2; x++) if (Math.random() < 0.6) cells.push([x, y]);
+  cells.push([2, 5], [3, 5], [3, 1]);             // always a solid torso and a head top, so it never looks like scattered dots
   const px = (x, y) => { g.fillRect(x, y, 1, 1); g.fillRect(N - 1 - x, y, 1, 1); };
 
   function draw(f, blink) {
