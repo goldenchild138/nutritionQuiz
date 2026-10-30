@@ -33,6 +33,36 @@ h1, h2 { font-family: var(--display); text-wrap: balance; margin: 0 }
 .eyebrow { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700 }
 .topicbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px }
 .topicbar label { margin: 0 }
+.hs-cta { margin-left: auto; font: inherit; display: inline-flex; align-items: center; gap: 10px; padding: 8px 16px 8px 12px; border-radius: 12px; border: 2px solid var(--fg); background: var(--accent); color: var(--accent-ink); cursor: pointer; box-shadow: 3px 3px 0 var(--fg); text-align: left }
+.hs-cta:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--fg) }
+.hs-cta:focus-visible, .linkbtn:focus-visible, .hs-tab:focus-visible, .name-input:focus-visible { outline: 3px solid var(--fg); outline-offset: 2px }
+.hs-cta span { display: grid; line-height: 1.2 }
+.hs-cta small { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums }
+.player { margin: 0; color: var(--muted) }
+.sound { font: inherit; font-size: 14px; font-weight: 700; padding: 8px 12px; border-radius: 999px; border: 2px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer }
+.sound[aria-pressed="false"] { color: var(--muted); text-decoration: line-through }
+.sound:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px }
+.linkbtn { font: inherit; font-weight: 700; background: none; border: 0; padding: 0; color: var(--fg); cursor: pointer; text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 3px }
+.name-input { font: inherit; font-size: 18px; padding: 12px 14px; border-radius: 10px; border: 2px solid var(--line); background: var(--bg); color: var(--fg); flex: 1 1 220px; min-width: 0 }
+.err { margin: 0; color: var(--bad); font-weight: 700 }
+.board-mini { display: grid; gap: 10px; padding: 16px; border-radius: 12px; background: var(--bg); border: 1px solid var(--line) }
+.rankline { margin: 0; font-weight: 700 }
+.savenote { margin: 0; font-size: 14px; color: var(--muted) }
+.table-wrap { overflow-x: auto }
+.board { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums }
+.board th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding: 6px 8px; border-bottom: 2px solid var(--line); white-space: nowrap }
+.board td { padding: 8px; border-bottom: 1px solid var(--line); white-space: nowrap }
+.board td.name { white-space: normal; font-weight: 700; min-width: 8ch }
+.board td.big { font-family: var(--display); font-weight: 800; font-size: 18px }
+.board tr.me td { background: var(--accent-soft) }
+.board .medal { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; font-weight: 800; font-size: 13px; background: var(--line); color: var(--fg) }
+.board tr:nth-child(1) .medal { background: #e8b923; color: #1d2418 } .board tr:nth-child(2) .medal { background: #c4cbd3; color: #1d2418 } .board tr:nth-child(3) .medal { background: #cd8a4b; color: #1d2418 }
+.board .empty { color: var(--muted); padding: 16px 8px; white-space: normal }
+.overlay { position: fixed; inset: 0; background: rgb(0 0 0 / .45); display: grid; place-items: start center; padding: max(24px, env(safe-area-inset-top, 0px)) 16px 24px; overflow-y: auto; z-index: 10 }
+.sheet { width: 100%; max-width: 720px; background: var(--surface); color: var(--fg); border-radius: 16px; border: 2px solid var(--fg); padding: 20px; display: grid; gap: 14px; box-shadow: 6px 6px 0 var(--fg) }
+.hs-tabs { display: flex; flex-wrap: wrap; gap: 6px }
+.hs-tab { font: inherit; font-weight: 700; font-size: 14px; padding: 6px 14px; border-radius: 999px; border: 2px solid var(--line); background: transparent; color: var(--fg); cursor: pointer }
+.hs-tab[aria-selected="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg) }
 .select { font: inherit; font-weight: 700; font-size: 16px; padding: 10px 40px 10px 14px; border-radius: 10px; border: 2px solid var(--line); background-color: var(--surface); color: var(--fg); cursor: pointer; appearance: none; -webkit-appearance: none;
   background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
   background-position: calc(100% - 20px) 55%, calc(100% - 15px) 55%; background-size: 5px 5px; background-repeat: no-repeat; max-width: 100% }
@@ -110,12 +140,18 @@ h1, h2 { font-family: var(--display); text-wrap: balance; margin: 0 }
       <option value="fats">Fats</option>
       <option value="pastry">Pastry</option>
     </select>
+    <button class="sound" id="soundBtn" aria-pressed="true">Sound on</button>
+    <button class="hs-cta" id="hsBtn" aria-haspopup="dialog">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M7 3h10v2h4v3a5 5 0 0 1-4.6 5A5 5 0 0 1 13 16.9V19h3v2H8v-2h3v-2.1A5 5 0 0 1 7.6 13 5 5 0 0 1 3 8V5h4V3Zm0 4H5v1a3 3 0 0 0 2 2.8V7Zm10 0v3.8A3 3 0 0 0 19 8V7h-2Z"/></svg>
+      <span><b>High scores</b><small id="hsTop">Loading…</small></span>
+    </button>
   </div>
 
   <div class="head">
     <div style="display:grid;gap:6px">
       <span class="eyebrow" id="kicker">Food &amp; nutrition</span>
       <h1 id="title">Fats Quiz</h1>
+      <p class="player" id="playerLine" hidden>Playing as <b id="playerName"></b> · <button class="linkbtn" id="changeName">Change name</button></p>
     </div>
     <div class="versions" role="group" aria-label="Test">
       <span class="eyebrow">Test</span>
@@ -128,8 +164,20 @@ h1, h2 { font-family: var(--display); text-wrap: balance; margin: 0 }
   </div>
 
 
+  <!-- NAME -->
+  <form class="card start" id="start">
+    <span class="eyebrow">Before you start</span>
+    <h2 class="q" style="margin:0">What's your name?</h2>
+    <p style="margin:0;color:var(--muted)">Your best scores go on the high score board for this topic and the overall board for all four topics.</p>
+    <div class="row">
+      <input class="name-input" id="nameInput" maxlength="20" autocomplete="nickname" placeholder="e.g. Sam K" aria-label="Your name" required>
+      <button class="btn" type="submit">Start quiz</button>
+    </div>
+    <p class="err" id="nameErr" hidden></p>
+  </form>
+
   <!-- QUIZ -->
-  <section class="card" id="play">
+  <section class="card" id="play" hidden>
     <div class="progress" id="progress"></div>
     <div class="meta"><span class="eyebrow" id="qnum"></span><span class="eyebrow">Score <b id="running">0</b></span></div>
     <h2 class="q" id="qtext"></h2>
@@ -157,10 +205,35 @@ h1, h2 { font-family: var(--display); text-wrap: balance; margin: 0 }
       <button class="btn" id="again">Retry this test</button>
       <button class="btn ghost" id="nextVersion">Try the next test</button>
     </div>
+    <div class="board-mini">
+      <div class="meta"><span class="eyebrow" id="miniTitle">High scores</span><button class="linkbtn" id="seeAll">See all high scores</button></div>
+      <p class="rankline" id="rankLine"></p>
+      <div class="table-wrap"><table class="board" id="miniBoard"></table></div>
+      <p class="savenote" id="saveStatus"></p>
+    </div>
     <ul class="review" id="review"></ul>
   </section>
 
 </main>
+
+<!-- HIGH SCORES -->
+<div class="overlay" id="hsModal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="hsTitle">
+    <div class="meta" style="align-items:center">
+      <h2 id="hsTitle" style="font-size:28px">High scores</h2>
+      <button class="btn ghost" id="hsClose">Close</button>
+    </div>
+    <div class="hs-tabs" role="tablist" aria-label="Board">
+      <button class="hs-tab" role="tab" data-board="overall">Overall</button>
+      <button class="hs-tab" role="tab" data-board="carbs">Carbohydrates</button>
+      <button class="hs-tab" role="tab" data-board="protein">Protein</button>
+      <button class="hs-tab" role="tab" data-board="fats">Fats</button>
+      <button class="hs-tab" role="tab" data-board="pastry">Pastry</button>
+    </div>
+    <p class="savenote" id="hsNote"></p>
+    <div class="table-wrap"><table class="board" id="hsTable"></table></div>
+  </div>
+</div>
 
 <script>
 const PER_QUIZ = 20;
@@ -508,6 +581,165 @@ function buildVersions(key, bank) {
 const $ = id => document.getElementById(id);
 const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
 let topic = "fats", VERSIONS, version = 1, quiz, i, results, answered, hintUsed;
+let player = store.get("nutritionQuizPlayer") || "", started = false;
+
+/* ---------- high scores ----------
+   Paste your Firebase project's settings here to share one board between everyone.
+   Left empty (or if the database can't be reached), scores are kept on this device only. */
+const LEADERBOARD = { projectId: "nutritionquiz-25fcd", apiKey: "AIzaSyCH2oiy54DdkLwZ8aBBGaBFYwSZHAuIZSE" };
+const ONLINE = !!(LEADERBOARD.projectId && LEADERBOARD.apiKey);
+const FS = `https://firestore.googleapis.com/v1/projects/${LEADERBOARD.projectId}/databases/(default)/documents`;
+let allScores = [], scoresFrom = "device", boardTab = "overall";
+
+const nameKey = n => n.trim().replace(/\s+/g, " ").toLowerCase();
+const localScores = () => { try { return JSON.parse(store.get("nutritionQuizScores") || "[]"); } catch (e) { return []; } };
+function saveLocal(rec) { const all = localScores(); all.push(rec); store.set("nutritionQuizScores", JSON.stringify(all.slice(-2000))); }
+
+async function loadScores() {
+  if (ONLINE) {
+    try {
+      const res = await fetch(`${FS}:runQuery?key=${LEADERBOARD.apiKey}`, { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ structuredQuery: { from: [{ collectionId: "scores" }], orderBy: [{ field: { fieldPath: "score" }, direction: "DESCENDING" }], limit: 5000 } }) });
+      if (!res.ok) throw new Error(res.status);
+      const rows = await res.json();
+      allScores = rows.filter(r => r.document).map(r => { const f = r.document.fields;
+        return { name: f.name.stringValue, topic: f.topic.stringValue, test: +f.test.integerValue, score: +f.score.integerValue, hints: +(f.hints?.integerValue || 0), at: f.createdAt?.timestampValue || "" }; });
+      scoresFrom = "online"; return;
+    } catch (e) { scoresFrom = "offline"; }
+  } else scoresFrom = "device";
+  allScores = localScores();
+}
+
+async function saveScore(rec) {
+  if (ONLINE) {
+    try {
+      const res = await fetch(`${FS}/scores?key=${LEADERBOARD.apiKey}`, { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fields: { name: { stringValue: rec.name }, topic: { stringValue: rec.topic }, test: { integerValue: String(rec.test) },
+          score: { integerValue: String(rec.score) }, hints: { integerValue: String(rec.hints) }, createdAt: { timestampValue: rec.at } } }) });
+      if (!res.ok) throw new Error(res.status);
+      return "online";
+    } catch (e) { saveLocal(rec); return "offline"; }
+  }
+  saveLocal(rec); return "device";
+}
+
+// Best attempt per person: higher score, then fewer hints, then earlier
+const better = (a, b) => a.score !== b.score ? a.score > b.score : a.hints !== b.hints ? a.hints < b.hints : a.at < b.at;
+function topicBoard(key) {
+  const best = new Map(), tries = new Map();
+  allScores.filter(s => s.topic === key).forEach(s => {
+    const k = nameKey(s.name); tries.set(k, (tries.get(k) || 0) + 1);
+    if (!best.has(k) || better(s, best.get(k))) best.set(k, s);
+  });
+  return [...best.entries()].map(([k, s]) => ({ ...s, key: k, tries: tries.get(k) }))
+    .sort((a, b) => b.score - a.score || a.hints - b.hints || (a.at < b.at ? -1 : 1));
+}
+function overallBoard() {
+  const people = new Map();
+  for (const key of Object.keys(TOPICS)) topicBoard(key).forEach(s => {
+    const p = people.get(s.key) || { key: s.key, name: s.name, total: 0, done: 0, by: {} };
+    p.by[key] = s.score; p.total += s.score; p.done++; people.set(s.key, p);
+  });
+  return [...people.values()].sort((a, b) => b.total - a.total || b.done - a.done || a.name.localeCompare(b.name));
+}
+
+const medal = n => `<span class="medal">${n}</span>`;
+function fillTable(table, head, rows, empty) {
+  table.innerHTML = "";
+  const thead = table.createTHead().insertRow();
+  head.forEach(h => { const th = document.createElement("th"); th.textContent = h; thead.appendChild(th); });
+  const body = table.createTBody();
+  if (!rows.length) { const td = body.insertRow().insertCell(); td.colSpan = head.length; td.className = "empty"; td.textContent = empty; return; }
+  rows.forEach(r => {
+    const tr = body.insertRow(); if (r.me) tr.className = "me";
+    r.cells.forEach(([val, cls, html]) => { const td = tr.insertCell(); if (cls) td.className = cls; html ? td.innerHTML = val : td.textContent = val; });
+  });
+}
+const me = k => player && k === nameKey(player);
+function topicRows(key, limit) {
+  return topicBoard(key).slice(0, limit).map((s, n) => ({ me: me(s.key), cells: [[medal(n + 1), "", true], [s.name, "name"], [`${s.score}/20`, "big"], [`Test ${s.test}`], [s.hints ? `${s.hints}` : "–"], [String(s.tries)]] }));
+}
+const TOPIC_HEAD = ["#", "Name", "Best", "Test", "Hints", "Tries"];
+function sourceNote() {
+  return scoresFrom === "online" ? "Live class board: everyone's best scores." :
+    scoresFrom === "offline" ? "Couldn't reach the class board, so these are scores saved on this device." :
+    "Scores saved on this device. Set up the class board to share scores between devices.";
+}
+
+function renderBoard() {
+  document.querySelectorAll(".hs-tab").forEach(b => b.setAttribute("aria-selected", String(b.dataset.board === boardTab)));
+  $("hsNote").textContent = sourceNote();
+  if (boardTab === "overall") {
+    const keys = Object.keys(TOPICS);
+    const SHORT = { carbs: "Carbs", protein: "Protein", fats: "Fats", pastry: "Pastry" };
+    fillTable($("hsTable"), ["#", "Name", "Total /80", ...keys.map(k => SHORT[k])],
+      overallBoard().slice(0, 50).map((p, n) => ({ me: me(p.key), cells: [[medal(n + 1), "", true], [p.name, "name"], [String(p.total), "big"], ...keys.map(k => [p.by[k] ?? "–"])] })),
+      "No scores yet. Finish a test to get on the board.");
+  } else fillTable($("hsTable"), TOPIC_HEAD, topicRows(boardTab, 50), `No ${TOPICS[boardTab].name.toLowerCase()} scores yet.`);
+}
+async function openBoard(tab) {
+  boardTab = tab || "overall";
+  $("hsModal").hidden = false; renderBoard(); $("hsClose").focus();
+  await loadScores(); renderBoard(); updateCta();
+}
+function closeBoard() { $("hsModal").hidden = true; $("hsBtn").focus(); }
+function updateCta() {
+  const top = topicBoard(topic)[0];
+  $("hsTop").textContent = top ? `${TOPICS[topic].name}: ${top.name} ${top.score}/20` : `${TOPICS[topic].name}: no scores yet`;
+}
+async function postResult(n, hints) {
+  const rec = { name: player, topic, test: version, score: n, hints, at: new Date().toISOString() };
+  $("miniTitle").textContent = `High scores · ${TOPICS[topic].name}`;
+  $("rankLine").textContent = "Saving your score…"; $("saveStatus").textContent = "";
+  const where = await saveScore(rec);
+  await loadScores();
+  const board = topicBoard(topic), pos = board.findIndex(s => s.key === nameKey(player)) + 1, best = board[pos - 1];
+  const o = overallBoard(), opos = o.findIndex(p => p.key === nameKey(player)) + 1;
+  $("rankLine").textContent = pos ? `${player}, you're #${pos} of ${board.length} on ${TOPICS[topic].name}` +
+    (best && best.score > n ? ` (your best is ${best.score}/20)` : "") + (opos ? ` and #${opos} overall.` : ".") : "";
+  fillTable($("miniBoard"), TOPIC_HEAD, topicRows(topic, 5), "No scores yet.");
+  $("saveStatus").textContent = where === "online" ? "Your score was added to the class board." :
+    where === "offline" ? "Couldn't reach the class board. Your score was saved on this device instead." : "Your score was saved on this device.";
+  updateCta();
+}
+
+/* ---------- player name ---------- */
+function showStart() {
+  started = false;
+  $("start").hidden = false; $("play").hidden = true; $("done").hidden = true; $("playerLine").hidden = true;
+  $("nameInput").value = player; $("nameErr").hidden = true;
+  $("nameInput").focus({ preventScroll: true });
+}
+function beginAs(name) {
+  const clean = name.trim().replace(/\s+/g, " ");
+  if (clean.length < 2) { $("nameErr").textContent = "Enter at least 2 letters so you can find yourself on the board."; $("nameErr").hidden = false; return; }
+  player = clean; store.set("nutritionQuizPlayer", player); started = true;
+  $("playerName").textContent = player; $("playerLine").hidden = false; $("start").hidden = true;
+  startQuiz();
+}
+
+/* ---------- sounds (made in the browser, no files) ---------- */
+let audio, soundOn = store.get("nutritionQuizSound") !== "off";
+function tone(freq, start, dur, type = "sine", vol = .18, slideTo) {
+  audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+  const t = audio.currentTime + start, o = audio.createOscillator(), g = audio.createGain();
+  o.type = type; o.frequency.setValueAtTime(freq, t);
+  if (slideTo) o.frequency.exponentialRampToValueAtTime(slideTo, t + dur);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .015); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(g).connect(audio.destination); o.start(t); o.stop(t + dur + .05);
+}
+function playSound(ok) {
+  if (!soundOn) return;
+  try {
+    if (ok) { tone(988, 0, .12, "triangle"); tone(1319, .09, .35, "triangle"); tone(2637, .09, .25, "sine", .05); }   // bright two-note ping
+    else { tone(196, 0, .18, "square", .07, 150); tone(147, .16, .3, "square", .07, 110); }                          // low "uh-oh" buzz
+  } catch (e) {}
+}
+function setSound(on) {
+  soundOn = on; store.set("nutritionQuizSound", on ? "on" : "off");
+  $("soundBtn").setAttribute("aria-pressed", String(on));
+  $("soundBtn").textContent = on ? "Sound on" : "Sound off";
+}
 
 /* ---------- topic + test ---------- */
 function setTopic(key) {
@@ -518,6 +750,7 @@ function setTopic(key) {
   $("kicker").textContent = `Food & nutrition · ${t.bank.length} questions`;
   VERSIONS = buildVersions(key, t.bank);
   setVersion(version);
+  updateCta();
 }
 function setVersion(v) {
   version = v; store.set("fatsQuizVersion", v);
@@ -529,7 +762,7 @@ function setVersion(v) {
 function startQuiz() {
   quiz = VERSIONS[version - 1]; i = 0; results = [];
   $("progress").innerHTML = quiz.map(() => "<span></span>").join("");
-  $("done").hidden = true; $("play").hidden = false;
+  $("done").hidden = true; $("play").hidden = !started;
   show();
 }
 function show() {
@@ -562,6 +795,7 @@ function choose(txt) {
   if (answered) return; answered = true;
   const item = quiz[i], ok = txt === item.a;
   results.push({ item, txt, ok, hint: hintUsed });
+  playSound(ok);
   [...$("opts").children].forEach(b => {
     b.disabled = true;
     const t = b.querySelector("span").textContent;
@@ -649,6 +883,7 @@ function finish() {
     li.querySelector("small").textContent = (r.ok ? `✓ ${r.item.a}` : `✗ Answer: ${r.item.a} (you said ${r.txt})`) + (r.hint ? " · hint used" : "");
     $("review").appendChild(li);
   });
+  postResult(n, hints);
 }
 
 
@@ -660,9 +895,18 @@ $("rememberBtn").onclick = toggleMemory;
 $("next").onclick = next;
 $("again").onclick = () => startQuiz();
 $("nextVersion").onclick = () => setVersion(version % 5 + 1);
+$("start").onsubmit = e => { e.preventDefault(); beginAs($("nameInput").value); };
+$("changeName").onclick = showStart;
+$("hsBtn").onclick = () => openBoard("overall");
+$("seeAll").onclick = () => openBoard(topic);
+$("hsClose").onclick = closeBoard;
+$("hsModal").onclick = e => { if (e.target === $("hsModal")) closeBoard(); };
+document.querySelectorAll(".hs-tab").forEach(b => b.onclick = () => { boardTab = b.dataset.board; renderBoard(); });
+$("soundBtn").onclick = () => { setSound(!soundOn); if (soundOn) playSound(true); };
 
 document.addEventListener("keydown", e => {
-  if (e.target.closest(".versions, .topicbar")) return;
+  if (!$("hsModal").hidden) { if (e.key === "Escape") closeBoard(); return; }
+  if (e.target.closest(".versions, .topicbar, form")) return;
   if ($("play").hidden || answered) return;
   const n = parseInt(e.key, 10);
   if (n >= 1 && n <= 4) choose(quiz[i].opts[n - 1]);
@@ -673,6 +917,9 @@ const sv = +store.get("fatsQuizVersion");
 version = sv >= 1 && sv <= 5 ? sv : 1;
 const st = store.get("nutritionQuizTopic");
 setTopic(TOPICS[st] ? st : "fats");
+setSound(soundOn);
+showStart();
+loadScores().then(updateCta);
 </script>
 </body>
 </html>
