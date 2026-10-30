@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nutrition Revision Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&display=swap">
+<style>
+[hidden] { display: none !important }
+body { margin: 0 }
+/* Layout: topic select, title + test switcher, then one question card; answers 2x2, stacking on phones */
+:root {
+  --bg: #f3f5ee; --surface: #ffffff; --fg: #1d2418; --muted: #5d6656;
+  --accent: #c98a00; --accent-ink: #1d2418; --accent-soft: #fbf0d4; --line: #d9dfd0;
+  --good: #2f7d3b; --good-bg: #e2f2e2; --bad: #b3362b; --bad-bg: #f8e1de;
+  --display: "Barlow", system-ui, -apple-system, sans-serif;
+  --body: "Barlow", system-ui, -apple-system, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #151a12; --surface: #1f261b; --fg: #edf0e6; --muted: #a3ad98;
+  --accent: #f0b52a; --accent-ink: #151a12; --accent-soft: #3a3016; --line: #34402e;
+  --good: #7fd18b; --good-bg: #1f3a22; --bad: #f08a7e; --bad-bg: #3d1f1b; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #151a12; --surface: #1f261b; --fg: #edf0e6; --muted: #a3ad98;
+  --accent: #f0b52a; --accent-ink: #151a12; --accent-soft: #3a3016; --line: #34402e;
+  --good: #7fd18b; --good-bg: #1f3a22; --bad: #f08a7e; --bad-bg: #3d1f1b; color-scheme: dark }
+
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 17px; line-height: 1.5 }
+.wrap { max-width: 720px; margin: 0 auto; padding-inline: 16px; padding-block: 32px 48px; display: grid; gap: 20px }
+h1, h2 { font-family: var(--display); text-wrap: balance; margin: 0 }
+.eyebrow { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700 }
+.topicbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px }
+.topicbar label { margin: 0 }
+.select { font: inherit; font-weight: 700; font-size: 16px; padding: 10px 40px 10px 14px; border-radius: 10px; border: 2px solid var(--line); background-color: var(--surface); color: var(--fg); cursor: pointer; appearance: none; -webkit-appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position: calc(100% - 20px) 55%, calc(100% - 15px) 55%; background-size: 5px 5px; background-repeat: no-repeat; max-width: 100% }
+.select:hover { border-color: var(--accent) }
+.select:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px }
+.head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 16px }
+.versions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap }
+.versions .eyebrow { margin-right: 4px }
+.v { font-family: var(--display); font-weight: 800; font-size: 18px; width: 44px; height: 44px; border-radius: 10px; border: 2px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer }
+.v:hover { border-color: var(--accent) }
+.v[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink) }
+.v:focus-visible, .opt:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 24px; display: grid; gap: 20px }
+.progress { display: flex; gap: 3px }
+.progress span { height: 6px; flex: 1; border-radius: 3px; background: var(--line) }
+.progress span.ok { background: var(--good) } .progress span.no { background: var(--bad) } .progress span.now { background: var(--accent) }
+.meta { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap }
+.meta b { font-variant-numeric: tabular-nums }
+.q { font-size: clamp(22px, 4vw, 30px); line-height: 1.2; font-weight: 800 }
+.opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px }
+@media (max-width: 520px) { .opts { grid-template-columns: 1fr } }
+.opt { font: inherit; text-align: left; padding: 14px 16px; border-radius: 10px; border: 2px solid var(--line); background: var(--bg); color: var(--fg); cursor: pointer; display: flex; gap: 12px; align-items: baseline; min-width: 0 }
+.opt:hover:not(:disabled) { border-color: var(--accent) }
+.opt:disabled { cursor: default }
+.opt kbd { font-family: var(--display); font-weight: 800; color: var(--muted); font-size: 14px }
+.opt.correct { border-color: var(--good); background: var(--good-bg) }
+.opt.wrong { border-color: var(--bad); background: var(--bad-bg) }
+.opt .tick { margin-left: auto; font-style: normal; font-weight: 800; font-size: 22px; line-height: 1; align-self: center }
+.opt.correct .tick { color: var(--good) }
+.opt .buddy { width: 32px; height: 32px; flex: none; margin-left: auto; align-self: center; image-rendering: pixelated; animation: hop .5s ease-out, bob .52s ease-in-out .5s infinite alternate }
+@keyframes bob { from { transform: translateY(0) } to { transform: translateY(-3px) } }
+.opt .buddy + .tick { margin-left: 0 }
+@keyframes hop { 0% { transform: translateY(8px) scale(.4); opacity: 0 } 60% { transform: translateY(-6px) scale(1.1); opacity: 1 } 100% { transform: none } }
+@media (prefers-reduced-motion: reduce) { .opt .buddy { animation: none } }
+.total { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap }
+.total .pct { font-family: var(--display); font-size: 28px; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums }
+.opt.wrong .tick { color: var(--bad) }
+.hint { background: var(--accent-soft); border-radius: 10px; padding: 12px 16px; margin: 0 }
+.hint strong { font-family: var(--display) }
+.feedback { border-left: 4px solid var(--accent); padding: 4px 0 4px 14px; color: var(--muted); margin: 0 }
+.feedback strong { color: var(--fg) }
+.btn { font: inherit; font-weight: 700; padding: 12px 22px; border-radius: 999px; border: 0; background: var(--accent); color: var(--accent-ink); cursor: pointer }
+.btn.ghost { background: transparent; color: var(--fg); border: 2px solid var(--line) }
+.btn.ghost:hover:not(:disabled) { border-color: var(--accent) }
+.btn:disabled { opacity: .45; cursor: default }
+.btn:focus-visible { outline: 3px solid var(--fg); outline-offset: 2px }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center }
+.score { font-family: var(--display); font-size: 64px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums }
+.review { list-style: none; padding: 0; margin: 0; display: grid }
+.review li { display: grid; grid-template-columns: 28px 1fr; gap: 8px; padding-block: 10px; border-top: 1px solid var(--line) }
+.review .mark { font-weight: 800; font-variant-numeric: tabular-nums } .review .ok { color: var(--good) } .review .no { color: var(--bad) }
+.review small { color: var(--muted); display: block }
+
+</style>
+</head>
+<body>
+
+<main class="wrap">
+  <div class="topicbar">
+    <label class="eyebrow" for="topic">Topic</label>
+    <select class="select" id="topic">
+      <option value="carbs">Carbohydrates</option>
+      <option value="protein">Protein</option>
+      <option value="fats">Fats</option>
+      <option value="pastry">Pastry</option>
+    </select>
+  </div>
+
+  <div class="head">
+    <div style="display:grid;gap:6px">
+      <span class="eyebrow" id="kicker">Food &amp; nutrition</span>
+      <h1 id="title">Fats Quiz</h1>
+    </div>
+    <div class="versions" role="group" aria-label="Test">
+      <span class="eyebrow">Test</span>
+      <button class="v" id="v1" data-v="1">1</button>
+      <button class="v" id="v2" data-v="2">2</button>
+      <button class="v" id="v3" data-v="3">3</button>
+      <button class="v" id="v4" data-v="4">4</button>
+      <button class="v" id="v5" data-v="5">5</button>
+    </div>
+  </div>
+
+
+  <!-- QUIZ -->
+  <section class="card" id="play">
+    <div class="progress" id="progress"></div>
+    <div class="meta"><span class="eyebrow" id="qnum"></span><span class="eyebrow">Score <b id="running">0</b></span></div>
+    <h2 class="q" id="qtext"></h2>
+    <div class="opts" id="opts"></div>
+    <p class="hint" id="hintBox" hidden></p>
+    <p class="feedback" id="feedback" hidden></p>
+    <div class="row">
+      <button class="btn ghost" id="hintBtn">Show hint</button>
+      <button class="btn" id="next" hidden>Next question</button>
+    </div>
+  </section>
+
+  <section class="card" id="done" hidden>
+    <span class="eyebrow" id="doneLabel">Your score</span>
+    <div class="total"><div class="score" id="score"></div><span class="pct" id="pct"></span></div>
+    <p id="verdict" style="margin:0"></p>
+    <div class="row">
+      <button class="btn" id="again">Retry this test</button>
+      <button class="btn ghost" id="nextVersion">Try the next test</button>
+    </div>
+    <ul class="review" id="review"></ul>
+  </section>
+
+</main>
+
+<script>
+const PER_QUIZ = 20;
+// Each entry: [question, correct answer, [wrong answers], explanation, hint]
+const TOPICS = {
+carbs: { name: "Carbohydrates", bank: [
+  ["Carbohydrates are a…", "Macronutrient", ["Micronutrient", "Mineral", "Vitamin"], "Carbohydrates are a macronutrient, needed in large amounts.", "The body needs them in large amounts."],
+  ["Which elements make up carbohydrates?", "Carbon, hydrogen and oxygen", ["Carbon, hydrogen and nitrogen", "Calcium, hydrogen and oxygen", "Nitrogen, oxygen and iron"], "Carbohydrates are made of hydrogen, carbon and oxygen (H + C + O).", "Think C-H-O."],
+  ["Plants make carbohydrates during…", "Photosynthesis", ["Respiration", "Fermentation", "Digestion"], "Carbohydrates are made by plants during photosynthesis.", "Plants use sunlight to make their food."],
+  ["What is the main function of carbohydrates?", "The body's main source of energy", ["Growth and repair", "Insulating the body", "Carrying vitamins A, D, E and K"], "Carbohydrates are the body's main source of energy.", "Think fuel."],
+  ["Besides energy, starchy carbohydrates also provide…", "B vitamins, iron, calcium and fibre", ["Only vitamin C", "Only water", "Omega-3 fatty acids"], "Starchy carbohydrates also provide protein, calcium, iron, B vitamins and dietary fibre.", "Think of the nutrients in wholemeal bread."],
+  ["The body breaks carbohydrate down into…", "Glucose", ["Amino acids", "Fatty acids", "Glycerol"], "Carbohydrate is digested into glucose, which cells use for energy.", "A simple sugar that cells use for energy."],
+  ["Glucose is absorbed into the blood through the…", "Small intestine", ["Large intestine", "Stomach", "Mouth"], "Glucose is absorbed through the small intestine into the blood.", "The long, narrow part of the gut."],
+  ["Which organ makes insulin?", "Pancreas", ["Liver", "Kidneys", "Heart"], "The pancreas makes insulin.", "An organ that sits behind the stomach."],
+  ["What does insulin do?", "Helps glucose enter cells", ["Breaks down fat", "Builds muscle protein", "Stores calcium in bones"], "Insulin helps glucose enter cells, which then release energy from it.", "It acts like a key that unlocks cells."],
+  ["Simple carbohydrates are…", "Sugars", ["Starches", "Proteins", "Fats"], "Simple carbohydrates are sugars.", "Think sweet."],
+  ["Complex carbohydrates are…", "Starches", ["Sugars", "Amino acids", "Fats"], "Complex carbohydrates are starches.", "Think bread, rice and potatoes."],
+  ["How are simple carbohydrates digested?", "Quickly, giving energy fast", ["Slowly, giving steady energy", "They are not digested", "Only in the stomach"], "Simple carbohydrates are digested quickly and give energy fast.", "Simple structure, short job for the body."],
+  ["How do complex carbohydrates release energy?", "Slowly and steadily", ["All at once", "Not at all", "Only at night"], "Complex carbohydrates are digested more slowly and release energy more steadily.", "Bigger molecules take longer to break down."],
+  ["Complex carbohydrates are…", "Polysaccharides", ["Monosaccharides", "Disaccharides", "Triglycerides"], "Starches are polysaccharides: many sugar units joined together.", "'Poly' means many."],
+  ["The word 'saccharide' comes from the Latin word for…", "Sugar", ["Starch", "Energy", "Bread"], "A saccharide is a unit of carbohydrate. The word comes from the Latin for sugar.", "Think of a sweet artificial sweetener called saccharin."],
+  ["Which is a monosaccharide?", "Glucose", ["Sucrose", "Starch", "Lactose"], "Monosaccharides are the most basic sugars, e.g. glucose and fructose.", "The sugar our cells use for energy."],
+  ["Fructose is a…", "Monosaccharide", ["Disaccharide", "Polysaccharide", "Protein"], "Fructose is a monosaccharide, like glucose.", "'Mono' means one."],
+  ["A disaccharide is made of…", "Two monosaccharides", ["One monosaccharide", "Many polysaccharides", "Two amino acids"], "Disaccharides are made of two monosaccharides joined together.", "'Di' means two."],
+  ["Sucrose is made of…", "Glucose and fructose", ["Two glucose units", "Starch and fibre", "Glucose and protein"], "Sucrose is a disaccharide made of glucose and fructose.", "Two monosaccharides named on the slides."],
+  ["Which is a complex carbohydrate?", "Starch", ["Glucose", "Fructose", "Sucrose"], "Starch is a polysaccharide, so it's a complex carbohydrate.", "The only option that isn't a sugar."],
+  ["What is the Glycaemic Index (GI)?", "A ranking of carbohydrate foods by how quickly they affect blood sugar", ["A list of foods high in protein", "A measure of fat content", "The number of calories in a food"], "GI ranks carbohydrate foods by how quickly they affect blood sugar levels.", "It's about blood sugar."],
+  ["High GI foods are digested ___ and cause a ___ rise in blood sugar.", "Quickly, sharp", ["Slowly, gentle", "Quickly, gentle", "Slowly, sharp"], "High GI foods are digested quickly and cause a sharp rise in blood sugar.", "High GI means fast."],
+  ["Low GI foods are digested ___ and cause a ___ rise in blood sugar.", "Slowly, gentle", ["Quickly, sharp", "Quickly, gentle", "Slowly, sharp"], "Low GI foods are digested slowly and cause a gentle rise in blood sugar.", "Low GI means slow."],
+  ["Which is a high GI food?", "White bread", ["Wholemeal bread", "Brown rice", "Peach"], "White bread, pasta, pineapple and melon are high GI.", "The refined, less fibrous option."],
+  ["Which is a low GI food?", "Brown rice", ["White bread", "Pineapple", "Melon"], "Wholemeal bread, brown rice and peach are low GI.", "The wholegrain option."],
+  ["Which fruit is low GI?", "Peach", ["Melon", "Pineapple", "Both melon and pineapple"], "Peach is listed as low GI. Melon and pineapple are high GI.", "A stone fruit with a fuzzy skin."],
+  ["Most of our energy should come from…", "Starchy foods and natural sugars", ["Sugary drinks and sweets", "Fats and oils", "Protein shakes"], "Most energy should come from starchy food and natural sugars, e.g. bread, pasta, fruit and vegetables.", "Bread, pasta, fruit and vegetables."],
+  ["Extra carbohydrate the body doesn't use is converted into…", "Fat, which can lead to obesity", ["Protein", "Vitamins", "Water"], "Excess carbohydrate is converted into fat, which can lead to obesity.", "The body stores spare energy for later."],
+  ["Eating too much sugary food can lead to…", "Dental caries (tooth decay)", ["Rickets", "Scurvy", "Night blindness"], "Too much sugar can lead to dental caries.", "Think about your teeth."],
+  ["Simple carbohydrates cause…", "Rapid surges in blood sugar", ["Steady blood sugar", "Lower blood sugar", "No change in blood sugar"], "Simple carbohydrates are digested quickly, so they cause rapid surges in blood sugar.", "Fast digestion, fast rise."],
+  ["Blood sugar levels that rise and fall too wildly can lead to…", "Type 2 diabetes", ["Kwashiorkor", "Anaemia", "Rickets"], "If blood sugar fluctuates too wildly it can lead to type 2 diabetes.", "A condition about controlling blood sugar."],
+  ["Too little carbohydrate can cause…", "Hunger, dizziness and tiredness", ["Weight gain", "Tooth decay", "High blood sugar"], "A lack of carbohydrate makes blood sugar drop, causing hunger, dizziness and tiredness.", "The body has less energy than it needs."],
+  ["Without enough carbohydrate, the body first uses ___ for energy.", "Fat", ["Vitamins", "Water", "Minerals"], "Without enough carbohydrate, the body uses fat in the diet or body.", "The body's energy store under the skin."],
+  ["If the body also lacks fat, it uses protein for energy, which causes…", "Muscle loss and weakness", ["Stronger muscles", "Tooth decay", "Weight gain"], "Using protein for energy breaks down muscle, making us weaker.", "Protein builds muscle. What happens if it's used up?"],
+  ["Nutrients are…", "Chemicals in food that nourish the body", ["Only the vitamins in food", "The calories in food", "Additives put in food"], "Nutrients are chemicals in food that give the body nourishment and keep us alive.", "What the body gets from food to stay alive."],
+  ["Not having enough of a nutrient is called…", "Deficiency", ["Excess", "Surplus", "Digestion"], "Too little of a nutrient is a deficiency. Too much is an excess.", "The opposite of excess."],
+  ["Which are the macronutrients?", "Carbohydrates, protein and fats", ["Vitamins and minerals", "Water and fibre", "Iron and calcium"], "Macronutrients are carbohydrates, protein and fats.", "The three the body needs in large amounts."],
+  ["Macronutrients are measured in…", "Grams", ["Milligrams", "Micrograms", "Litres"], "Macronutrients are needed in large amounts, so they're measured in grams.", "The largest unit in the list."],
+  ["Micronutrients are measured in…", "Milligrams or micrograms", ["Kilograms", "Grams only", "Litres"], "Micronutrients are needed in small amounts, measured in mg or µg.", "'Micro' means small."],
+  ["Which are micronutrients?", "Vitamins and minerals", ["Carbohydrates and protein", "Fats and oils", "Starch and sugar"], "Micronutrients are vitamins, minerals and trace elements.", "Needed in tiny amounts."],
+  ["Which food is a good source of starch?", "Potatoes", ["Butter", "Fizzy drinks", "Olive oil"], "Starch is found in bread, rice, pasta, potatoes and cereals.", "A vegetable you might mash or roast."],
+  ["As well as nutrients, the body also needs…", "Dietary fibre and water", ["Caffeine and sugar", "Salt and additives", "Alcohol and fat"], "The body also needs dietary fibre and water.", "One keeps digestion moving, the other you drink."],
+]},
+
+protein: { name: "Protein", bank: [
+  ["Protein is a…", "Macronutrient", ["Micronutrient", "Vitamin", "Mineral"], "Protein is a macronutrient, needed in large amounts.", "Needed in large amounts, like carbs and fats."],
+  ["Which is an example of protein used for growth?", "Growth of hair, nails and muscle", ["Keeping us warm", "Giving fast energy", "Carrying vitamin A"], "Protein is needed for growth, e.g. hair, nails and muscle mass.", "Things on the body that keep getting longer or bigger."],
+  ["Protein helps with repair by…", "Repairing muscles, tissues and organs after injury", ["Storing fat", "Making glucose", "Cooling the body"], "Protein repairs muscles, tissues and organs after illness or injury.", "Think about healing."],
+  ["Protein is used for maintenance, for example to make…", "Enzymes and antibodies", ["Glucose and starch", "Fat stores", "Vitamin C"], "Protein makes enzymes for digestion and antibodies to stop us getting ill.", "One helps digestion, one fights illness."],
+  ["What do antibodies do?", "Stop us getting ill", ["Digest food", "Store energy", "Build bones"], "Antibodies are part of the immune system and stop us getting ill.", "Part of the immune system."],
+  ["When is protein used for energy?", "When there isn't enough from carbohydrate and fat", ["Always first, before carbs", "Only during sleep", "Never"], "Protein is a secondary energy source, used if the body doesn't get enough from carbs and fat.", "It's the backup, not the first choice."],
+  ["Proteins are made up of chains of…", "Amino acids", ["Fatty acids", "Glucose", "Saccharides"], "Proteins are long chains of building blocks called amino acids.", "The building blocks of protein."],
+  ["Amino acids are mainly made of carbon, oxygen, hydrogen and…", "Nitrogen", ["Iron", "Calcium", "Sodium"], "Amino acids are mainly carbon, oxygen, nitrogen and hydrogen.", "The element carbohydrates don't have."],
+  ["How many amino acids make up proteins?", "20", ["9", "11", "50"], "Proteins are made up of 20 amino acids.", "11 + 9."],
+  ["How many amino acids can our bodies make?", "11", ["9", "20", "5"], "Our bodies make 11 amino acids. These are non-essential.", "20 minus the essential ones."],
+  ["How many essential amino acids are there?", "9", ["11", "20", "3"], "There are 9 essential amino acids we must get from food.", "Fewer than half of the 20."],
+  ["Essential amino acids are ones that…", "We must eat, because the body can't make them", ["The body makes in large amounts", "Are only found in sweets", "We don't need"], "Essential amino acids can't be made by the body, so must come from food.", "'Essential' to get from your diet."],
+  ["Which is an essential amino acid?", "Leucine", ["Glucose", "Gluten", "Sucrose"], "Leucine is one of the 9 essential amino acids.", "Names of amino acids often end in '-ine'."],
+  ["Which is an essential amino acid?", "Tryptophan", ["Fructose", "Gliadin", "Glycerol"], "Tryptophan is one of the 9 essential amino acids.", "Names of amino acids often end in '-an' or '-ine'."],
+  ["High biological value (HBV) proteins contain…", "All the essential amino acids", ["None of the essential amino acids", "Only non-essential amino acids", "Only fat"], "HBV proteins contain all the essential amino acids we need.", "'High value' means it has everything."],
+  ["HBV proteins are mainly found in…", "Animal sources", ["Plant sources only", "Sugary foods", "Fruit"], "HBV proteins mainly come from animal sources like meat, fish, eggs and milk.", "Meat, fish, eggs, cheese and milk."],
+  ["Which is an HBV protein food?", "Eggs", ["Lentils", "Peas", "Nuts"], "Eggs are HBV, along with meat, fish, cheese and milk.", "The only animal food listed."],
+  ["Which plant food is an HBV protein?", "Soya beans", ["Peas", "Lentils", "Broccoli"], "Soya beans and quinoa are plant-based HBV proteins.", "Used to make tofu."],
+  ["Which grain-like plant food is an HBV protein?", "Quinoa", ["Spinach", "Seeds", "Peanuts"], "Quinoa and soya beans are plant-based HBV proteins.", "A small seed often eaten like rice."],
+  ["Low biological value (LBV) proteins…", "Are missing one or more essential amino acids", ["Contain all essential amino acids", "Come only from animals", "Contain no protein at all"], "LBV proteins are missing one or more essential amino acids.", "'Low value' means something is missing."],
+  ["LBV proteins are only found in…", "Plant sources", ["Animal sources", "Dairy foods", "Fish"], "LBV proteins come only from plants.", "Peas, lentils, nuts and seeds."],
+  ["Which is an LBV protein food?", "Lentils", ["Fish", "Cheese", "Milk"], "Lentils are LBV, along with peas, nuts, seeds and most beans.", "The only plant food listed."],
+  ["Which vegetable contains small amounts of LBV protein?", "Broccoli", ["Chicken", "Eggs", "Milk"], "Vegetables like spinach and broccoli contain small amounts of LBV protein.", "The only vegetable listed."],
+  ["Why do vegetarians need alternative protein sources?", "They don't eat meat", ["They don't eat vegetables", "They don't need protein", "They only eat fruit"], "Vegetarians don't eat meat, so they get protein from beans, lentils, nuts, eggs and alternatives.", "Think about what vegetarians leave out."],
+  ["What do alternative proteins usually taste like?", "Not much on their own; they absorb flavours", ["Very strong and spicy", "Very sweet", "Exactly like beef"], "Alternative proteins don't taste of much but absorb flavours from sauces and marinades.", "Why are they often cooked in sauces?"],
+  ["Whole soya beans must be cooked to…", "Remove toxicity", ["Add protein", "Make them sweet", "Remove fibre"], "Soya beans must be cooked to remove toxicity.", "Raw, they aren't safe to eat."],
+  ["Tofu is made by…", "Curdling soya milk", ["Baking soya flour dough", "Growing a fungus", "Grinding peas"], "Tofu is made by curdling soya milk.", "Similar to how cheese is made from milk."],
+  ["TVP is made from…", "Soya flour", ["Wheat flour", "Mushrooms", "Egg white"], "TVP is made from soya flour (ground soya beans).", "The same bean used to make tofu."],
+  ["What does TVP stand for?", "Textured Vegetable Protein", ["Total Vitamin Protein", "Textured Vitamin Powder", "True Vegetable Pulse"], "TVP stands for Textured Vegetable Protein.", "It has a meat-like texture and comes from a vegetable."],
+  ["When baked, the dough used for TVP has a…", "Meat-like texture", ["Crumbly, short texture", "Liquid texture", "Crisp, flaky texture"], "TVP dough has a meat-like texture and is used for sausages, burgers and ready meals.", "It's used for sausages and burgers."],
+  ["Mycoprotein is traditionally made from…", "A mushroom-like fungus and egg white", ["Soya beans and water", "Wheat and yeast", "Peas and rice"], "Mycoprotein is made from a mushroom-like fungus and egg white.", "'Myco' relates to fungi."],
+  ["Vegan mycoprotein replaces egg white with…", "Potato starch", ["Milk", "Gelatine", "Butter"], "Vegan versions use potato starch instead of egg white.", "It comes from a vegetable grown underground."],
+  ["Mycoprotein is often used in place of…", "Chicken", ["Fruit", "Bread", "Cheese"], "Mycoprotein is often used where you'd normally use chicken.", "A type of poultry."],
+  ["Extra firm tofu is sometimes called…", "Dry tofu", ["Silken tofu", "Wet tofu", "Sweet tofu"], "Extra firm tofu has the least water, so it's sometimes called dry tofu.", "It has the least water."],
+  ["Soft tofu is best used for…", "Desserts and dips", ["Stir-fries", "Barbecues", "Roasting"], "Soft tofu is used in desserts and dips. Firm tofu is used in stir-fries.", "Smooth, spoonable foods."],
+  ["Protein complementation means…", "Combining LBV proteins to get all the essential amino acids", ["Eating only HBV proteins", "Avoiding protein", "Eating protein with sugar"], "Combining different LBV proteins provides all the essential amino acids.", "Two incomplete proteins together make a complete set."],
+  ["Which meal is an example of protein complementation?", "Houmous and pitta bread", ["Steak and chips", "Fish and chips", "Cheese on toast"], "Houmous and pitta are both LBV, but together they provide all essential amino acids.", "Two plant foods that complete each other."],
+  ["Dietary reference values are…", "Estimates of the nutrients people should have", ["Prices of food", "Food labels on packaging", "Calories burned in exercise"], "Dietary reference values estimate the amount of nutrients people should have.", "Guidance on how much we should eat."],
+  ["How much protein should an average male eat each day?", "55 g", ["45 g", "25 g", "100 g"], "An average male should eat 55 g of protein a day.", "10 g more than the average female."],
+  ["How much protein should an average female eat each day?", "45 g", ["55 g", "15 g", "90 g"], "An average female should eat 45 g of protein a day.", "10 g less than the average male."],
+  ["How much extra protein do pregnant women need?", "About 6 g", ["About 60 g", "None", "About 1 kg"], "Pregnant women need about 6 g more protein to help the baby grow.", "A small single-digit amount."],
+  ["Who needs more protein relative to their size?", "Growing children", ["Elderly people who are inactive", "People asleep", "Nobody"], "Growing children need more protein relative to their size and body mass.", "People who are still growing."],
+  ["Why do physically active people need more protein?", "For muscle growth and repair", ["To store more fat", "To raise blood sugar", "To absorb vitamin C"], "Active people need more protein for muscle growth and repair.", "Exercise works the muscles."],
+  ["What happens to children who lack protein?", "Their growth is slowed", ["They grow faster", "They gain muscle", "Nothing happens"], "Without protein, growth slows, especially in growing children.", "Protein is needed for growth."],
+  ["Without enough protein, the immune system…", "Can't work properly, so wounds heal slowly", ["Works better than normal", "Stops needing vitamins", "Makes more antibodies"], "Without protein, wounds heal slowly and the risk of infection rises.", "Protein makes antibodies."],
+  ["What is oedema?", "A build-up of fluid that causes swelling", ["A lack of vitamin C", "A type of protein", "A bone disease"], "Oedema is fluid build-up causing swelling, often around the feet.", "It often shows around the feet."],
+  ["Which disease can develop from severe protein deficiency?", "Kwashiorkor", ["Scurvy", "Rickets", "Type 2 diabetes"], "Severe protein deficiency can cause kwashiorkor.", "A word that starts with 'K'."],
+  ["A symptom of kwashiorkor is…", "A swollen abdomen", ["Bleeding gums", "Bowed legs", "Night blindness"], "Kwashiorkor causes oedema around the stomach, so the abdomen swells.", "Oedema around the stomach."],
+  ["Too much protein puts strain on the…", "Liver and kidneys", ["Lungs and heart", "Bones and teeth", "Skin and hair"], "The liver and kidneys process protein, so too much strains them.", "The organs that process protein."],
+  ["Without enough protein, hair, skin and nails…", "Get into poor condition", ["Grow faster", "Become stronger", "Stay the same"], "Hair, skin and nails don't grow as fast and get into poor condition.", "They need protein to grow."],
+]},
+
+fats: { name: "Fats", bank: [
+  ["Fatty acids attached to a glycerol backbone form a…", "Triglyceride", ["Glycogen", "Amino acid", "Cholesterol"], "Fat is made of fatty acids attached to a glycerol molecule, called a triglyceride.", "There are three fatty acids on each glycerol. Look for 'tri-'."],
+  ["How many kilocalories does 1 g of fat provide?", "9 kcal", ["4 kcal", "7 kcal", "2 kcal"], "Fat provides 9 kcal (37 kJ) per gram, so fatty foods provide a lot of energy.", "It's more than double what carbohydrate or protein gives."],
+  ["How many kilojoules does 1 g of fat provide?", "37 kJ", ["17 kJ", "9 kJ", "29 kJ"], "Fat provides 37 kJ (9 kcal) per gram.", "1 kcal is about 4.2 kJ. Multiply 9 kcal by 4.2."],
+  ["Which vitamins does fat carry in the diet?", "A, D, E and K", ["B and C", "A, C and E", "B12 and folate"], "Fat carries the fat-soluble vitamins A, D, E and K.", "The four fat-soluble vitamins."],
+  ["Most saturated fats are…", "Solid at room temperature, from animal sources", ["Liquid at room temperature, from plants", "Liquid at room temperature, from animals", "Solid at room temperature, from vegetables"], "Saturated fats are mostly solid at room temperature and tend to come from animals.", "Think of butter in the fridge. Where does it come from?"],
+  ["Most unsaturated fats are…", "Liquid at room temperature, usually vegetable fats", ["Solid at room temperature, from animals", "Solid at room temperature, from plants", "Gases at room temperature"], "Unsaturated fats are mostly liquid at room temperature and usually come from vegetables.", "Think of a bottle of cooking oil."],
+  ["Why is butter described as a 'saturated fat'?", "It has more saturated than unsaturated fatty acids", ["It contains only saturated fatty acids", "It is liquid at room temperature", "It contains no fatty acids"], "Foods are categorised by their dominant type of fatty acid. Butter has more saturated than unsaturated.", "Foods are named after the type of fatty acid they have the most of."],
+  ["Why are most vegetable oils described as 'unsaturated fats'?", "They have more mono- and polyunsaturated than saturated fatty acids", ["They contain no saturated fatty acids at all", "They are solid at room temperature", "They come from animals"], "Vegetable oils have more mono- and polyunsaturated fatty acids than saturated ones.", "Foods are named after the type of fatty acid they have the most of."],
+  ["Which food is high in saturated fat?", "Hard cheese", ["Olive oil", "Avocado", "Sunflower seeds"], "Hard cheese, butter, fatty meat and chocolate are high in saturated fat.", "Look for the dairy food that comes from an animal."],
+  ["Which food is high in saturated fat?", "Skin of poultry", ["Nuts", "Avocados", "Sunflower oil"], "Poultry skin, fatty cuts of meat and processed meat are high in saturated fat.", "Which option comes from an animal?"],
+  ["Which food group is high in saturated fat?", "Biscuits, cakes and pastries", ["Seeds", "Oily fish", "Edible oils"], "Biscuits, cakes, pastries and chocolate are high in saturated fat.", "Think of baked treats made with butter."],
+  ["Which food is a good source of monounsaturated fat?", "Olive oil", ["Butter", "Processed meat", "Chocolate"], "Monounsaturated fats are found in edible oils (especially olive oil), avocados and nuts.", "A Mediterranean cooking oil."],
+  ["Which fruit is high in monounsaturated fat?", "Avocado", ["Banana", "Apple", "Orange"], "Avocados are a source of monounsaturated fat, along with olive oil and nuts.", "A creamy green fruit, often eaten on toast."],
+  ["Monounsaturated fat is also found in…", "Meat and milk", ["Sugar and honey", "Rice and pasta", "Fruit juice"], "As well as oils, avocados and nuts, monounsaturated fat is found in meat and milk.", "Some animal foods contain it too."],
+  ["Which oil is especially high in polyunsaturated fat?", "Sunflower oil", ["Palm oil", "Coconut oil", "Butter oil (ghee)"], "Polyunsaturated fats are found in edible oils, especially sunflower oil.", "It comes from the seeds of a tall yellow flower."],
+  ["Which of these is high in polyunsaturated fat?", "Seeds", ["Hard cheese", "Pastries", "Fatty cuts of meat"], "Seeds, sunflower oil, margarine and oily fish are high in polyunsaturated fat.", "Small plant foods you might sprinkle on a salad."],
+  ["Which spread is high in polyunsaturated fat?", "Margarine made from vegetable oil", ["Butter", "Lard", "Dripping"], "Margarine and spreads made from vegetable oils are high in polyunsaturated fat.", "The spread made from plants, not animal fat."],
+  ["What is the richest source of long-chain omega-3 fatty acids?", "Oily fish", ["Chicken", "Butter", "Hard cheese"], "Oily fish is the richest dietary source of long-chain omega-3.", "Think salmon, mackerel and sardines."],
+  ["How often is a serving of oily fish recommended?", "Once a week", ["Once a month", "Three times a day", "Never"], "A weekly serving of oily fish is recommended for omega-3.", "The slides recommend a ___ly serving."],
+  ["What are the main sources of omega-6 fatty acids?", "Vegetable oils, nuts and chicken", ["Butter, cream and cheese", "Fruit and vegetables", "Bread and pasta"], "Omega-6 mainly comes from vegetable oils, nuts and chicken.", "Plant oils, plus one kind of poultry."],
+  ["Omega-6 fatty acids help to…", "Lower blood cholesterol and reduce inflammation", ["Raise blood sugar", "Increase blood pressure", "Store vitamin C"], "Omega-6 helps lower blood cholesterol and reduce inflammation.", "Good for the heart and for swelling."],
+  ["Omega-3 fatty acids help…", "Brain function, and may reduce heart disease risk", ["Build muscle protein", "Digest carbohydrates", "Absorb vitamin C"], "Omega-3 helps brain function and may reduce the risk of heart disease.", "Good for the head and the heart."],
+  ["Omega-3 and omega-6 are also known as…", "n-3 and n-6", ["v-3 and v-6", "Type 3 and Type 6", "C-3 and C-6"], "Omega-3 and omega-6 are also called n-3 and n-6.", "A single lowercase letter, then the number."],
+  ["What makes a fatty acid 'essential'?", "The body cannot make it, so it must come from food", ["It is found in every food", "It is only found in animals", "The body makes too much of it"], "Essential fatty acids cannot be made by the body, so we need them from our diet.", "Where must 'essential' nutrients come from?"],
+  ["Omega-3 is found in smaller amounts in…", "Eggs from hens fed omega-3 enriched diets", ["White sugar", "Fruit juice", "Plain rice"], "Meat or eggs from animals fed omega-3 enriched diets contain some, but less than oily fish.", "It comes from animals given a special diet."],
+  ["Total fat should be no more than what share of food energy?", "35%", ["11%", "50%", "2%"], "Total fat should provide no more than 35% of food energy.", "About a third."],
+  ["Saturated fat should be no more than what share of food energy?", "11%", ["35%", "25%", "2%"], "Saturated fat should provide no more than 11% of food energy.", "Just over a tenth."],
+  ["Trans fats should be no more than what share of food energy?", "2%", ["11%", "20%", "35%"], "Trans fats should provide no more than 2% of food energy.", "The smallest of the three limits."],
+  ["In UK adults, which fat intake is currently too high?", "Saturated fat", ["Total fat", "Omega-3", "Monounsaturated fat"], "Average total fat intake is within the recommendation, but saturated fat intake is too high.", "Total fat is fine. It's the 'unhealthy' type that's the problem."],
+  ["Replacing saturated fats with unsaturated fats can help…", "Lower cholesterol", ["Raise cholesterol", "Increase blood pressure", "Cause vitamin deficiency"], "There is good evidence this swap helps lower cholesterol, a risk factor for heart disease.", "Unsaturated fats are linked to better heart health."],
+  ["Too much saturated fat in the diet can…", "Raise blood cholesterol levels", ["Cause a lack of vitamins A, D, E and K", "Lower blood pressure", "Make you feel cold faster"], "Too much saturated fat can increase blood cholesterol and restrict blood flow.", "A fatty substance in the blood goes up."],
+  ["Restricted blood flow from high cholesterol increases the risk of…", "High blood pressure", ["Low blood sugar", "Vitamin C deficiency", "Tooth decay"], "Restricted blood flow raises the risk of high blood pressure and cardiovascular disease.", "Narrower vessels mean the heart pushes harder."],
+  ["Which is a form of cardiovascular disease?", "Stroke", ["Type 2 diabetes", "Anaemia", "Rickets"], "CHD, stroke and heart attack are forms of cardiovascular disease.", "Cardio = heart, vascular = blood vessels. Which one cuts blood flow to the brain?"],
+  ["Excess fat in the body can lead to obesity, which can lead to…", "Type 2 diabetes", ["Scurvy", "Rickets", "Anaemia"], "Obesity can lead to diet-related type 2 diabetes.", "A condition linked to blood sugar."],
+  ["In type 2 diabetes, the body struggles to…", "Control blood sugar levels", ["Absorb calcium", "Make vitamin C", "Digest protein"], "Type 2 diabetes is when the body struggles to control blood sugar levels.", "Think about insulin and glucose."],
+  ["Where is excess fat stored in the body?", "Under the skin and around organs", ["In the bones", "In the blood only", "In the stomach lining"], "Excess fat is stored under the skin, and around organs in some cases.", "Two places: one you can pinch, one deep inside."],
+  ["What can happen if we eat too little fat?", "Fewer fat-soluble vitamins are absorbed", ["Blood cholesterol rises", "Type 2 diabetes develops", "We gain weight"], "Less fat means less vitamin A, D, E and K is absorbed, leading to deficiency.", "Fat carries some vitamins into the body."],
+  ["If the diet lacks carbohydrate, the body uses ___ for energy.", "Its fat stores", ["Its bones", "Vitamin C", "Water"], "Without enough carbohydrate the body uses its fat stores, which can lead to weight loss.", "The body's backup energy supply."],
+  ["A person with too little body fat may…", "Get colder faster", ["Overheat easily", "Gain weight quickly", "Have higher cholesterol"], "Less body fat means less insulation to keep the body warm.", "Body fat works like a blanket."],
+  ["A thinner layer of fat under the skin means…", "Less protection from knocks", ["Stronger bones", "Better vitamin absorption", "More energy stored"], "Fat under the skin protects the body from knocks.", "Body fat works like padding."],
+  ["Our bodies use fat to make…", "Cholesterol, part of all cell membranes", ["Vitamin C", "Glucose", "Calcium"], "The body makes cholesterol from fat. It is an essential part of cell membranes.", "A fatty substance found in every cell membrane."],
+  ["Fat is a component of ___, which control biochemical reactions in cells.", "Hormones", ["Enzymes in saliva", "Red blood cells", "Bones"], "Fat is a component of hormones.", "The body's chemical messengers."],
+  ["Essential fatty acids are important parts of cell membranes, including those in the…", "Brain and nervous system", ["Hair and nails", "Teeth", "Bones"], "Essential fatty acids are components of cell membranes, including in the brain and nervous system.", "The body's control centre."],
+  ["Which is a function of fat in the body?", "Cushioning the major organs", ["Building strong teeth", "Carrying oxygen in the blood", "Fighting infection directly"], "Fat cushions and protects the major organs.", "Think of padding around the heart and kidneys."],
+  ["The layer of fat under our skin helps to…", "Keep us warm", ["Make vitamin D", "Digest food", "Carry oxygen"], "Fat forms an insulating layer under the skin that keeps us warm.", "Seals and whales have a thick layer of it."],
+  ["What is the difference between types of fatty acids?", "How carbon atoms bond with hydrogen atoms", ["How many glycerol molecules they have", "Their colour", "Whether they contain oxygen"], "The difference is in how carbon atoms bond with hydrogen atoms.", "It's about chemical bonds between two elements."],
+  ["The structure of fatty acids determines their…", "Effect on health, melting point and digestibility", ["Colour and smell only", "Vitamin C content", "Protein content"], "Structure affects health effects and characteristics such as melting point and digestibility.", "Why are some fats solid and others liquid?"],
+  ["During digestion, the body breaks fat down into…", "Fatty acids", ["Amino acids", "Glucose", "Starch"], "The body breaks fat down into fatty acids during digestion.", "The building blocks attached to glycerol."],
+  ["Which list contains polyunsaturated fatty acids?", "Omega-3, omega-6 and omega-9", ["Vitamins A, D, E and K", "Glucose, sucrose and lactose", "Calcium, iron and zinc"], "The slides list omega-3, omega-6 and omega-9 as polyunsaturated fatty acids.", "They all share a Greek letter."],
+  ["Fat is classed as a…", "Macronutrient", ["Micronutrient", "Mineral", "Vitamin"], "Fat is a macronutrient and an essential part of our daily diet.", "Needed in large amounts, like protein and carbohydrate."],
+]},
+
+pastry: { name: "Pastry", bank: [
+  ["What are the basic ingredients of pastry?", "Flour, fat, salt and water", ["Flour, sugar, eggs and milk", "Flour, yeast, salt and water", "Butter, sugar and cream"], "The basic ingredients of pastry are flour, fat, salt and water.", "Four ingredients. No raising agent or sugar needed."],
+  ["How many main types of pastry are there?", "Six", ["Three", "Four", "Ten"], "The six main types are shortcrust, suet, puff, rough puff, flaky and choux.", "Shortcrust, suet, puff, rough puff, flaky, choux…"],
+  ["Which of these is one of the six main types of pastry?", "Choux", ["Sourdough", "Brioche", "Focaccia"], "Choux is one of the six main pastries. The others in the list are breads.", "The others are all types of bread."],
+  ["Which flour is used for shortcrust pastry?", "Plain flour", ["Strong flour", "Self-raising flour", "Rice flour"], "Shortcrust uses plain flour, which is low in protein.", "Low protein, no raising agent."],
+  ["Which flour is used for suet pastry?", "Self-raising flour", ["Plain flour", "Strong flour", "Cornflour"], "Suet pastry uses self-raising flour.", "It contains a raising agent."],
+  ["Which flour is used for puff, flaky, rough puff and choux pastry?", "Strong flour", ["Plain flour", "Self-raising flour", "Cornflour"], "These pastries use strong flour for gluten development.", "High protein for strength and structure."],
+  ["What is the proportion of fat to flour in shortcrust pastry?", "Half fat to flour", ["Equal fat and flour", "Three-quarters fat to flour", "A quarter fat to flour"], "Shortcrust uses ½ fat to flour.", "The same proportion as suet pastry."],
+  ["What is the proportion of fat to flour in puff and flaky pastry?", "Three-quarters fat to flour", ["Half fat to flour", "Twice as much fat as flour", "A quarter fat to flour"], "Flaky and puff pastry use ¾ fat to flour.", "More fat than shortcrust."],
+  ["What fat is used in suet pastry?", "Shredded suet", ["Olive oil", "Lard only", "Margarine only"], "Suet pastry uses shredded suet.", "It's in the name."],
+  ["Which fat is recommended for shortcrust pastry?", "Half lard and half margarine/butter, or all butter", ["Shredded suet", "Sunflower oil", "No fat at all"], "Shortcrust uses ½ lard and ½ margarine/butter, or all butter.", "A mix of two fats, or just one dairy fat."],
+  ["How is shortcrust pastry made?", "Fat is cut into cubes and rubbed into the flour, then liquid is added", ["Fat and water are heated, then flour is beaten in", "Dough is rolled and folded with layers of fat", "Suet and flour are mixed with liquid"], "Shortcrust uses the rubbing-in method, then liquid is added.", "The 'rubbing-in' method."],
+  ["What is added to make a richer shortcrust pastry?", "Egg yolk and sugar", ["Yeast and salt", "Extra water", "Strong flour"], "For a richer pastry, egg yolk and sugar are added.", "Two ingredients that make it sweeter and richer."],
+  ["What is a laminated dough?", "A dough rolled and folded to create layers", ["A dough that is piped", "A dough with no fat", "A dough made with yeast"], "Laminated dough is rolled and folded to create layers, as in puff pastry.", "Think of the many layers in puff pastry."],
+  ["In flaky and puff pastry, how much of the fat is rubbed in at the start?", "A quarter", ["All of it", "Half", "None"], "¼ of the fat is rubbed in, then the rest is added when rolling.", "Most of the fat is added later during rolling."],
+  ["Rough puff pastry is…", "A quicker version of puff pastry", ["A type of choux pastry", "Made with suet", "Made without fat"], "Rough puff is a slightly quicker version of puff pastry.", "Its name gives it away."],
+  ["How is rough puff pastry made?", "Fat cubes are stirred into the flour and liquid added", ["Fat and liquid are heated in a pan", "Fat is rubbed in until it looks like breadcrumbs", "It is piped from a bag"], "Rough puff: fat cut into cubes, stirred into the flour, liquid added.", "The fat stays in lumps."],
+  ["How is choux pastry made?", "Fat and liquid are heated, flour worked in, then eggs added", ["Fat is rubbed into flour, then water added", "Suet and flour are mixed with liquid", "Dough is rolled and folded with fat"], "Choux: fat and liquid heated in a pan, flour worked in, eggs added to the paste.", "It's the only pastry made in a pan."],
+  ["Choux pastry is different because it is…", "A paste that is piped", ["A dough that is rolled and folded", "Made with suet", "Made without eggs"], "Choux is a paste that is piped, rather than a dough that is rolled.", "Think of how eclairs are shaped."],
+  ["Which products are made with choux pastry?", "Profiteroles and eclairs", ["Sausage rolls and turnovers", "Quiches and pasties", "Strudels"], "Choux is used for profiteroles and eclairs.", "Cream-filled, chocolate-topped treats."],
+  ["What are the properties of cooked choux pastry?", "Light texture and hollow centre", ["Short and crumbly", "Flaky layers", "Dense and heavy"], "Choux pastry has a light texture and a hollow centre.", "Why can you fill it with cream?"],
+  ["Which products are made with shortcrust pastry?", "Pies, quiches, tarts and pasties", ["Profiteroles and eclairs", "Strudels", "Croissants"], "Shortcrust is used for pies, quiches, tarts and pasties.", "Products with a firm base."],
+  ["Which product is made with flaky, puff or rough puff pastry?", "Sausage rolls", ["Eclairs", "Quiche", "Profiteroles"], "Sausage rolls, pies and fruit turnovers use flaky or puff pastry.", "A savoury snack with flaky layers."],
+  ["What are the properties of filo pastry?", "Light, crisp and fragile", ["Short and crumbly", "Thick and chewy", "Hollow in the centre"], "Filo is light, crisp and fragile.", "Paper-thin sheets."],
+  ["Filo pastry is used for…", "Strudels and pastry parcels", ["Eclairs", "Pasties", "Suet puddings"], "Filo is used for strudels and pastry parcels.", "An apple dessert from Austria."],
+  ["Shortcrust pastry has a texture described as…", "Short", ["Flaky", "Hollow", "Chewy"], "Shortcrust has a 'short' (firm and crumbly) texture.", "It's in the name."],
+  ["Which two proteins are found in wheat flour?", "Gliadin and glutenin", ["Gluten and starch", "Casein and whey", "Albumin and keratin"], "Wheat flour contains gliadin and glutenin.", "Both start with 'gl'."],
+  ["When water is added to flour, gliadin and glutenin form…", "Gluten", ["Starch", "Sugar", "Fat"], "With water, the two proteins combine to make gluten.", "The stretchy protein in dough."],
+  ["Gluten gives dough its…", "Elastic texture and structure", ["Sweet flavour", "Brown colour", "Crumbly texture"], "Gluten is responsible for the elastic texture and structure of doughs.", "Think of stretching bread dough."],
+  ["Gluten is coiled, which means it can…", "Stretch and bend", ["Dissolve in water", "Melt when heated", "Turn sweet"], "Coiled gluten can stretch and bend, giving elasticity.", "Like a spring."],
+  ["Strong flour has a…", "High protein content", ["Low protein content", "High sugar content", "Raising agent added"], "Strong flour is high in protein, so it develops more gluten.", "More protein means more gluten."],
+  ["Why is strong flour used for puff pastry?", "Gluten development is needed for strength and structure", ["It makes the pastry crumbly", "It makes the pastry sweet", "It stops the pastry rising"], "Puff, flaky and choux need gluten development for strength and structure.", "These pastries need to hold their shape as they rise."],
+  ["Why is plain flour used for shortcrust?", "It is low in protein, so less gluten develops", ["It is high in protein", "It contains yeast", "It makes the pastry rise"], "Low-protein flour is used where gluten development is to be avoided.", "Shortcrust should be crumbly, not stretchy."],
+  ["Rubbing fat into flour gives the flour particles a…", "Waterproof coating", ["Sweet coating", "Sticky coating", "Crunchy coating"], "Rubbed-in fat coats the flour particles with a waterproof layer.", "Fat and water don't mix."],
+  ["The fat coating on flour particles prevents…", "Long gluten molecules forming", ["The pastry from browning", "Salt from dissolving", "The pastry from cooking"], "The coating stops long gluten molecules forming when water is added.", "Less stretch, more crumble."],
+  ["Why is fat in shortcrust called 'shortening'?", "It gives a short (firm and crumbly) texture", ["It shortens the cooking time", "It makes the pastry shorter in height", "It shortens the shelf life"], "Fat stops the dough being stretchy, keeping a short texture: hence 'shortening'.", "It's about the texture."],
+  ["Why is shortening used for filled pies and tarts?", "The base doesn't rise and forms a solid case", ["It makes the base rise high", "It makes the pastry hollow", "It makes the pastry sweeter"], "Shortening keeps the base flat and solid so it can hold a filling.", "The base needs to hold a filling."],
+  ["How does fat help flaky and puff pastry?", "It separates the layers by creating steam", ["It stops the pastry rising", "It adds sweetness", "It makes the pastry crumbly"], "Fat helps separate the layers by creating steam as it cooks.", "What happens to water in a hot oven?"],
+  ["What does salt do for the flavour of pastry?", "Enhances flavour and stops it tasting flat", ["Makes it taste sweet", "Has no effect", "Makes it bitter"], "Salt enhances flavour and prevents pastry tasting flat or dull.", "Think of seasoning."],
+  ["How does salt affect the protein in flour?", "It tightens the protein bonds, giving structure", ["It breaks down the protein", "It turns protein into sugar", "It has no effect"], "Salt tightens protein bonds, giving elasticity and structure.", "It holds the dough together."],
+  ["In laminated doughs, salt helps to…", "Absorb moisture evenly and prevent stickiness", ["Melt the fat", "Make the dough sweet", "Stop the pastry rising"], "Salt helps dough absorb moisture evenly and prevents stickiness.", "It's about water and stickiness."],
+  ["Why does sweet pastry turn brown when cooked?", "Sugar caramelises when heated", ["Salt burns", "Flour turns brown in water", "Fat goes off"], "Sugar caramelises when heated, giving cooked pastry its brown colour.", "Think of toffee."],
+  ["What does sugar do to the gluten in sweet pastry?", "Softens it, giving a soft crumb and moist texture", ["Strengthens it", "Makes it stretchy", "Removes it completely"], "Sugar softens gluten, giving a soft crumb and moist texture.", "It makes the pastry softer."],
+  ["What happens if shortcrust pastry is stretched or too wet?", "It becomes tough and shrinks from the dish", ["It becomes flaky", "It rises well", "It turns sweet"], "Stretched or wet shortcrust becomes tough and shrinks from the dish.", "It pulls back when cooked."],
+  ["What happens if shortcrust pastry is over-kneaded?", "It becomes hard and leathery", ["It becomes light and flaky", "It becomes hollow", "It becomes sweeter"], "Over-kneading develops gluten, making pastry hard and leathery.", "Too much gluten develops."],
+  ["Puff pastry that doesn't rise is usually caused by…", "Opening the oven door or the oven not being hot enough", ["Using too much salt", "Using strong flour", "Resting the dough"], "Flat puff pastry is due to opening the oven door or the oven not being hot enough.", "The steam needs lots of heat."],
+  ["Which is the first technique in pastry making?", "Sieving the flour and salt", ["Rolling", "Resting", "Cooking"], "The techniques in order: sieving, rubbing-in, adding liquid, resting, rolling, cooking.", "Before you rub in the fat."],
+  ["Which technique comes straight after adding the liquid?", "Resting", ["Sieving", "Rubbing-in", "Cooking"], "After adding liquid, the dough is rested, then rolled and cooked.", "Let the dough relax before rolling."],
+]},
+};
+
+for (const t of Object.values(TOPICS)) t.bank = t.bank.map(([q, a, w, why, hint], id) => ({ id, q, a, w, why, hint }));
+
+// Seeded random so each test always has the same questions; questions run in slide order
+function rng(seed) { return () => { seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t ^= t + Math.imul(t ^ (t >>> 7), 61 | t); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+function shuffle(a, r = Math.random) { a = a.slice(); for (let k = a.length - 1; k > 0; k--) { const j = Math.floor(r() * (k + 1)); [a[k], a[j]] = [a[j], a[k]]; } return a; }
+function seedFor(s) { let h = 0; for (const ch of s) h = (h * 31 + ch.charCodeAt(0)) | 0; return h; }
+
+// Each test gets its own share of questions (up to 10) found in no other test, topped up to 20 from the rest
+function buildVersions(key, bank) {
+  const s = seedFor(key), uniq = Math.min(10, Math.floor(bank.length / 5));
+  const base = shuffle(bank.map(b => b.id), rng(s + 2026));
+  return [0, 1, 2, 3, 4].map(v => {
+    const own = base.slice(v * uniq, v * uniq + uniq);
+    const rest = shuffle(base.filter(n => !own.includes(n)), rng(s + 100 + v)).slice(0, PER_QUIZ - own.length);
+    const r = rng(s + 500 + v);
+    return [...own, ...rest].sort((x, y) => x - y).map(n => ({ ...bank[n], opts: shuffle([bank[n].a, ...bank[n].w], r) }));
+  });
+}
+
+const $ = id => document.getElementById(id);
+const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
+let topic = "fats", VERSIONS, version = 1, quiz, i, results, answered, hintUsed;
+
+/* ---------- topic + test ---------- */
+function setTopic(key) {
+  topic = key; store.set("nutritionQuizTopic", key);
+  const t = TOPICS[key];
+  $("topic").value = key;
+  $("title").textContent = `${t.name} Quiz`;
+  $("kicker").textContent = `Food & nutrition · ${t.bank.length} questions`;
+  VERSIONS = buildVersions(key, t.bank);
+  setVersion(version);
+}
+function setVersion(v) {
+  version = v; store.set("fatsQuizVersion", v);
+  document.querySelectorAll(".v").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.v === v)));
+  startQuiz();
+}
+
+/* ---------- quiz ---------- */
+function startQuiz() {
+  quiz = VERSIONS[version - 1]; i = 0; results = [];
+  $("progress").innerHTML = quiz.map(() => "<span></span>").join("");
+  $("done").hidden = true; $("play").hidden = false;
+  show();
+}
+function show() {
+  const item = quiz[i]; answered = false; hintUsed = false;
+  $("qnum").textContent = `Test ${version} · Question ${i + 1} of ${quiz.length}`;
+  $("running").textContent = results.filter(r => r.ok).length;
+  $("qtext").textContent = item.q;
+  $("opts").innerHTML = "";
+  item.opts.forEach((txt, n) => {
+    const b = document.createElement("button");
+    b.className = "opt"; b.id = "opt" + n;
+    b.innerHTML = `<kbd>${n + 1}</kbd><span></span>`;
+    b.querySelector("span").textContent = txt;
+    b.onclick = () => choose(txt);
+    $("opts").appendChild(b);
+  });
+  $("hintBox").hidden = true; $("hintBtn").hidden = false; $("hintBtn").disabled = false;
+  $("feedback").hidden = true; $("next").hidden = true;
+  $("progress").children[i].className = "now";
+}
+function showHint() {
+  if (answered) return;
+  hintUsed = true;
+  $("hintBox").innerHTML = "<strong>Hint:</strong> ";
+  $("hintBox").append(quiz[i].hint);
+  $("hintBox").hidden = false; $("hintBtn").disabled = true;
+}
+function choose(txt) {
+  if (answered) return; answered = true;
+  const item = quiz[i], ok = txt === item.a;
+  results.push({ item, txt, ok, hint: hintUsed });
+  [...$("opts").children].forEach(b => {
+    b.disabled = true;
+    const t = b.querySelector("span").textContent;
+    const mark = (cls, sym, label) => { b.classList.add(cls); b.insertAdjacentHTML("beforeend", `<i class="tick" aria-label="${label}">${sym}</i>`); };
+    if (t === item.a) { mark("correct", "✓", "Correct answer"); if (ok) b.insertBefore(pixelBuddy(), b.querySelector(".tick")); }
+    else if (t === txt) mark("wrong", "✗", "Wrong answer");
+  });
+  $("progress").children[i].className = ok ? "ok" : "no";
+  $("running").textContent = results.filter(r => r.ok).length;
+  $("feedback").innerHTML = "<strong></strong> ";
+  $("feedback").firstChild.textContent = ok ? "Correct." : `Not quite. The answer is ${item.a}.`;
+  $("feedback").append(item.why);
+  $("feedback").hidden = false; $("hintBtn").hidden = true;
+  $("next").textContent = i === quiz.length - 1 ? "See my score" : "Next question";
+  $("next").hidden = false; $("next").focus({ preventScroll: true });
+}
+// A random, symmetric 8x8 pixel character that walks, waves and blinks
+function pixelBuddy() {
+  const N = 8, cv = document.createElement("canvas");
+  cv.width = cv.height = N; cv.className = "buddy"; cv.setAttribute("aria-hidden", "true");
+  const g = cv.getContext("2d"), hue = Math.floor(Math.random() * 360);
+  const body = `hsl(${hue} 70% 50%)`, shade = `hsl(${hue} 70% 35%)`;
+  // Random body (rows 1-5, columns 1-3), mirrored so it looks like a creature
+  const cells = [];
+  for (let y = 1; y <= 5; y++) for (let x = 1; x < N / 2; x++) if (Math.random() < 0.6) cells.push([x, y]);
+  const px = (x, y) => { g.fillRect(x, y, 1, 1); g.fillRect(N - 1 - x, y, 1, 1); };
+
+  function draw(f, blink) {
+    g.clearRect(0, 0, N, N);
+    g.fillStyle = body;
+    cells.forEach(([x, y]) => px(x, y));
+    g.fillRect(2, 2, 4, 3);                       // head, so it always has a face
+    px(0, f ? 2 : 4);                             // arms: up on one frame, down on the other
+    g.fillStyle = shade;
+    if (f) { px(2, 6); px(1, 7); } else { px(3, 6); px(3, 7); }  // legs: apart, then together
+    if (!blink) {
+      g.fillStyle = "#fff"; px(2, 3);
+      g.fillStyle = "#111"; g.fillRect(2, 3, 1, .5); g.fillRect(5, 3, 1, .5);
+    }
+  }
+
+  let f = 0, tick = 0;
+  draw(0, false);
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const id = setInterval(() => {
+      if (tick > 2 && !cv.isConnected) return clearInterval(id);  // stop once the question changes
+      tick++; f ^= 1;
+      draw(f, tick % 12 === 0);                   // blink every few seconds
+    }, 260);
+  }
+  return cv;
+}
+
+function next() { i++; i < quiz.length ? show() : finish(); }
+function finish() {
+  $("play").hidden = true; $("done").hidden = false;
+  const n = results.filter(r => r.ok).length, total = quiz.length, hints = results.filter(r => r.hint).length;
+  $("doneLabel").textContent = `${TOPICS[topic].name} · Test ${version} · Total score`;
+  $("score").textContent = `${n}/${total}`;
+  $("pct").textContent = `${Math.round(n / total * 100)}% · ${n} right, ${total - n} wrong`;
+  const v = n === total ? `Perfect score. You know your ${TOPICS[topic].name.toLowerCase()}.` : n >= 15 ? "Strong work. Check the ones you missed below." : n >= 10 ? "A good start. Revise the missed questions and try again." : "Look back over the slides, use the hints, then have another go.";
+  $("verdict").textContent = v + (hints ? ` You used ${hints} hint${hints > 1 ? "s" : ""}.` : "");
+  $("nextVersion").textContent = `Try test ${version % 5 + 1}`;
+  $("review").innerHTML = "";
+  results.forEach((r, k) => {
+    const li = document.createElement("li");
+    li.innerHTML = `<span class="mark ${r.ok ? "ok" : "no"}">${k + 1}</span><div><span></span><small></small></div>`;
+    li.querySelector("div span").textContent = r.item.q;
+    li.querySelector("small").textContent = (r.ok ? `✓ ${r.item.a}` : `✗ Answer: ${r.item.a} (you said ${r.txt})`) + (r.hint ? " · hint used" : "");
+    $("review").appendChild(li);
+  });
+}
+
+
+/* ---------- wiring ---------- */
+$("topic").onchange = e => setTopic(e.target.value);
+document.querySelectorAll(".v").forEach(b => b.onclick = () => setVersion(+b.dataset.v));
+$("hintBtn").onclick = showHint;
+$("next").onclick = next;
+$("again").onclick = () => startQuiz();
+$("nextVersion").onclick = () => setVersion(version % 5 + 1);
+
+document.addEventListener("keydown", e => {
+  if (e.target.closest(".versions, .topicbar")) return;
+  if ($("play").hidden || answered) return;
+  const n = parseInt(e.key, 10);
+  if (n >= 1 && n <= 4) choose(quiz[i].opts[n - 1]);
+  else if (e.key.toLowerCase() === "h") showHint();
+});
+
+const sv = +store.get("fatsQuizVersion");
+version = sv >= 1 && sv <= 5 ? sv : 1;
+const st = store.get("nutritionQuizTopic");
+setTopic(TOPICS[st] ? st : "fats");
+</script>
+</body>
+</html>
