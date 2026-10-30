@@ -67,6 +67,17 @@ h1, h2 { font-family: var(--display); text-wrap: balance; margin: 0 }
 .opt .buddy + .tick { margin-left: 0 }
 @keyframes hop { 0% { transform: translateY(8px) scale(.4); opacity: 0 } 60% { transform: translateY(-6px) scale(1.1); opacity: 1 } 100% { transform: none } }
 @media (prefers-reduced-motion: reduce) { .opt .buddy { animation: none } }
+.remember { font: inherit; font-weight: 700; justify-self: start; background: none; border: 0; padding: 4px 0; color: var(--fg); cursor: pointer; display: inline-flex; gap: 8px; align-items: center; text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 4px }
+.remember::before { content: "▸"; color: var(--accent); transition: transform .2s; text-decoration: none }
+.remember[aria-expanded="true"]::before { transform: rotate(90deg) }
+.remember:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px }
+.memory { border: 2px dashed var(--accent); background: var(--accent-soft); border-radius: 14px; padding: 20px; display: grid; gap: 14px; animation: pop .25s ease-out }
+@keyframes pop { from { transform: translateY(-6px); opacity: 0 } to { transform: none; opacity: 1 } }
+.mem-visual { display: flex; flex-wrap: wrap; gap: 8px }
+.mem-visual span { font-family: var(--display); font-weight: 800; font-size: clamp(18px, 3.4vw, 24px); line-height: 1.15; padding: 8px 14px; border-radius: 10px; background: var(--surface); border: 2px solid var(--fg); box-shadow: 3px 3px 0 var(--fg) }
+.mem-trick { margin: 0; font-size: 18px }
+.mem-points { margin: 0; padding-left: 20px; display: grid; gap: 4px; color: var(--muted) }
+@media (prefers-reduced-motion: reduce) { .memory { animation: none } }
 .total { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap }
 .total .pct { font-family: var(--display); font-size: 28px; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums }
 .opt.wrong .tick { color: var(--bad) }
@@ -128,6 +139,13 @@ h1, h2 { font-family: var(--display); text-wrap: balance; margin: 0 }
     <div class="row">
       <button class="btn ghost" id="hintBtn">Show hint</button>
       <button class="btn" id="next" hidden>Next question</button>
+    </div>
+    <button class="remember" id="rememberBtn" aria-expanded="false" aria-controls="memory" hidden>Help me remember this</button>
+    <div class="memory" id="memory" hidden>
+      <span class="eyebrow">Memory card · <span id="memTitle"></span></span>
+      <div class="mem-visual" id="memVisual"></div>
+      <p class="mem-trick"><strong>Trick:</strong> <span id="memTrick"></span></p>
+      <ul class="mem-points" id="memPoints"></ul>
     </div>
   </section>
 
@@ -352,6 +370,124 @@ pastry: { name: "Pastry", bank: [
 
 for (const t of Object.values(TOPICS)) t.bank = t.bank.map(([q, a, w, why, hint], id) => ({ id, q, a, w, why, hint }));
 
+// Memory cards: one per key idea, linked to the questions (by bank position) they help with
+const MEMORY = {
+carbs: [
+  { ids: [0, 34, 35, 36, 37, 38, 39, 41], title: "Nutrients: macro vs micro", visual: ["MACRO = g", "MICRO = mg / µg"],
+    mnemonic: "Macro = Massive, Micro = Minute.",
+    points: ["Macronutrients (carbs, protein, fat) are needed in large amounts, measured in grams.", "Micronutrients (vitamins, minerals) are needed in small amounts, in mg or µg.", "Too much is an excess. Too little is a deficiency.", "The body also needs dietary fibre and water."] },
+  { ids: [1, 2, 3, 4], title: "What carbohydrates are", visual: ["C · H · O", "☀ → plant → energy"],
+    mnemonic: "Carbs are CHOcolate for your cells: Carbon, Hydrogen, Oxygen.",
+    points: ["Made by plants during photosynthesis.", "The body's main source of energy.", "Starchy carbs also give B vitamins, iron, calcium, protein and fibre."] },
+  { ids: [5, 6, 7, 8], title: "From food to energy", visual: ["Eat → Glucose → Blood → Cells"],
+    mnemonic: "Insulin is the key, the pancreas is the key-cutter.",
+    points: ["Carbohydrate is broken down into glucose.", "Glucose is absorbed through the small intestine into the blood.", "The pancreas makes insulin, which lets glucose into cells for energy."] },
+  { ids: [9, 10, 11, 12, 19, 26, 40], title: "Simple vs complex", visual: ["SIMPLE = Sugar = Speedy", "COMPLEX = starCH = Chilled out"],
+    mnemonic: "Simple Sugars Sprint. Complex Carbs Crawl.",
+    points: ["Simple carbs are sugars: digested quickly, fast energy.", "Complex carbs are starches: digested slowly, steady energy.", "Starch is in bread, rice, pasta, potatoes and cereals.", "Most of our energy should come from starchy foods and natural sugars."] },
+  { ids: [13, 14, 15, 16, 17, 18], title: "Saccharides", visual: ["MONO = 1", "DI = 2", "POLY = many"],
+    mnemonic: "Monorail (one), Duo (two), Polygon (many sides). Sucrose = Glucose + Fructose, a sweet couple.",
+    points: ["'Saccharide' comes from the Latin for sugar.", "Monosaccharides: glucose, fructose.", "Disaccharides: two monosaccharides, e.g. sucrose.", "Polysaccharides: many units, e.g. starch (complex)."] },
+  { ids: [20, 21, 22, 23, 24, 25], title: "Glycaemic Index (GI)", visual: ["HIGH GI ⚡ quick · sharp", "LOW GI 🐢 slow · gentle"],
+    mnemonic: "White and tropical spike high. Brown and peachy stay low.",
+    points: ["GI ranks carbohydrate foods by how fast they raise blood sugar.", "High GI: white bread, pasta, pineapple, melon.", "Low GI: wholemeal bread, brown rice, peach."] },
+  { ids: [27, 28, 29, 30], title: "Too much carbohydrate", visual: ["3 Fs: Fat · Fillings · Fluctuations"],
+    mnemonic: "Too many carbs give you the 3 Fs.",
+    points: ["Fat: spare carbohydrate is stored as fat, which can lead to obesity.", "Fillings: too much sugar causes dental caries.", "Fluctuations: sugar spikes and wild swings can lead to type 2 diabetes."] },
+  { ids: [31, 32, 33], title: "Too little carbohydrate", visual: ["Carbs → Fat → Muscle"],
+    mnemonic: "Burn the logs (carbs), then the furniture (fat), then the house itself (muscle).",
+    points: ["Low blood sugar makes you Hungry, Dizzy and Tired.", "Without carbs, the body uses fat for energy.", "Without fat too, it uses protein, so muscles waste and you get weaker."] },
+],
+protein: [
+  { ids: [0, 1, 2, 3, 4, 5], title: "What protein does", visual: ["G · R · M · E"],
+    mnemonic: "Protein Grows, Repairs, Maintains, and is Emergency Energy.",
+    points: ["Growth: hair, nails, muscle, children growing.", "Repair: muscles, tissues and organs after injury.", "Maintenance: enzymes for digestion, antibodies against illness.", "Energy: a backup when carbs and fat run short."] },
+  { ids: [6, 7, 8, 9, 10, 11, 12, 13], title: "Amino acids", visual: ["20 = 11 + 9"],
+    mnemonic: "Of the 20, 11 are made at home (non-essential) and 9 come from the shop (essential, from food).",
+    points: ["Proteins are chains of amino acids.", "Elements: C, H, O and N. The N (nitrogen) is what carbs don't have.", "The 9 essential ones include leucine, lysine, tryptophan and valine."] },
+  { ids: [14, 15, 16, 17, 18, 19, 20, 21, 22], title: "HBV vs LBV", visual: ["HBV = Has it all", "LBV = Lacking"],
+    mnemonic: "HBV Has Basically eVerything. LBV is Lacking. Soya and Quinoa are the Super-Quality plants.",
+    points: ["HBV: all essential amino acids. Mostly animal: meat, fish, eggs, cheese, milk.", "Plant HBV: soya beans and quinoa.", "LBV: missing one or more. Plants only: peas, lentils, nuts, seeds, beans, broccoli, spinach."] },
+  { ids: [35, 36], title: "Protein complementation", visual: ["LBV + LBV = complete"],
+    mnemonic: "Two half-teams make a full team: houmous + pitta.",
+    points: ["Combining different LBV proteins provides all the essential amino acids.", "Example: houmous and pitta bread."] },
+  { ids: [23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34], title: "Alternative proteins", visual: ["Soya → Tofu · TVP", "Fungus → Mycoprotein"],
+    mnemonic: "Soya's family: milk curdles into Tofu, flour bakes into TVP. Myco = Mushroom-like, and it stands in for chicken.",
+    points: ["Alternatives taste of little but soak up flavours.", "Soya beans must be cooked to remove toxicity.", "Tofu: curdled soya milk. Soft for desserts and dips, firm for stir-fries, extra firm = 'dry'.", "TVP (Textured Vegetable Protein): soya flour dough with a meat-like texture.", "Mycoprotein: fungus + egg white (vegan versions use potato starch)."] },
+  { ids: [37, 38, 39, 40, 41, 42], title: "How much protein", visual: ["♂ 55 g · ♀ 45 g", "Pregnant +6 g"],
+    mnemonic: "Men 55, women 45: ten apart. Pregnancy adds 6 for the baby.",
+    points: ["Dietary reference values estimate how much of each nutrient we need.", "Growing children need more relative to their size.", "Active people need more for muscle growth and repair."] },
+  { ids: [43, 44, 45, 46, 47, 49], title: "Too little protein", visual: ["Slow growth · Swelling"],
+    mnemonic: "K for Kwashiorkor, K for a Kid with a swollen tummy.",
+    points: ["Growth slows, especially in children.", "Hair, skin and nails get into poor condition.", "Weak immune system: slow-healing wounds, more infections.", "Oedema: fluid build-up causing swelling. Severe cases: kwashiorkor."] },
+  { ids: [48], title: "Too much protein", visual: ["Liver + Kidneys = overtime"],
+    mnemonic: "Lots of protein makes the Liver and Kidneys work overtime.",
+    points: ["The liver and kidneys process protein.", "Too much puts strain on them, which can be dangerous."] },
+],
+fats: [
+  { ids: [0, 45, 46, 47, 49], title: "What fat is", visual: ["Glycerol + 3 fatty acids"],
+    mnemonic: "A TRIglyceride is a TRIcycle: one glycerol seat, three fatty-acid wheels.",
+    points: ["Fat is a macronutrient.", "Fatty acid types differ in how carbon bonds with hydrogen.", "Structure decides health effects, melting point and digestibility.", "Digestion breaks fat into fatty acids."] },
+  { ids: [1, 2], title: "Energy in fat", visual: ["1 g fat = 9 kcal = 37 kJ"],
+    mnemonic: "Fat is fine at NINE. For kJ, times by about 4: 9 × 4.2 ≈ 37.",
+    points: ["Fat is the most concentrated energy source.", "Fatty foods provide a lot of energy."] },
+  { ids: [3, 40, 41, 42, 43, 44], title: "What fat does", visual: ["H · E · A · T + A D E K"],
+    mnemonic: "Fat brings the HEAT: Hormones, Essential fatty acids for the brain, Armour for organs, Temperature. And it deals 'A DEcK' of vitamins.",
+    points: ["Carries fat-soluble vitamins A, D, E and K.", "Makes cholesterol, part of all cell membranes.", "Part of hormones. Essential fatty acids build brain and nerve cells.", "Cushions organs and insulates to keep us warm."] },
+  { ids: [4, 5, 6, 7], title: "Saturated vs unsaturated", visual: ["SATURATED = Solid", "UNSATURATED = Un-solid (liquid)"],
+    mnemonic: "Saturated is Solid and comes from the Stockyard (animals). Unsaturated runs out of a bottle.",
+    points: ["Saturated: mostly solid at room temperature, from animals.", "Unsaturated: mostly liquid at room temperature, from vegetables.", "Foods are named after the fatty acid they have most of: butter is saturated, veg oil is unsaturated."] },
+  { ids: [8, 9, 10], title: "Foods high in saturated fat", visual: ["Meat · Skin · Butter · Biscuits · Cheese · Chocolate"],
+    mnemonic: "My Sister Bakes Biscuits with Cheese and Chocolate.",
+    points: ["Fatty and processed meat, poultry skin.", "Butter, hard cheese.", "Biscuits, cakes, pastries and chocolate."] },
+  { ids: [11, 12, 13], title: "Monounsaturated fat", visual: ["Olive oil · Avocado · Nuts"],
+    mnemonic: "Mono goes to the Mediterranean: olive oil drizzled on avocado and nuts.",
+    points: ["Found in edible oils (especially olive oil), avocados and nuts.", "Also found in meat and milk."] },
+  { ids: [14, 15, 16, 48], title: "Polyunsaturated fat", visual: ["Sunflower oil · Seeds · Margarine · Oily fish"],
+    mnemonic: "Sunny Seeds Make Oil: Sunflower oil, Seeds, Margarine, Oily fish.",
+    points: ["Omega-3, omega-6 and omega-9 are polyunsaturated.", "Spreads made from vegetable oils count too."] },
+  { ids: [17, 18, 19, 20, 21, 22, 23, 24], title: "Omega-3 and omega-6", visual: ["Ω3 = Fish → Brain", "Ω6 = Veg oil · Nuts · Chicken"],
+    mnemonic: "Omega-3 swims (oily fish, once a week, good for brain and heart). Omega-6 clucks and crunches (chicken, nuts, veg oil; lowers cholesterol, calms inflammation).",
+    points: ["Also called n-3 and n-6.", "One of each is 'essential': the body can't make it.", "Eggs from hens fed omega-3 diets have smaller amounts."] },
+  { ids: [25, 26, 27, 28], title: "How much fat", visual: ["35% → 11% → 2%"],
+    mnemonic: "Count down like a rocket: 35 total, 11 saturated, 2 trans, lift-off!",
+    points: ["Total fat: no more than 35% of food energy.", "Saturated: no more than 11%. Trans: no more than 2%.", "UK adults eat too much saturated fat."] },
+  { ids: [29, 30, 31, 32, 33, 34, 35], title: "Too much fat", visual: ["Sat fat → Cholesterol ↑ → Pressure ↑ → Heart"],
+    mnemonic: "Clogged pipes: more sat fat means gunk in the pipes, and the pump (heart) has to push harder.",
+    points: ["Raises blood cholesterol and restricts blood flow.", "Risk of high blood pressure, CHD, stroke, heart attack.", "Excess fat is stored under the skin and around organs, leading to obesity and type 2 diabetes.", "Swapping saturated for unsaturated fat helps lower cholesterol."] },
+  { ids: [36, 37, 38, 39], title: "Too little fat", visual: ["No coat · No padding · No vitamin taxi"],
+    mnemonic: "No fat means no coat (cold), no padding (knocks) and no taxi for A, D, E and K.",
+    points: ["Fewer fat-soluble vitamins absorbed, causing deficiency.", "Without carbs, fat stores are used up and weight drops.", "Less insulation and less protection from knocks."] },
+],
+pastry: [
+  { ids: [0, 1, 2, 45, 46], title: "Pastry basics", visual: ["Flour · Fat · Salt · Water"],
+    mnemonic: "Four Friends Stay Warm. Method: Sieve, Rub, Add liquid, Rest, Roll, Cook.",
+    points: ["The six types: shortcrust, suet, puff, rough puff, flaky, choux.", "Rest the dough after adding liquid, then roll and cook."] },
+  { ids: [3, 4, 5, 6, 7, 8, 9, 13], title: "Flour and fat for each pastry", visual: ["Plain · Self-raising · Strong", "½ fat · ¾ fat"],
+    mnemonic: "Plain for Pies, Self-raising for Suet, Strong for the Show-offs. Half fat for the humble pair, three-quarters for the fancy four.",
+    points: ["Shortcrust: plain flour, ½ fat (lard + butter, or all butter).", "Suet: self-raising flour, ½ shredded suet.", "Puff, flaky, rough puff, choux: strong flour, ¾ fat.", "Flaky/puff: rub in ¼ of the fat first, add the rest when rolling."] },
+  { ids: [10, 11, 12, 14, 15, 16, 17], title: "Methods", visual: ["Rub · Stir lumps · Roll & fold · Pan & pipe"],
+    mnemonic: "Choux is the only one that goes into a pan and comes out of a bag.",
+    points: ["Shortcrust: rub fat into flour, add liquid. Richer: add egg yolk and sugar.", "Rough puff: fat cubes stirred in, a quicker puff.", "Puff/flaky: laminated, rolled and folded into layers.", "Choux: heat fat and liquid, beat in flour, add eggs, pipe the paste."] },
+  { ids: [18, 19, 20, 21, 22, 23, 24], title: "Which pastry for which product", visual: ["Choux = Cream-filled", "Shortcrust = Sturdy", "Puff = Party", "Filo = Fragile"],
+    mnemonic: "Cream-filled Choux, Sturdy Shortcrust, Party Puff, Fragile Filo.",
+    points: ["Choux: light, hollow. Profiteroles, eclairs.", "Shortcrust: 'short' texture. Pies, quiches, tarts, pasties.", "Flaky/puff/rough puff: puffed layers. Sausage rolls, turnovers.", "Filo: light, crisp, fragile. Strudels, parcels."] },
+  { ids: [25, 26, 27, 28, 29, 30, 31], title: "Gluten", visual: ["Gliadin + Glutenin + Water = Gluten"],
+    mnemonic: "G + G + water = Gluten, coiled like a spring.",
+    points: ["Gluten gives dough its stretch and structure.", "Strong flour = high protein = more gluten, for puff, flaky and choux.", "Plain/self-raising = low protein, for shortcrust and suet where we avoid gluten."] },
+  { ids: [32, 33, 34, 35, 36], title: "What fat does in pastry", visual: ["Fat = a raincoat for flour"],
+    mnemonic: "Fat gives flour a raincoat, so water can't build long gluten. Short and crumbly, hence 'shortening'.",
+    points: ["The waterproof coating stops long gluten molecules forming.", "Gives a firm, flat base for filled pies and tarts.", "In puff pastry, fat creates steam that separates the layers."] },
+  { ids: [37, 38, 39, 40, 41], title: "Salt and sugar", visual: ["Salt: 3 S", "Sugar: 3 S"],
+    mnemonic: "Salt: Savour, Strengthen, Stops sticking. Sugar: Sweet, Soft, Shade (brown).",
+    points: ["Salt enhances flavour and tightens protein bonds for structure.", "Salt helps laminated dough absorb moisture evenly.", "Sugar softens gluten for a moist crumb and caramelises to brown."] },
+  { ids: [42, 43, 44], title: "Pastry problems", visual: ["Stretch → Shrink", "Knead → Leathery", "Peek → Flat"],
+    mnemonic: "Stretch it and it Shrinks. Knead it and it's Leathery. Peek in the oven and it's Flat.",
+    points: ["Stretched or too wet shortcrust is tough and shrinks.", "Over-kneading develops gluten: hard and leathery.", "Flat puff pastry: oven door opened, or oven not hot enough."] },
+],
+};
+const memoryFor = (key, id) => MEMORY[key].find(m => m.ids.includes(id));
+
 // Seeded random so each test always has the same questions; questions run in slide order
 function rng(seed) { return () => { seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t ^= t + Math.imul(t ^ (t >>> 7), 61 | t); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
 function shuffle(a, r = Math.random) { a = a.slice(); for (let k = a.length - 1; k > 0; k--) { const j = Math.floor(r() * (k + 1)); [a[k], a[j]] = [a[j], a[k]]; } return a; }
@@ -412,6 +548,7 @@ function show() {
   });
   $("hintBox").hidden = true; $("hintBtn").hidden = false; $("hintBtn").disabled = false;
   $("feedback").hidden = true; $("next").hidden = true;
+  $("rememberBtn").hidden = true; $("memory").hidden = true; $("rememberBtn").setAttribute("aria-expanded", "false");
   $("progress").children[i].className = "now";
 }
 function showHint() {
@@ -440,6 +577,21 @@ function choose(txt) {
   $("feedback").hidden = false; $("hintBtn").hidden = true;
   $("next").textContent = i === quiz.length - 1 ? "See my score" : "Next question";
   $("next").hidden = false; $("next").focus({ preventScroll: true });
+  const mem = memoryFor(topic, item.id);
+  if (mem) {
+    $("memTitle").textContent = mem.title;
+    $("memVisual").innerHTML = "";
+    mem.visual.forEach(v => { const s = document.createElement("span"); s.textContent = v; $("memVisual").appendChild(s); });
+    $("memTrick").textContent = mem.mnemonic;
+    $("memPoints").innerHTML = "";
+    mem.points.forEach(p => { const li = document.createElement("li"); li.textContent = p; $("memPoints").appendChild(li); });
+    $("rememberBtn").hidden = false;
+  }
+}
+function toggleMemory() {
+  const open = $("memory").hidden;
+  $("memory").hidden = !open;
+  $("rememberBtn").setAttribute("aria-expanded", String(open));
 }
 // A random, symmetric 8x8 pixel character that walks, waves and blinks
 function pixelBuddy() {
@@ -504,6 +656,7 @@ function finish() {
 $("topic").onchange = e => setTopic(e.target.value);
 document.querySelectorAll(".v").forEach(b => b.onclick = () => setVersion(+b.dataset.v));
 $("hintBtn").onclick = showHint;
+$("rememberBtn").onclick = toggleMemory;
 $("next").onclick = next;
 $("again").onclick = () => startQuiz();
 $("nextVersion").onclick = () => setVersion(version % 5 + 1);
