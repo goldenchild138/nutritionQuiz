@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Nutrition Revision Quiz</title>
+<title>Revision Quizzes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&display=swap">
 <style>
@@ -14,23 +14,34 @@ body { margin: 0 }
   --bg: #f3f5ee; --surface: #ffffff; --fg: #1d2418; --muted: #5d6656;
   --accent: #c98a00; --accent-ink: #1d2418; --accent-soft: #fbf0d4; --line: #d9dfd0;
   --good: #2f7d3b; --good-bg: #e2f2e2; --bad: #b3362b; --bad-bg: #f8e1de;
+  --s1: #2a78d6; --s2: #eb6834; --grid-major: #c3ccb8; --grid-minor: #e4e9dc;
+  --cell: #e3f0d2; --chl: #3d8b36; --sap: #d9e9f7; --wax: #f3e2a0; --soil: #c8a27a; --film: #b9d6f2; --dough: #d9b17c; --fat: #fff4cf;
   --display: "Barlow", system-ui, -apple-system, sans-serif;
   --body: "Barlow", system-ui, -apple-system, sans-serif;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
   --bg: #151a12; --surface: #1f261b; --fg: #edf0e6; --muted: #a3ad98;
   --accent: #f0b52a; --accent-ink: #151a12; --accent-soft: #3a3016; --line: #34402e;
-  --good: #7fd18b; --good-bg: #1f3a22; --bad: #f08a7e; --bad-bg: #3d1f1b; color-scheme: dark } }
+  --good: #7fd18b; --good-bg: #1f3a22; --bad: #f08a7e; --bad-bg: #3d1f1b;
+  --s1: #3987e5; --s2: #d95926; --grid-major: #4a5743; --grid-minor: #2b3427;
+  --cell: #2a3b22; --chl: #72c468; --sap: #1d3348; --wax: #5c4e1b; --soil: #7a5b3c; --film: #24496b; --dough: #8a6a3e; --fat: #4a4227; color-scheme: dark } }
 :root[data-theme="dark"] {
   --bg: #151a12; --surface: #1f261b; --fg: #edf0e6; --muted: #a3ad98;
   --accent: #f0b52a; --accent-ink: #151a12; --accent-soft: #3a3016; --line: #34402e;
-  --good: #7fd18b; --good-bg: #1f3a22; --bad: #f08a7e; --bad-bg: #3d1f1b; color-scheme: dark }
+  --good: #7fd18b; --good-bg: #1f3a22; --bad: #f08a7e; --bad-bg: #3d1f1b;
+  --s1: #3987e5; --s2: #d95926; --grid-major: #4a5743; --grid-minor: #2b3427;
+  --cell: #2a3b22; --chl: #72c468; --sap: #1d3348; --wax: #5c4e1b; --soil: #7a5b3c; --film: #24496b; --dough: #8a6a3e; --fat: #4a4227; color-scheme: dark }
 
 * { box-sizing: border-box }
 body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 17px; line-height: 1.5 }
 .wrap { max-width: 720px; margin: 0 auto; padding-inline: 16px; padding-block: 32px 48px; display: grid; gap: 20px }
 h1, h2 { font-family: var(--display); text-wrap: balance; margin: 0 }
 .eyebrow { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700 }
+.subjects { display: flex; gap: 4px; border-bottom: 2px solid var(--line); overflow-x: auto }
+.subj { font: inherit; font-family: var(--display); font-weight: 800; font-size: 18px; padding: 10px 18px; border: 0; background: none; color: var(--muted); cursor: pointer; border-bottom: 4px solid transparent; margin-bottom: -2px; white-space: nowrap }
+.subj:hover { color: var(--fg) }
+.subj[aria-current="page"] { color: var(--fg); border-bottom-color: var(--accent) }
+.subj:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px }
 .topicbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px }
 .topicbar label { margin: 0 }
 .hs-cta { margin-left: auto; font: inherit; display: inline-flex; align-items: center; gap: 10px; padding: 8px 16px 8px 12px; border-radius: 12px; border: 2px solid var(--fg); background: var(--accent); color: var(--accent-ink); cursor: pointer; box-shadow: 3px 3px 0 var(--fg); text-align: left }
@@ -92,11 +103,12 @@ h1, h2 { font-family: var(--display); text-wrap: balance; margin: 0 }
 .opt.wrong { border-color: var(--bad); background: var(--bad-bg) }
 .opt .tick { margin-left: auto; font-style: normal; font-weight: 800; font-size: 22px; line-height: 1; align-self: center }
 .opt.correct .tick { color: var(--good) }
-.opt .buddy { width: 48px; height: 48px; margin-block: -10px; flex: none; margin-left: auto; align-self: center; image-rendering: pixelated; animation: hop .5s ease-out, bob .52s ease-in-out .5s infinite alternate }
+.buddy { width: 48px; height: 48px; flex: none; image-rendering: pixelated; animation: hop .5s ease-out, bob .52s ease-in-out .5s infinite alternate }
+.opt .buddy { margin-block: -10px; margin-left: auto; align-self: center }
 @keyframes bob { from { transform: translateY(0) } to { transform: translateY(-3px) } }
 .opt .buddy + .tick { margin-left: 0 }
 @keyframes hop { 0% { transform: translateY(8px) scale(.4); opacity: 0 } 60% { transform: translateY(-6px) scale(1.1); opacity: 1 } 100% { transform: none } }
-@media (prefers-reduced-motion: reduce) { .opt .buddy { animation: none } }
+@media (prefers-reduced-motion: reduce) { .buddy { animation: none } }
 .remember { font: inherit; font-weight: 700; justify-self: start; background: none; border: 0; padding: 4px 0; color: var(--fg); cursor: pointer; display: inline-flex; gap: 8px; align-items: center; text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 4px }
 .remember::before { content: "▸"; color: var(--accent); transition: transform .2s; text-decoration: none }
 .remember[aria-expanded="true"]::before { transform: rotate(90deg) }
@@ -113,8 +125,15 @@ h1, h2 { font-family: var(--display); text-wrap: balance; margin: 0 }
 .opt.wrong .tick { color: var(--bad) }
 .hint { background: var(--accent-soft); border-radius: 10px; padding: 12px 16px; margin: 0 }
 .hint strong { font-family: var(--display) }
-.feedback { border-left: 4px solid var(--accent); padding: 4px 0 4px 14px; color: var(--muted); margin: 0 }
+.feedback { --fb: var(--accent); --fb-bg: var(--accent-soft); margin: 0; padding: 18px 20px; border-radius: 14px; border: 2px solid var(--fb); border-left-width: 10px; background: var(--fb-bg); color: var(--fg); font-size: 18px; box-shadow: 4px 4px 0 var(--fb); animation: pop .3s ease-out }
+.feedback.is-ok { --fb: var(--good); --fb-bg: var(--good-bg) } .feedback.is-no { --fb: var(--bad); --fb-bg: var(--bad-bg) }
 .feedback strong { color: var(--fg) }
+.fb-head { display: flex; align-items: center; gap: 12px; font-family: var(--display); font-weight: 800; font-size: clamp(24px, 4.5vw, 30px); line-height: 1.1 }
+.fb-head i { font-style: normal; display: grid; place-items: center; width: 40px; height: 40px; flex: none; border-radius: 50%; background: var(--fb); color: var(--surface); font-size: 22px }
+.feedback .answer-line { font-weight: 600 }
+.feedback .why { padding: 12px 14px; border-radius: 10px; background: var(--surface); line-height: 1.45 }
+.feedback .why strong { font-family: var(--display); text-transform: uppercase; letter-spacing: .06em; font-size: 15px; color: var(--fb) }
+@media (prefers-reduced-motion: reduce) { .feedback { animation: none } }
 .btn { font: inherit; font-weight: 700; padding: 12px 22px; border-radius: 999px; border: 0; background: var(--accent); color: var(--accent-ink); cursor: pointer }
 .btn.ghost { background: transparent; color: var(--fg); border: 2px solid var(--line) }
 .btn.ghost:hover:not(:disabled) { border-color: var(--accent) }
@@ -127,19 +146,70 @@ h1, h2 { font-family: var(--display); text-wrap: balance; margin: 0 }
 .review .mark { font-weight: 800; font-variant-numeric: tabular-nums } .review .ok { color: var(--good) } .review .no { color: var(--bad) }
 .review small { color: var(--muted); display: block }
 
+/* Exam-style questions: figure, typed answer, mark scheme */
+.fig { margin: 0; padding: 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); overflow-x: auto }
+.fig svg { display: block; width: 100%; min-width: 440px; height: auto; max-height: 380px }
+@media (max-width: 520px) { .fig { padding: 6px; margin-inline: -12px } }
+.fig .lbl { font: 800 17px var(--display); fill: var(--fg) }
+.fig .key { font: 600 14px var(--body); fill: var(--fg) }
+.fig .lead { stroke: var(--fg); stroke-width: 1.2 } .fig .dot { fill: var(--fg) }
+.fig .ink { stroke: var(--fg); stroke-width: 1.6; fill: none }
+.fig .cell { fill: var(--cell); stroke: var(--fg); stroke-width: 1.1 }
+.fig .cellline { fill: var(--cell); stroke: var(--fg); stroke-width: 1 }
+.fig .chl, .fig .chl-big { fill: var(--chl) } .fig .grana { stroke: var(--cell); stroke-width: 1.2 }
+.fig .wax { fill: var(--wax); stroke: var(--fg); stroke-width: .8 }
+.fig .xy { fill: var(--surface); stroke: var(--fg); stroke-width: 3 }
+.fig .wall { fill: var(--cell); stroke: var(--fg); stroke-width: 3 } .fig .cyto { fill: var(--surface); stroke: var(--fg); stroke-width: 1; opacity: .9 }
+.fig .sap { fill: var(--sap); stroke: var(--fg); stroke-width: 1 } .fig .nuc { fill: var(--grid-major); stroke: var(--fg); stroke-width: 1.2 } .fig .nucleolus { fill: var(--fg) }
+.fig .panel { fill: var(--bg); stroke: var(--line); stroke-width: 1.5 } .fig .pore { fill: var(--grid-major); stroke: var(--fg); stroke-width: 1 }
+.fig .soil { fill: var(--soil); stroke: var(--fg); stroke-width: .8 } .fig .film { fill: var(--film) }
+.fig .arrow { stroke: var(--s1); stroke-width: 3 } .fig .arrow-h { fill: var(--s1) }
+.fig .hollow { fill: var(--surface) } .fig .lig { stroke: var(--fg); stroke-width: 3; stroke-linecap: round; opacity: .75 } .fig .vwall { stroke: var(--fg); stroke-width: 3; fill: none }
+.fig .sieve { stroke: var(--fg); stroke-width: 3.5; stroke-dasharray: 5 4 }
+.fig .shade { fill: var(--grid-major); stroke: var(--fg); stroke-width: 1.4 } .fig .bulb { fill: var(--wax); stroke: var(--fg); stroke-width: 1.4 } .fig .ray { stroke: var(--wax); stroke-width: 2; stroke-dasharray: 4 4 }
+.fig .ruler { fill: var(--wax); stroke: var(--fg); stroke-width: 1.2 } .fig .weed { stroke: var(--chl); stroke-width: 4; fill: none; stroke-linecap: round } .fig .bubble { fill: var(--surface); stroke: var(--fg); stroke-width: 1.2 }
+.fig .g-minor line { stroke: var(--grid-minor); stroke-width: 1 } .fig .g-major line { stroke: var(--grid-major); stroke-width: 1 }
+.fig .axis { stroke: var(--fg); stroke-width: 1.6; fill: none }
+.fig .ticks text { font: 500 13px var(--body); fill: var(--muted); font-variant-numeric: tabular-nums }
+.fig .axis-t { font: 700 14px var(--body); fill: var(--fg) }
+.fig .series { fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round } .fig .s1 { stroke: var(--s1) } .fig .s2 { stroke: var(--s2); stroke-dasharray: 8 5 }
+.fig .cross { stroke: var(--fg); stroke-width: 2; stroke-linecap: round }
+.answer { display: grid; gap: 10px }
+.ans-field { display: flex; flex-wrap: wrap; align-items: center; gap: 10px }
+.ans-num { flex: 0 1 150px; width: 150px; font-variant-numeric: tabular-nums }
+.ans-text { flex: 1 1 100%; min-height: 110px; resize: vertical; line-height: 1.45 } .ans-text.short { min-height: 0 }
+.ans-field .unit { font-weight: 700; color: var(--muted) }
+.name-input.correct { border-color: var(--good); background: var(--good-bg) } .name-input.wrong { border-color: var(--bad); background: var(--bad-bg) } .name-input.part { border-color: var(--accent); background: var(--accent-soft) }
+.answer .buddy { width: 40px; height: 40px }
+.feedback { display: grid; gap: 10px }
+.feedback p { margin: 0 }
+.feedback .model { color: var(--fg); line-height: 1.45 }
+.scheme { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px }
+.scheme li { display: grid; grid-template-columns: 22px 1fr; gap: 6px }
+.scheme i { font-style: normal; font-weight: 800 } .scheme .hit i { color: var(--good) } .scheme .miss i { color: var(--bad) } .scheme .hit span { color: var(--fg) } .scheme .miss span { color: var(--muted) }
+.progress span.part { background: linear-gradient(90deg, var(--good) 50%, var(--bad) 50%) }
+.review .part { color: var(--accent) }
+.fig .bar { fill: var(--s1) } .fig .note { font: 500 12px var(--body); fill: var(--muted) }
+.fig .sug { fill: var(--wax); stroke: var(--fg); stroke-width: 1.5 } .fig .bond { stroke: var(--fg); stroke-width: 2.5; fill: none }
+.fig .b1 { fill: var(--s1); stroke: var(--fg) } .fig .b2 { fill: var(--s2); stroke: var(--fg) } .fig .b3 { fill: var(--chl); stroke: var(--fg) } .fig .b4 { fill: var(--wax); stroke: var(--fg) }
+.fig .gly { fill: var(--wax); stroke: var(--fg); stroke-width: 1.5 } .fig .chain { fill: none; stroke: var(--fg); stroke-width: 2.2; stroke-linejoin: round }
+.fig .flour { fill: var(--surface); stroke: var(--fg); stroke-width: 1.2 } .fig .fatc { fill: var(--wax); stroke: var(--fg); stroke-width: .8 }
+.fig .dough { fill: var(--dough); stroke: var(--fg); stroke-width: 1 } .fig .fatl { fill: var(--fat); stroke: var(--fg); stroke-width: 1 }
+.fig .lbl.big { font-size: 20px }
+
 </style>
 </head>
 <body>
 
 <main class="wrap">
+  <nav class="subjects" aria-label="Subject">
+    <button class="subj" data-subject="foodtech">Food Tech</button>
+    <button class="subj" data-subject="biology">Biology</button>
+  </nav>
+
   <div class="topicbar">
     <label class="eyebrow" for="topic">Topic</label>
-    <select class="select" id="topic">
-      <option value="carbs">Carbohydrates</option>
-      <option value="protein">Protein</option>
-      <option value="fats">Fats</option>
-      <option value="pastry">Pastry</option>
-    </select>
+    <select class="select" id="topic"></select>
     <button class="sound" id="soundBtn" aria-pressed="true">Sound on</button>
     <button class="hs-cta" id="hsBtn" aria-haspopup="dialog">
       <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M7 3h10v2h4v3a5 5 0 0 1-4.6 5A5 5 0 0 1 13 16.9V19h3v2H8v-2h3v-2.1A5 5 0 0 1 7.6 13 5 5 0 0 1 3 8V5h4V3Zm0 4H5v1a3 3 0 0 0 2 2.8V7Zm10 0v3.8A3 3 0 0 0 19 8V7h-2Z"/></svg>
@@ -179,11 +249,18 @@ h1, h2 { font-family: var(--display); text-wrap: balance; margin: 0 }
   <!-- QUIZ -->
   <section class="card" id="play" hidden>
     <div class="progress" id="progress"></div>
-    <div class="meta"><span class="eyebrow" id="qnum"></span><span class="eyebrow">Score <b id="running">0</b></span></div>
+    <div class="meta"><span class="eyebrow" id="qnum"></span><span class="eyebrow">Marks <b id="running">0</b></span></div>
     <h2 class="q" id="qtext"></h2>
+    <figure class="fig" id="qfig" hidden></figure>
     <div class="opts" id="opts"></div>
+    <div class="answer" id="answer" hidden>
+      <label class="eyebrow" for="ansIn">Your answer</label>
+      <div class="ans-field" id="ansField"></div>
+      <p class="err" id="ansErr" hidden></p>
+      <div class="row"><button class="btn" id="markBtn">Mark my answer</button><span class="savenote" id="ansTip"></span></div>
+    </div>
     <p class="hint" id="hintBox" hidden></p>
-    <p class="feedback" id="feedback" hidden></p>
+    <div class="feedback" id="feedback" hidden></div>
     <div class="row">
       <button class="btn ghost" id="hintBtn">Show hint</button>
       <button class="btn" id="next" hidden>Next question</button>
@@ -223,13 +300,7 @@ h1, h2 { font-family: var(--display); text-wrap: balance; margin: 0 }
       <h2 id="hsTitle" style="font-size:28px">High scores</h2>
       <button class="btn ghost" id="hsClose">Close</button>
     </div>
-    <div class="hs-tabs" role="tablist" aria-label="Board">
-      <button class="hs-tab" role="tab" data-board="overall">Overall</button>
-      <button class="hs-tab" role="tab" data-board="carbs">Carbohydrates</button>
-      <button class="hs-tab" role="tab" data-board="protein">Protein</button>
-      <button class="hs-tab" role="tab" data-board="fats">Fats</button>
-      <button class="hs-tab" role="tab" data-board="pastry">Pastry</button>
-    </div>
+    <div class="hs-tabs" id="hsTabs" role="tablist" aria-label="Board"></div>
     <p class="savenote" id="hsNote"></p>
     <div class="table-wrap"><table class="board" id="hsTable"></table></div>
   </div>
@@ -439,9 +510,184 @@ pastry: { name: "Pastry", bank: [
   ["Which is the first technique in pastry making?", "Sieving the flour and salt", ["Rolling", "Resting", "Cooking"], "The techniques in order: sieving, rubbing-in, adding liquid, resting, rolling, cooking.", "Before you rub in the fat."],
   ["Which technique comes straight after adding the liquid?", "Resting", ["Sieving", "Rubbing-in", "Cooking"], "After adding liquid, the dough is rested, then rolled and cooked.", "Let the dough relax before rolling."],
 ]},
+
+photo: { name: "Photosynthesis", bank: [
+  ["What is the word equation for photosynthesis?", "carbon dioxide + water → glucose + oxygen", ["glucose + oxygen → carbon dioxide + water", "carbon dioxide + oxygen → glucose + water", "water + oxygen → glucose + carbon dioxide"], "Plants take in carbon dioxide and water and use light energy to make glucose and oxygen.", "The reactants are what the plant takes in from the air and the soil."],
+  ["Which is the balanced symbol equation for photosynthesis?", "6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂", ["C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O", "6CO₂ + 6H₂O → C₆H₁₂O₆ + 3O₂", "CO₂ + H₂O → C₆H₁₂O₆ + O₂"], "Six carbon dioxide and six water make one glucose and six oxygen.", "There's a 6 in front of everything except glucose."],
+  ["What is the chemical formula of glucose?", "C₆H₁₂O₆", ["C₁₂H₂₂O₁₁", "C₆H₆O₆", "CO₂"], "Glucose is C₆H₁₂O₆: 6 carbon, 12 hydrogen, 6 oxygen.", "Think 6-12-6."],
+  ["Where does a plant get the carbon dioxide it needs for photosynthesis?", "From the air, through the stomata", ["From the soil, through root hair cells", "It is made in the chloroplasts", "From water in the xylem"], "Carbon dioxide diffuses from the air into the leaf through the stomata.", "It's a gas, so where would it come from?"],
+  ["Where does a plant get the water it needs for photosynthesis?", "From the soil, through root hair cells", ["From the air, through the stomata", "It is made by respiration in the leaf", "From the phloem"], "Water is absorbed from the soil by root hair cells, then carried up the xylem to the leaves.", "Think about what the roots are for."],
+  ["How does carbon dioxide get into the leaf?", "Diffusion", ["Osmosis", "Active transport", "Translocation"], "CO₂ diffuses into the leaf because its concentration is lower inside, where it's being used up.", "Gases move from high to low concentration."],
+  ["Where does the energy for photosynthesis come from?", "Light", ["Heat from the soil", "Glucose", "Oxygen"], "Light energy is absorbed by chlorophyll and used to make glucose.", "'Photo' means light."],
+  ["Photosynthesis is an endothermic reaction. What does this mean?", "It takes in energy from the surroundings", ["It gives out energy to the surroundings", "It only happens at night", "It doesn't need energy"], "Photosynthesis takes in light energy, so it is endothermic.", "ENdothermic: energy goes IN."],
+  ["In which part of a plant cell does photosynthesis take place?", "Chloroplasts", ["Mitochondria", "Nucleus", "Vacuole"], "Photosynthesis happens in the chloroplasts.", "The green parts of the cell."],
+  ["What is the green pigment that absorbs light for photosynthesis?", "Chlorophyll", ["Cellulose", "Starch", "Lignin"], "Chlorophyll in the chloroplasts absorbs light energy.", "It's inside chloroplasts and starts with 'chloro-'."],
+  ["What happens to the oxygen made in photosynthesis?", "It is released through the stomata or used in respiration", ["It is stored as starch", "It is sent to the roots in the phloem", "It is turned back into glucose"], "Oxygen diffuses out through the stomata, or the plant uses some for respiration.", "It's a waste gas the plant doesn't need much of."],
+  ["Plants convert some glucose into ___ so it can be stored.", "Starch", ["Cellulose", "Protein", "Chlorophyll"], "Glucose is turned into insoluble starch for storage, e.g. in roots and tubers.", "Potatoes are full of it."],
+  ["Plants use glucose to make cellulose. What is cellulose used for?", "Strengthening cell walls", ["Absorbing light", "Carrying water up the stem", "Opening the stomata"], "Cellulose is used to build strong cell walls.", "The 'cell-' in cellulose is a clue."],
+  ["Plants combine glucose with nitrate ions to make…", "Amino acids, for protein synthesis", ["Starch", "Cellulose", "Oils"], "Glucose + nitrate ions make amino acids, which are built into proteins.", "Nitrates contain nitrogen, which proteins need."],
+  ["Plants use glucose in respiration to…", "Release energy", ["Make oxygen", "Absorb light", "Store water"], "Respiration releases the energy from glucose for the cell's processes.", "The same reason we use glucose."],
+  ["Seeds often store energy as…", "Fats or oils", ["Cellulose", "Nitrates", "Lignin"], "Glucose can be turned into fats or oils and stored in seeds.", "Think sunflower oil or olive oil."],
+  ["What is a limiting factor?", "The factor in shortest supply that stops the rate going up", ["The factor that is always highest", "Any factor that always increases the rate", "The amount of glucose a plant stores"], "A limiting factor is whatever is in shortest supply, holding the rate back.", "Think of the slowest person holding up a queue."],
+  ["Which of these is a limiting factor for photosynthesis?", "Light intensity", ["Oxygen concentration", "Amount of starch", "Colour of the soil"], "Light intensity, CO₂ concentration and temperature can all limit photosynthesis.", "What does photosynthesis need to get its energy?"],
+  ["What are the three main limiting factors of photosynthesis?", "Light intensity, CO₂ concentration and temperature", ["Oxygen, glucose and starch", "Wind, humidity and rainfall", "Nitrates, water vapour and lignin"], "Light intensity, carbon dioxide concentration and temperature limit the rate.", "One gives energy, one is a reactant, one affects enzymes."],
+  ["What happens to the rate of photosynthesis if the temperature gets too high?", "It falls, because enzymes are denatured", ["It keeps increasing", "Chlorophyll turns into glucose", "The stomata absorb more light"], "Above the optimum, the enzymes that control photosynthesis denature, so the rate drops.", "Photosynthesis is controlled by enzymes."],
+  ["On a graph, the rate rises with light intensity, then levels off. Why does it level off?", "Another factor, e.g. CO₂ or temperature, is now limiting", ["Light has stopped reaching the plant", "The plant has run out of glucose", "Photosynthesis has stopped"], "Once light is no longer the limit, something else (CO₂ or temperature) holds the rate back.", "Light isn't in short supply any more."],
+  ["(Higher) If you double the distance between a lamp and a plant, the light intensity…", "Falls to a quarter", ["Halves", "Doubles", "Stays the same"], "Light intensity follows the inverse square law: 1 ÷ 2² = ¼.", "Use 1 ÷ distance²."],
+  ["(Higher) Which shows the inverse square law for light intensity?", "Light intensity ∝ 1 ÷ distance²", ["Light intensity ∝ distance²", "Light intensity ∝ 1 ÷ distance", "Light intensity ∝ distance"], "Light intensity is inversely proportional to the square of the distance.", "'Inverse' means 1 ÷, 'square' means ²."],
+  ["How can a farmer increase the rate of photosynthesis in a greenhouse?", "Add heating, extra lighting and extra CO₂", ["Open the doors to cool it down", "Remove all the water", "Add more oxygen"], "Greenhouses control the limiting factors: heat, light and CO₂.", "Raise the three limiting factors."],
+  ["What is the function of a chloroplast?", "Contains chlorophyll, which absorbs light for photosynthesis", ["Controls what enters and leaves the cell", "Releases energy by respiration", "Stores cell sap"], "Chloroplasts are where photosynthesis happens.", "It's green."],
+  ["What does the permanent vacuole do?", "Contains cell sap and keeps the cell firm", ["Makes proteins", "Carries out photosynthesis", "Controls the cell's activities"], "The vacuole is filled with cell sap, which keeps the cell turgid and firm.", "A big bag of liquid in the middle of the cell."],
+  ["What does the cell wall do?", "Strengthens and supports the cell", ["Controls what enters and leaves", "Absorbs light", "Releases energy"], "The cellulose cell wall gives the cell strength and support.", "It's the rigid outer layer."],
+  ["What does the cell membrane do?", "Controls what enters and leaves the cell", ["Strengthens the cell", "Absorbs light", "Contains genetic material"], "The membrane controls which substances pass in and out.", "It's like a security guard."],
+  ["What does the nucleus do?", "Contains genetic material and controls the cell's activities", ["Releases energy", "Makes glucose", "Stores cell sap"], "The nucleus holds the DNA and controls the cell.", "The cell's control centre."],
+  ["What happens in the mitochondria?", "Aerobic respiration releases energy", ["Photosynthesis makes glucose", "Proteins are made", "Cell sap is stored"], "Mitochondria are where aerobic respiration releases energy.", "The cell's power station."],
+  ["What is the cytoplasm?", "Where most of the cell's chemical reactions happen", ["The outer layer that supports the cell", "Where photosynthesis happens", "Where DNA is stored"], "The cytoplasm is the jelly where most chemical reactions take place.", "The jelly that fills the cell."],
+  ["What do ribosomes do?", "Make proteins (protein synthesis)", ["Absorb light", "Store starch", "Control the stomata"], "Ribosomes are where proteins are made.", "Tiny protein factories."],
+  ["Which structures are found in plant cells but not animal cells?", "Cell wall, chloroplasts and a permanent vacuole", ["Nucleus, cell membrane and cytoplasm", "Mitochondria and ribosomes", "Nucleus and mitochondria"], "Only plant cells have a cell wall, chloroplasts and a permanent vacuole.", "Three extras that help plants stand up and make food."],
+  ["What is the plant cell wall made of?", "Cellulose", ["Starch", "Lignin", "Protein"], "Plant cell walls are made of cellulose.", "It's made from glucose and sounds like 'cell'."],
+  ["Which plant cell does NOT contain chloroplasts?", "Root hair cell", ["Palisade mesophyll cell", "Guard cell", "Spongy mesophyll cell"], "Root hair cells have no chloroplasts.", "Which one lives underground?"],
+  ["Why don't root hair cells have chloroplasts?", "They are underground, where there is no light", ["They are too small", "They make glucose another way", "They are dead cells"], "Root hair cells are in the dark soil, so they can't photosynthesise.", "What does photosynthesis need that soil doesn't have?"],
+  ["Which gas is given off during photosynthesis?", "Oxygen", ["Carbon dioxide", "Nitrogen", "Water vapour"], "Photosynthesis produces oxygen as a by-product.", "The gas we breathe in."],
+  ["When do plants respire?", "All the time, day and night", ["Only at night", "Only in daylight", "Never, they only photosynthesise"], "Plants respire all the time to release energy. They only photosynthesise in the light.", "Every living cell needs energy, all the time."],
+  ["In which leaf cells does most photosynthesis happen?", "Palisade mesophyll cells", ["Upper epidermis cells", "Xylem cells", "Root hair cells"], "Palisade cells are packed with chloroplasts near the top of the leaf.", "The tall cells near the top of the leaf."],
+]},
+
+leaf: { name: "Leaf structure", bank: [
+  ["A leaf is an example of…", "An organ", ["A cell", "A tissue", "An organism"], "A leaf is an organ because it's made of several different tissues working together.", "It's made of several different tissues."],
+  ["Which of these is a tissue?", "Xylem", ["Root hair cell", "Stem", "Flower"], "Xylem is a tissue: a group of similar cells doing one job.", "A group of similar cells."],
+  ["Which of these is a single cell?", "Guard cell", ["Phloem", "Spongy mesophyll", "Leaf"], "A guard cell is one specialised cell.", "Look for the word 'cell'."],
+  ["Which of these is an organ?", "Root", ["Xylem", "Palisade mesophyll", "Pollen grain"], "Roots, stems, leaves, flowers and fruit are plant organs.", "Made of several tissues."],
+  ["What is a tissue?", "A group of similar cells working together to do a job", ["A single specialised cell", "Several organs working together", "A whole plant"], "A tissue is a group of similar cells with a similar function.", "Similar cells, one job."],
+  ["What is an organ?", "A group of different tissues working together", ["A group of identical cells", "A single cell", "A chemical in a cell"], "An organ is made of different tissues working together for a function.", "Different tissues, one job."],
+  ["Which order goes from smallest to largest?", "Cell → tissue → organ → organ system → organism", ["Tissue → cell → organ → organism → organ system", "Organ → tissue → cell → organism → organ system", "Cell → organ → tissue → organism → organ system"], "Cells make tissues, tissues make organs, organs make systems, systems make organisms.", "Start with the smallest building block."],
+  ["What does the waxy cuticle do?", "Reduces water loss from the leaf", ["Absorbs light for photosynthesis", "Opens and closes the stomata", "Transports glucose"], "The waxy cuticle is waterproof, so it reduces water loss by evaporation.", "Wax is waterproof."],
+  ["Why is the upper epidermis transparent?", "So light can pass through to the palisade cells", ["To let water out", "To store glucose", "To let CO₂ in"], "The upper epidermis is clear so light reaches the chloroplasts below.", "Like a window."],
+  ["What is the job of the palisade mesophyll?", "Photosynthesis: its cells are packed with chloroplasts", ["Transporting water", "Gas exchange through air spaces", "Controlling the stomata"], "Palisade mesophyll cells contain many chloroplasts for photosynthesis.", "The layer with the most chloroplasts."],
+  ["Why is the palisade layer near the top of the leaf?", "So it gets the most light", ["So it is near the roots", "To keep it cool", "So it can reach the stomata"], "Being near the top surface means more light for photosynthesis.", "Where does the light come from?"],
+  ["What shape are palisade mesophyll cells?", "Tall and tightly packed", ["Round with big air spaces", "Flat and transparent", "Long hollow tubes"], "Tall, tightly packed cells fit lots of chloroplasts near the surface.", "Like a palisade fence."],
+  ["What is special about the spongy mesophyll?", "It has air spaces so gases can diffuse easily", ["It is waterproof", "It is transparent", "It carries sugars"], "Air spaces in the spongy layer let CO₂ and O₂ diffuse through the leaf.", "A sponge is full of holes."],
+  ["How do the air spaces in a leaf help?", "They allow efficient diffusion of gases", ["They store water", "They make the leaf stronger", "They absorb light"], "Air spaces give a large surface area for gases to diffuse in and out of cells.", "What moves through the gaps?"],
+  ["What does the lower epidermis contain?", "Stomata and guard cells", ["Palisade cells", "Xylem and phloem", "The waxy cuticle only"], "Most stomata and their guard cells are in the lower epidermis.", "The tiny pores are mostly on the underside."],
+  ["What are stomata for?", "Letting CO₂ in and O₂ and water vapour out", ["Absorbing water from soil", "Transporting sugars", "Making glucose"], "Stomata are pores for gas exchange.", "Tiny doors for gases."],
+  ["What is the job of guard cells?", "Opening and closing the stomata", ["Absorbing water from soil", "Transporting glucose", "Making the cuticle"], "Guard cells control the size of the stomata.", "They guard the doorway."],
+  ["How do guard cells open a stoma?", "They take in water by osmosis, swell and curve apart", ["They lose water and shrink", "They divide by mitosis", "Light pushes them apart"], "When guard cells take in water they become turgid, curve, and open the stoma.", "Think about swelling."],
+  ["During the day, glucose builds up in guard cells. What happens next?", "Water moves in by osmosis, the guard cells swell and the stoma opens", ["Glucose leaves through the stoma", "Water moves out and the stoma closes", "The guard cells release glucose to open"], "More glucose makes the guard cells more concentrated, so water enters by osmosis. They swell and the stoma opens.", "Water follows sugar."],
+  ["Guard cells have a thicker inner wall and a thinner outer wall. Why?", "So they bend apart when they swell", ["So they can't swell", "To store more glucose", "To let light through"], "The uneven walls make the cells curve when turgid, opening the gap.", "The thin side stretches more."],
+  ["When do stomata usually close?", "At night, or when the plant is short of water", ["Only in bright sunlight", "When it is hot and windy", "Never"], "Closing stomata reduces water loss when photosynthesis isn't possible or water is short.", "When is there no point letting water escape?"],
+  ["Why are most stomata on the lower surface of a leaf?", "It is cooler and shaded, so less water is lost", ["There is more light underneath", "Roots are underneath", "The cuticle is thicker there"], "The underside is cooler and shaded, which reduces water loss.", "Which side is out of the sun?"],
+  ["What does the vascular bundle in a leaf contain?", "Xylem and phloem", ["Palisade cells", "Stomata", "Air spaces"], "The vascular bundle (vein) holds the xylem and phloem.", "The leaf's veins."],
+  ["How does a large surface area help a leaf?", "It absorbs more light", ["It stores more starch", "It reduces gas exchange", "It stops water entering"], "A broad, flat leaf catches more light for photosynthesis.", "Think solar panel."],
+  ["How does being thin help a leaf?", "Gases have only a short distance to diffuse", ["It makes the leaf stronger", "It stores more water", "It blocks the light"], "Thin leaves mean a short diffusion distance for CO₂ to reach cells.", "Short journey for the gases."],
+  ["Gases move in and out of the leaf by…", "Diffusion", ["Osmosis", "Active transport", "Translocation"], "Gases diffuse through the stomata, down a concentration gradient.", "High to low concentration."],
+  ["Why does CO₂ diffuse into the leaf during the day?", "Its concentration is lower inside the leaf, as it's used up in photosynthesis", ["Its concentration is higher inside the leaf", "It is pumped in by active transport", "It is pulled in by the xylem"], "Photosynthesis uses CO₂, keeping its concentration low inside the leaf.", "Gases go from high to low concentration."],
+  ["How is the spongy mesophyll adapted for its function?", "Lots of air spaces and a large surface area for gas exchange", ["Tall cells packed with chloroplasts", "A waxy waterproof layer", "Dead cells with no end walls"], "Air spaces and a large surface area allow efficient diffusion of gases.", "It's the 'spongy' layer."],
+  ["Which leaf layer has the most chloroplasts?", "Palisade mesophyll", ["Upper epidermis", "Lower epidermis", "Waxy cuticle"], "Palisade cells are packed with chloroplasts.", "The tall cells near the top."],
+  ["What is the outermost layer on the top of a leaf?", "Waxy cuticle", ["Upper epidermis", "Palisade mesophyll", "Spongy mesophyll"], "The waxy cuticle sits on top of the upper epidermis.", "The waterproof coating."],
+  ["Which list is in order from the top of a leaf to the bottom?", "Waxy cuticle, upper epidermis, palisade, spongy mesophyll, lower epidermis", ["Upper epidermis, waxy cuticle, spongy, palisade, lower epidermis", "Palisade, waxy cuticle, upper epidermis, spongy, lower epidermis", "Lower epidermis, spongy, palisade, upper epidermis, waxy cuticle"], "From the top: cuticle, upper epidermis, palisade, spongy, lower epidermis.", "Start with the waterproof wax."],
+  ["Where are most chloroplasts in a leaf found?", "In the mesophyll cells", ["In the epidermis cells", "In the xylem", "In the waxy cuticle"], "The palisade and spongy mesophyll cells contain chloroplasts.", "The middle layers of the leaf."],
+  ["Which leaf cells contain chloroplasts?", "Palisade cells, spongy mesophyll cells and guard cells", ["Epidermis cells and xylem", "Xylem and phloem", "The waxy cuticle and epidermis"], "Palisade, spongy and guard cells all contain chloroplasts.", "Guard cells are one of them."],
+  ["What does the xylem in a leaf do?", "Brings water to the leaf cells", ["Carries glucose away", "Lets gases in", "Absorbs light"], "Xylem delivers water for photosynthesis.", "Water comes up from the roots."],
+  ["What does the phloem in a leaf do?", "Carries sugars made in photosynthesis to the rest of the plant", ["Brings water from the roots", "Opens the stomata", "Makes the cuticle"], "Phloem transports sugars away from the leaf.", "Food leaves the leaf."],
+  ["How does water vapour leave a leaf?", "Through the stomata", ["Through the waxy cuticle", "Through the phloem", "Through the palisade cells"], "Water vapour diffuses out through the stomata.", "The same pores used by gases."],
+  ["A plant lives in a hot, dry desert. Its leaves are likely to have…", "A thick waxy cuticle and fewer stomata", ["A thin cuticle and more stomata", "No xylem", "No chloroplasts"], "Thicker wax and fewer stomata reduce water loss.", "How would you save water?"],
+  ["In a cell/tissue/organ table, where does 'pollen grain' go?", "Cell", ["Tissue", "Organ", "Organ system"], "A pollen grain is a single specialised cell.", "It's tiny and single."],
+  ["Flowers and fruits are examples of…", "Organs", ["Cells", "Tissues", "Organelles"], "Flowers and fruits are made of several tissues, so they're organs.", "The same level as a leaf."],
+  ["What does the stem do?", "Supports the plant and transports water and sugars", ["Absorbs water from the soil", "Makes most of the glucose", "Releases pollen"], "The stem holds the plant up and contains xylem and phloem.", "The plant's backbone and pipework."],
+]},
+
+transport: { name: "Roots, xylem & phloem", bank: [
+  ["What is the job of root hair cells?", "Absorbing water and mineral ions from the soil", ["Making glucose", "Transporting sugars", "Releasing oxygen"], "Root hair cells take up water and minerals from the soil.", "They're in the soil."],
+  ["How is a root hair cell adapted to absorb water?", "Its long 'hair' gives a large surface area", ["It has lots of chloroplasts", "It has a waxy coating", "It is dead and hollow"], "The long projection increases the surface area for absorption.", "More surface, more absorbing."],
+  ["Why do root hair cells have lots of mitochondria?", "To release energy by respiration for active transport", ["To photosynthesise", "To store water", "To make cellulose"], "Active transport needs energy, which mitochondria release by respiration.", "Moving minerals in costs energy."],
+  ["How does water move into root hair cells?", "Osmosis", ["Active transport", "Translocation", "Evaporation"], "Water enters root hair cells by osmosis.", "Water moving through a membrane."],
+  ["What is osmosis?", "Diffusion of water from a dilute to a more concentrated solution through a partially permeable membrane", ["Movement of minerals using energy", "Movement of sugars in the phloem", "Loss of water vapour from leaves"], "Osmosis is the movement of water across a partially permeable membrane.", "It's specifically about water."],
+  ["Why does water move into a root hair cell?", "The cell sap is more concentrated than the soil water", ["The soil water is more concentrated", "The cell pumps water in using energy", "Gravity pulls it in"], "Water moves by osmosis towards the more concentrated solution inside the cell.", "Water moves towards where there's more stuff dissolved."],
+  ["How do mineral ions get into root hair cells?", "Active transport", ["Osmosis", "Diffusion only", "Transpiration"], "Mineral ions are taken in by active transport.", "It needs energy."],
+  ["What is active transport?", "Moving substances from a low to a high concentration, using energy", ["Moving water through a membrane", "Moving gases from high to low concentration", "Water evaporating from leaves"], "Active transport moves substances against the concentration gradient using energy from respiration.", "Against the gradient, so it needs energy."],
+  ["Why do plants need active transport to absorb mineral ions?", "The concentration of minerals is usually higher inside the root than in the soil", ["Minerals are too big for osmosis", "The soil has more minerals than the root", "Minerals are gases"], "Because minerals must move against the concentration gradient, energy is needed.", "Which way is the gradient?"],
+  ["What do plants use nitrate ions for?", "Making amino acids, then proteins, for growth", ["Making chlorophyll", "Making cellulose", "Opening stomata"], "Nitrates provide nitrogen to make amino acids and proteins.", "Proteins contain nitrogen."],
+  ["What do plants use magnesium ions for?", "Making chlorophyll", ["Making proteins", "Making starch", "Strengthening xylem"], "Magnesium is needed to make chlorophyll.", "The green pigment."],
+  ["A plant lacks nitrate ions. What might you see?", "Stunted growth and yellow older leaves", ["Very tall, fast growth", "Extra-green leaves", "More flowers"], "Without nitrates the plant can't make enough protein, so growth is stunted.", "No protein, no growth."],
+  ["How can farmers replace minerals used up by crops?", "Add fertiliser to the soil", ["Water the crops more", "Remove the roots", "Grow the crops in the dark"], "Fertilisers put minerals such as nitrates back into the soil.", "What do you add to soil to feed plants?"],
+  ["Another way farmers can avoid minerals running out is…", "Crop rotation: growing different crops each year", ["Growing the same crop every year", "Cutting down hedges", "Using less water"], "Rotating crops (including legumes) stops the same minerals being used up.", "Change what you grow each year."],
+  ["What does xylem transport?", "Water and mineral ions, up from the roots", ["Sugars, in both directions", "Oxygen to the roots", "Starch to the seeds"], "Xylem carries water and minerals from roots to leaves.", "Water goes up."],
+  ["What are xylem cells like?", "Dead cells with no end walls, forming hollow tubes", ["Living cells with pores in the end walls", "Cells packed with chloroplasts", "Cells with long hairs"], "Xylem cells are dead and joined end to end with no end walls.", "Think of a hollow drinking straw."],
+  ["What does lignin do in xylem?", "Strengthens the walls and stops the xylem collapsing", ["Carries sugars", "Absorbs light", "Lets water out"], "Lignin makes the xylem walls strong and waterproof.", "It's the stiffening material."],
+  ["The movement of water from the roots to the leaves is called the…", "Transpiration stream", ["Translocation stream", "Osmosis chain", "Phloem flow"], "Water moving up the xylem is the transpiration stream.", "Linked to water loss from leaves."],
+  ["What is transpiration?", "The loss of water vapour from the leaves through the stomata", ["Movement of sugars in the phloem", "Absorbing minerals by active transport", "Making glucose in the leaf"], "Transpiration is water evaporating and diffusing out of the leaves.", "Plants 'sweat' water vapour."],
+  ["Which shows the path of water through a plant?", "Root hair cells → xylem → leaf → out of stomata", ["Stomata → phloem → roots → soil", "Leaf → phloem → root hair cells", "Xylem → soil → stomata → roots"], "Water enters the roots, travels up the xylem and evaporates from the leaves.", "From soil to air."],
+  ["What 'pulls' water up the xylem?", "Evaporation of water from the leaves", ["Gravity", "Active transport in the leaves", "The phloem pushing it"], "As water evaporates from leaves, more is drawn up the xylem.", "Like sucking on a straw from the top."],
+  ["What does phloem transport?", "Dissolved sugars made in the leaves", ["Water and minerals", "Oxygen", "Carbon dioxide"], "Phloem carries sugars from photosynthesis to the rest of the plant.", "Food from the leaves."],
+  ["The movement of sugars through the phloem is called…", "Translocation", ["Transpiration", "Osmosis", "Respiration"], "Translocation is moving dissolved sugars in the phloem.", "Not transpiration."],
+  ["In which direction does phloem carry sugars?", "Both up and down the plant", ["Only up", "Only down", "Only sideways"], "Phloem moves sugars wherever they're needed, in both directions.", "Sugar goes wherever it's needed."],
+  ["What are phloem cells like?", "Living cells with small pores in the end walls", ["Dead hollow tubes with no end walls", "Cells with long hairs", "Cells full of chloroplasts"], "Phloem is made of living cells, with pores in the end walls to let sugars through.", "The opposite of xylem."],
+  ["Why do sugars need to be transported around the plant?", "Every cell needs sugar for respiration, and some is stored", ["To make the plant heavier", "To stop photosynthesis", "To absorb water"], "Cells everywhere need sugar for respiration, and some goes into storage.", "Roots can't photosynthesise but still need energy."],
+  ["Which transport tissue is made of living cells?", "Phloem", ["Xylem", "Both xylem and phloem", "Neither"], "Phloem cells are living. Xylem cells are dead.", "The one that moves food."],
+  ["What happens to the rate of transpiration when temperature rises?", "It increases, as water evaporates and diffuses faster", ["It decreases", "It stays the same", "It stops"], "Warmer temperatures speed up evaporation and diffusion.", "Washing dries faster on a warm day."],
+  ["What happens to transpiration when it is windy?", "It increases, as water vapour is blown away from the leaf", ["It decreases", "It stops completely", "It stays the same"], "Wind removes water vapour, keeping a steep concentration gradient.", "Washing dries faster on a windy day."],
+  ["What happens to transpiration when humidity is high?", "It decreases, as the air is already full of water vapour", ["It increases", "It stays the same", "It doubles"], "Humid air means a smaller concentration gradient, so less diffusion.", "Washing dries slowly on a damp day."],
+  ["What happens to transpiration in bright light?", "It increases, as more stomata open", ["It decreases, as stomata close", "It stops", "It isn't affected"], "Light makes stomata open for photosynthesis, so more water escapes.", "Stomata open in the light."],
+  ["Which conditions give the fastest transpiration?", "Hot, dry, windy and bright", ["Cold, humid, still and dark", "Cold, dry, still and dark", "Hot, humid, still and dark"], "Heat, dry air, wind and light all increase transpiration.", "Perfect washing-drying weather."],
+  ["Which conditions give the slowest transpiration?", "Cold, humid, still and dark", ["Hot, dry, windy and bright", "Hot, humid, windy and bright", "Cold, dry, windy and bright"], "Cold, humid, still, dark conditions reduce transpiration.", "The opposite of good drying weather."],
+  ["Which apparatus is used to measure the rate of transpiration?", "A potometer", ["A thermometer", "A gas syringe", "A microscope"], "A potometer measures how fast a plant shoot takes up water.", "Starts with 'pot-'."],
+  ["What does a potometer actually measure?", "The rate of water uptake by the shoot", ["The amount of glucose made", "The number of stomata", "The rate of sugar transport"], "It measures water uptake, by how far an air bubble moves along a tube.", "Watch the bubble move."],
+  ["Why is water uptake a good estimate of transpiration?", "Most water taken up is lost by transpiration", ["All water is used in photosynthesis", "Plants never lose water", "Water uptake and transpiration are unrelated"], "Nearly all the water a plant takes up is lost through the leaves; only a little is used.", "Where does most of the water end up?"],
+  ["A plant is short of water. How does it reduce water loss?", "Guard cells lose water and close the stomata", ["It opens more stomata", "It grows a thinner cuticle", "It speeds up transpiration"], "Guard cells go floppy and close the stomata, reducing water loss.", "Shut the doors."],
+  ["Why do plants need water?", "For photosynthesis, support, cooling and carrying minerals", ["Only for photosynthesis", "Only to cool down", "Plants don't need water"], "Water is a reactant, keeps cells turgid, cools the plant and carries minerals.", "More than one reason."],
+  ["Why is a root described as an organ?", "It is made of different tissues, including root hair cells, xylem and phloem", ["It is one single cell", "It is only one type of tissue", "It makes its own food"], "Roots are organs made of several tissues, with root hair cells to absorb water and nitrates.", "Different tissues working together."],
+  ["What does the stem contain to transport substances?", "Xylem and phloem", ["Root hair cells", "Stomata", "Palisade cells"], "The stem contains xylem and phloem and supports the plant.", "Two transport tissues."],
+  ["What is the main difference between diffusion and active transport?", "Active transport needs energy; diffusion doesn't", ["Diffusion needs energy; active transport doesn't", "Both need energy", "Neither moves particles"], "Active transport uses energy from respiration to move substances against a gradient.", "Which one goes 'uphill'?"],
+  ["In a potometer, the bubble moves 30 mm in 10 minutes. What is the rate of water uptake?", "3 mm per minute", ["300 mm per minute", "0.3 mm per minute", "20 mm per minute"], "Rate = distance ÷ time = 30 ÷ 10 = 3 mm per minute.", "Divide distance by time."],
+]},
+
+practical: { name: "Required practical", bank: [
+  ["A student counts bubbles from pondweed at different distances from a lamp. What is the independent variable?", "The distance of the pondweed from the lamp", ["The number of bubbles of gas", "The length of the pondweed", "The time taken to collect the gas"], "The independent variable is what the student changes: the distance from the lamp.", "What is the student deliberately changing?"],
+  ["In the pondweed practical, what is the dependent variable?", "The number of bubbles produced per minute", ["The distance from the lamp", "The temperature of the water", "The type of pondweed"], "The dependent variable is what you measure: bubbles of oxygen per minute.", "What does the student count?"],
+  ["Which should be kept the same (controlled) in the pondweed practical?", "Temperature and CO₂ concentration", ["Distance from the lamp", "Number of bubbles", "Light intensity"], "Temperature and CO₂ must be controlled, because they also affect the rate.", "The other limiting factors."],
+  ["Which gas is in the bubbles given off by the pondweed?", "Oxygen", ["Carbon dioxide", "Nitrogen", "Hydrogen"], "The bubbles are oxygen, made by photosynthesis.", "A product of photosynthesis."],
+  ["Why can counting bubbles measure the rate of photosynthesis?", "Oxygen is produced by photosynthesis, so more bubbles means a faster rate", ["Bubbles show how much water the plant takes in", "Bubbles show CO₂ being used", "Bubbles show the plant respiring"], "The faster the plant photosynthesises, the more oxygen bubbles it gives off.", "What does each bubble contain?"],
+  ["At 40 cm, the pondweed gave 16 bubbles in 5 minutes. What is the rate in bubbles per minute?", "3.2", ["2.5", "16", "80"], "Rate = 16 ÷ 5 = 3.2 bubbles per minute.", "Divide the bubbles by the number of minutes."],
+  ["At 10 cm, the pondweed gave 120 bubbles in 5 minutes. What is the rate in bubbles per minute?", "24", ["12", "120", "600"], "Rate = 120 ÷ 5 = 24 bubbles per minute.", "Divide by 5."],
+  ["At 30 cm, the pondweed gave 31 bubbles in 5 minutes. What is the rate in bubbles per minute?", "6.2", ["31", "3.1", "155"], "Rate = 31 ÷ 5 = 6.2 bubbles per minute.", "Divide by 5."],
+  ["Bubbles fell from 120 at 10 cm to 10 at 50 cm. What conclusion can be made?", "The closer the lamp, the faster the rate of photosynthesis", ["The further the lamp, the faster the rate", "Distance has no effect on the rate", "The pondweed stopped photosynthesising"], "As distance increases, light intensity falls and so does the rate.", "Look at what happens as distance goes up."],
+  ["Why does moving the lamp closer increase the rate?", "Light intensity is higher, giving more energy for photosynthesis", ["The water gets colder", "There is less oxygen", "The pondweed grows bigger"], "Closer means brighter light, and light is a limiting factor.", "What does distance change?"],
+  ["The lamp warms the water. How could this affect the results?", "The rate increases because of the heat as well as the light, so the test isn't fair", ["It has no effect", "The rate drops to zero", "It makes the bubbles bigger only"], "Higher temperature also speeds up photosynthesis, so you can't tell if light alone caused the change.", "Temperature is a limiting factor too."],
+  ["How could you stop the lamp heating the water?", "Put a glass tank of water between the lamp and pondweed, or use an LED lamp", ["Move the lamp closer", "Use a brighter, hotter bulb", "Count bubbles for longer"], "A heat shield or LED lamp keeps light intensity changing without changing temperature.", "Block the heat, not the light."],
+  ["Why is collecting gas in a gas syringe better than counting bubbles?", "Bubbles can be different sizes, so measuring the volume is more accurate", ["A gas syringe is cheaper", "Bubbles are always the same size", "It makes the plant photosynthesise faster"], "Measuring the volume of oxygen gives a more accurate, valid result.", "Are all bubbles the same size?"],
+  ["Why should you wait a few minutes after moving the lamp before counting?", "To let the pondweed adjust to the new light intensity", ["To let the water cool down completely", "To let the bubbles stop", "To let the lamp warm up the water"], "The plant needs time to settle to the new rate before you measure.", "Give the plant time to respond."],
+  ["Why should the practical be done in a darkened room?", "So the lamp is the only light source", ["To keep the water warm", "To stop oxygen forming", "To make bubbles easier to see"], "Other light would change the light intensity and make the results invalid.", "Control the light."],
+  ["Why is sodium hydrogencarbonate sometimes added to the water?", "It provides CO₂, so CO₂ doesn't limit the rate", ["It provides oxygen", "It warms the water", "It kills bacteria"], "It releases CO₂, making sure light is the only limiting factor being tested.", "It supplies a reactant."],
+  ["How can you make the results more repeatable?", "Repeat each distance and calculate a mean", ["Only do each distance once", "Use a different plant each time", "Change the timing for each distance"], "Repeating and averaging reduces the effect of random errors.", "Do it more than once."],
+  ["What is an anomalous result?", "A result that doesn't fit the pattern of the others", ["The highest result", "The first result", "A result you predicted"], "Anomalies don't fit the trend and are left out when calculating a mean.", "The odd one out."],
+  ["(Higher) The lamp is moved from 10 cm to 20 cm. By how much does the light intensity change?", "It falls to a quarter", ["It halves", "It doubles", "It stays the same"], "Doubling the distance gives 1 ÷ 2² = ¼ of the light intensity.", "Inverse square law."],
+  ["(Higher) Using light intensity = 1 ÷ distance², what is the light intensity at 20 cm?", "0.0025 (arbitrary units)", ["0.05", "0.025", "400"], "1 ÷ 20² = 1 ÷ 400 = 0.0025.", "Square 20 first, then do 1 ÷ that."],
+  ["When plotting the results, what goes on the x-axis?", "Distance from the lamp", ["Number of bubbles", "Temperature", "Time of day"], "The independent variable goes on the x-axis.", "What did you change?"],
+  ["Which type of graph should be used for these results?", "A line graph", ["A pie chart", "A bar chart", "A pictogram"], "Both variables are continuous, so a line graph is used.", "Both variables are numbers that can take any value."],
+  ["What is a hazard in this practical?", "The lamp gets hot, and water is near electricity", ["The pondweed is poisonous", "Oxygen is explosive", "The ruler is sharp"], "Keep water away from the plug and don't touch the hot bulb.", "Water and electricity."],
+  ["Why should the same piece of pondweed be used at every distance?", "Different pieces may photosynthesise at different rates", ["It's cheaper", "Pondweed dies when moved", "It doesn't matter"], "Using the same pondweed keeps it a fair test.", "Keep everything except distance the same."],
+  ["Why are the bubbles counted for the same time (5 minutes) at each distance?", "So the results can be compared fairly", ["Because the lamp turns off after 5 minutes", "To let the water heat up", "Because pondweed only makes bubbles for 5 minutes"], "Counting for the same time makes it a fair comparison.", "Fair test."],
+  ["At 50 cm, the pondweed gave 10 bubbles in 5 minutes. What is the rate in bubbles per minute?", "2", ["10", "50", "0.5"], "Rate = 10 ÷ 5 = 2 bubbles per minute.", "Divide by 5."],
+  ["Which equipment is used to measure the distance from the lamp?", "A metre ruler", ["A thermometer", "A stopwatch", "A measuring cylinder"], "A metre ruler measures the distance between the lamp and the pondweed.", "It measures length."],
+  ["What is a problem with counting bubbles?", "Bubbles can be different sizes, or come too fast to count", ["Bubbles are always the same size", "Bubbles never form in water", "Bubbles contain carbon dioxide"], "Counting can be inaccurate, which is why a gas syringe is better.", "Are all bubbles equal?"],
+  ["Which is a control variable in this practical?", "The temperature of the water", ["The distance from the lamp", "The number of bubbles", "The light intensity"], "Temperature must stay the same so only light intensity changes.", "Something kept the same."],
+  ["What does an increase in bubbles per minute show?", "A faster rate of photosynthesis", ["A slower rate of photosynthesis", "The plant is dying", "Less oxygen is being made"], "More oxygen per minute means faster photosynthesis.", "More product, faster reaction."],
+  ["What would happen to the bubbles if there was no CO₂ in the water?", "Very few bubbles, as CO₂ would limit photosynthesis", ["Many more bubbles", "No change", "The bubbles would be CO₂"], "Without CO₂, a reactant is missing, so the rate drops.", "CO₂ is a reactant."],
+  ["Moving the lamp closer than 10 cm gives no more bubbles. Why?", "Something else, such as CO₂ or temperature, is now limiting", ["The lamp is too far away", "The pondweed has more light than it can see", "Oxygen has run out"], "Once light isn't limiting, another factor holds the rate back.", "Light isn't the problem any more."],
+  ["Predict the number of bubbles in 5 minutes at 60 cm.", "Fewer than 10", ["More than 120", "Exactly 120", "Between 31 and 56"], "The trend shows bubbles fall as distance increases, so fewer than the 10 at 50 cm.", "Follow the pattern in the table."],
+  ["Why is pondweed used in this practical?", "It lives in water, so the oxygen it makes forms bubbles you can count", ["It doesn't need light", "It makes carbon dioxide bubbles", "It grows very fast"], "Aquatic plants release oxygen as visible bubbles.", "Why would a land plant be hard to use?"],
+  ["Which equipment times the 5 minutes?", "A stopwatch", ["A metre ruler", "A thermometer", "A gas syringe"], "A stopwatch or timer measures the time.", "It measures time."],
+]},
 };
 
 for (const t of Object.values(TOPICS)) t.bank = t.bank.map(([q, a, w, why, hint], id) => ({ id, q, a, w, why, hint }));
+
+const SUBJECTS = {
+  foodtech: { name: "Food Tech", kicker: "Food & nutrition", topics: ["carbs", "protein", "fats", "pastry"] },
+  biology: { name: "Biology", kicker: "AQA GCSE Biology · Plants", topics: ["photo", "leaf", "transport", "practical"] },
+};
+const SHORT = { carbs: "Carbs", protein: "Protein", fats: "Fats", pastry: "Pastry", photo: "Photosyn.", leaf: "Leaf", transport: "Transport", practical: "Practical" };
+const subjectOf = key => Object.keys(SUBJECTS).find(s => SUBJECTS[s].topics.includes(key));
 
 // Memory cards: one per key idea, linked to the questions (by bank position) they help with
 const MEMORY = {
@@ -558,35 +804,644 @@ pastry: [
     mnemonic: "Stretch it and it Shrinks. Knead it and it's Leathery. Peek in the oven and it's Flat.",
     points: ["Stretched or too wet shortcrust is tough and shrinks.", "Over-kneading develops gluten: hard and leathery.", "Flat puff pastry: oven door opened, or oven not hot enough."] },
 ],
+photo: [
+  { ids: [0, 1, 2, 7], title: "The equations", visual: ["CO₂ + H₂O → glucose + O₂", "6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂"],
+    mnemonic: "Six-six makes one-six: six of everything except glucose. Glucose is 6-12-6. ENdothermic means energy goes IN (light).",
+    points: ["Reactants: carbon dioxide and water. Products: glucose and oxygen.", "Light energy is taken in, so photosynthesis is endothermic."] },
+  { ids: [3, 4, 5, 6, 10, 36], title: "Where the reactants come from", visual: ["CO₂: air → stomata", "H₂O: soil → roots → xylem", "Light → chlorophyll"],
+    mnemonic: "Gas from Above, water from Below, light from the Sky.",
+    points: ["CO₂ diffuses in through the stomata.", "Water is absorbed by root hair cells and travels up the xylem.", "Oxygen leaves through the stomata or is used in respiration."] },
+  { ids: [8, 9, 24, 38], title: "Chloroplasts", visual: ["Chloroplast = solar panel"],
+    mnemonic: "Chloroplasts are the leaf's solar panels. Chlorophyll is the green paint that catches the light.",
+    points: ["Photosynthesis happens in chloroplasts.", "Chlorophyll absorbs light energy.", "Palisade cells are packed with chloroplasts, so most photosynthesis happens there."] },
+  { ids: [11, 12, 13, 14, 15, 37], title: "What plants do with glucose", visual: ["R · S · C · F · P"],
+    mnemonic: "Really Smart Cats Find Proteins: Respiration, Starch, Cellulose, Fats and oils, Proteins.",
+    points: ["Respiration releases energy (plants respire all the time).", "Starch for storage. Cellulose for cell walls. Fats and oils stored in seeds.", "Glucose + nitrate ions → amino acids → proteins."] },
+  { ids: [16, 17, 18, 19, 20, 23], title: "Limiting factors", visual: ["Light · CO₂ · Temperature"],
+    mnemonic: "The slowest person in the queue sets the pace. Whichever factor is in shortest supply limits the rate.",
+    points: ["Too hot and the enzymes denature, so the rate falls.", "When a graph levels off, a different factor has become limiting.", "Greenhouses add heat, light and CO₂ to boost the rate."] },
+  { ids: [21, 22], title: "(Higher) Inverse square law", visual: ["Distance × 2 → light ÷ 4"],
+    mnemonic: "Distance doubles, light quarters. Intensity = 1 ÷ distance².",
+    points: ["Triple the distance and the light falls to 1/9.", "Halve the distance and the light is 4× stronger."] },
+  { ids: [25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35], title: "Plant cell parts", visual: ["Plant extras: Wall · Chloroplasts · Vacuole"],
+    mnemonic: "Plants have 3 extras: 'Very Cool Walls' — Vacuole, Chloroplasts, Wall. Mitochondria = power station, nucleus = control centre, ribosomes = protein factories.",
+    points: ["Cell wall (cellulose): strength. Vacuole: cell sap keeps the cell firm.", "Membrane controls what goes in and out. Cytoplasm: where reactions happen.", "Root hair cells have no chloroplasts: they're underground with no light."] },
+],
+leaf: [
+  { ids: [0, 1, 2, 3, 4, 5, 6, 37, 38, 39], title: "Cell → tissue → organ", visual: ["Cell → Tissue → Organ → System → Organism"],
+    mnemonic: "Cats Tickle Our Silly Owners.",
+    points: ["Cells: guard cell, root hair cell, pollen grain, ovum.", "Tissues: xylem, phloem, palisade and spongy mesophyll, epidermis.", "Organs: leaf, root, stem, flower, fruit."] },
+  { ids: [7, 8, 9, 10, 11, 28, 29, 30, 31, 32], title: "Leaf layers, top to bottom", visual: ["Wax · Epidermis · Palisade · Spongy · Epidermis"],
+    mnemonic: "We Eat Pizza Sitting Elegantly: Waxy cuticle, upper Epidermis, Palisade, Spongy, lower Epidermis.",
+    points: ["Waxy cuticle: waterproof, reduces water loss.", "Upper epidermis: transparent, lets light through.", "Palisade: tall cells packed with chloroplasts near the top."] },
+  { ids: [12, 13, 14, 15, 25, 26, 27, 35], title: "Gas exchange", visual: ["CO₂ in · O₂ + water vapour out"],
+    mnemonic: "The spongy layer is a sponge full of air holes. The stomata are its doors.",
+    points: ["Gases move by diffusion through the stomata.", "Air spaces give a large surface area for diffusion.", "CO₂ diffuses in because photosynthesis keeps its concentration low inside."] },
+  { ids: [16, 17, 18, 19, 20, 21, 36], title: "Guard cells and stomata", visual: ["Glucose ↑ → water in → swell → OPEN"],
+    mnemonic: "Water follows sugar. Sweet guard cells get thirsty, take in water by osmosis, puff up like bananas and bend apart.",
+    points: ["Thick inner wall, thin outer wall, so they curve when swollen.", "Stomata close at night or when water is short.", "Most stomata are underneath, where it's cooler and shaded."] },
+  { ids: [22, 23, 24, 33, 34], title: "How the leaf is adapted", visual: ["Big · Thin · Veins"],
+    mnemonic: "Big to catch light, Thin for short gas journeys, Veins to bring water and take sugar away.",
+    points: ["Vascular bundle = xylem + phloem.", "Xylem brings water in. Phloem carries sugars out."] },
+],
+transport: [
+  { ids: [0, 1, 2, 38], title: "Root hair cells", visual: ["Long hair = big surface area", "Lots of mitochondria"],
+    mnemonic: "Long hair to soak it up, lots of power stations to pump minerals in.",
+    points: ["Absorb water and mineral ions from the soil.", "Mitochondria release energy for active transport.", "Roots are organs made of several tissues."] },
+  { ids: [3, 4, 5, 6, 7, 8, 40], title: "Osmosis vs active transport", visual: ["Water → osmosis (free)", "Minerals → active transport (costs energy)"],
+    mnemonic: "Osmosis is free, like rolling downhill. Active transport pays energy to push uphill.",
+    points: ["Osmosis: water from dilute to concentrated, through a partially permeable membrane.", "Active transport: low to high concentration, using energy from respiration.", "Minerals are more concentrated in the root, so they need active transport."] },
+  { ids: [9, 10, 11, 12, 13], title: "Minerals", visual: ["Nitrate → protein", "Magnesium → chlorophyll"],
+    mnemonic: "Nitrates make proteins for growth. Magnesium Makes it green.",
+    points: ["No nitrates: stunted growth, yellow older leaves.", "Farmers add fertiliser or use crop rotation."] },
+  { ids: [14, 15, 16, 17, 18, 19, 20, 35, 37, 39], title: "Xylem and transpiration", visual: ["Xylem: water UP · dead · lignin"],
+    mnemonic: "Xylem is an eXtra-strong straw: dead, hollow, lined with lignin, and water only goes UP.",
+    points: ["Transpiration: water vapour lost from leaves through stomata.", "Evaporation at the leaves pulls water up the xylem (the transpiration stream).", "Water is needed for photosynthesis, support, cooling and carrying minerals."] },
+  { ids: [21, 22, 23, 24, 25, 26], title: "Phloem and translocation", visual: ["Phloem: food · both ways · living"],
+    mnemonic: "Phloem carries food. Translocation means Travelling sugar.",
+    points: ["Living cells with pores in the end walls.", "Moves sugars up and down to where they're needed for respiration or storage."] },
+  { ids: [27, 28, 29, 30, 31, 32, 33, 34, 36, 41], title: "Factors affecting transpiration", visual: ["Hot · Windy · Dry · Bright = FAST"],
+    mnemonic: "Think of washing on a line: it dries fastest on a hot, windy, dry, sunny day.",
+    points: ["Humid air slows transpiration: a smaller concentration gradient.", "A potometer measures water uptake (bubble distance ÷ time).", "Short of water? Guard cells close the stomata."] },
+],
+practical: [
+  { ids: [0, 1, 2, 23, 24, 28], title: "Variables", visual: ["Change · Measure · Keep the same"],
+    mnemonic: "I change it (Independent), it Depends on that (Dependent), Controls stay Constant.",
+    points: ["Independent: distance from the lamp (light intensity).", "Dependent: bubbles per minute.", "Control: temperature, CO₂, same pondweed, same time."] },
+  { ids: [3, 4, 9, 22, 26, 29, 33, 34], title: "How the practical works", visual: ["Lamp → ruler → pondweed → count O₂ bubbles"],
+    mnemonic: "More light → more photosynthesis → more oxygen → more bubbles.",
+    points: ["Bubbles are oxygen from photosynthesis.", "Equipment: lamp, metre ruler, pondweed in a tube of water, stopwatch.", "Hazard: hot lamp, and water near electricity."] },
+  { ids: [5, 6, 7, 25], title: "Calculating the rate", visual: ["Rate = bubbles ÷ minutes"],
+    mnemonic: "Always divide by the time: 16 bubbles ÷ 5 minutes = 3.2 per minute.",
+    points: ["10 cm: 120 ÷ 5 = 24. 30 cm: 31 ÷ 5 = 6.2. 50 cm: 10 ÷ 5 = 2.", "Check the units in the question: per minute, not per 5 minutes."] },
+  { ids: [8, 16, 17, 20, 21, 30, 31, 32], title: "Results and conclusions", visual: ["Closer lamp = more bubbles"],
+    mnemonic: "Closer is brighter, brighter is faster, until another factor runs out.",
+    points: ["Distance on the x-axis, rate on the y-axis, as a line graph.", "Repeat and take a mean, ignoring anomalies.", "If the rate stops rising, CO₂ or temperature is limiting."] },
+  { ids: [10, 11, 12, 13, 14, 15, 27], title: "Improving the practical", visual: ["Heat shield · Gas syringe · Dark room · Wait"],
+    mnemonic: "Block the heat, measure the volume, kill other light, give it time.",
+    points: ["A lamp warms the water, so use a glass tank of water as a heat shield, or an LED.", "Bubbles vary in size, so collect gas in a gas syringe.", "Add sodium hydrogencarbonate so CO₂ isn't limiting."] },
+  { ids: [18, 19], title: "(Higher) Inverse square law", visual: ["Light intensity = 1 ÷ d²"],
+    mnemonic: "Distance doubles, light quarters. 20 cm → 1 ÷ 400 = 0.0025.",
+    points: ["Square the distance first, then divide 1 by it."] },
+],
 };
-const memoryFor = (key, id) => MEMORY[key].find(m => m.ids.includes(id));
+/* ---------- exam-style questions (Biology) ----------
+   Mixed into every test alongside the multiple choice. Types:
+   mcq  - as above, but usually with a diagram or graph (fig)
+   num  - type a number; right if within tol of ans (allows for reading a graph)
+   text - written answer, marked against the mark scheme: a point scores if every
+          group in k has a matching word (word starts, small typos allowed).
+          any: n means "any n of these points". card names the memory card. */
+const EXAM = {
+carbs: [
+  { fig: "sugars", q: "The diagram shows three carbohydrates, A, B and C. Which one is a disaccharide, such as sucrose?", a: "B", w: ["A", "C", "A and C"],
+    why: "B is two sugar units joined together: a disaccharide (di = two). A is a monosaccharide, such as glucose. C is a long chain: a polysaccharide, such as starch.", hint: "Di means two.", card: "Saccharides" },
+  { fig: "sugars", q: "Which letter shows starch?", a: "C", w: ["A", "B", "A and B"],
+    why: "Starch is a complex carbohydrate: a polysaccharide made of many glucose units joined in long chains (C).", hint: "Starch is a complex carbohydrate. Look for the most units.", card: "Saccharides" },
+  { type: "text", fig: "sugars", q: "Explain why food containing C gives energy more slowly than food containing A.", marks: [
+      { p: "C is a complex carbohydrate / polysaccharide made of many sugar units", k: [["complex", "polysacchar", "long chain", "chain", "many", "lots of", "starch"]] },
+      { p: "It takes longer to digest / break down into glucose", k: [["digest", "break", "broken", "absorb"], ["slow", "longer", "more time", "time"]] }],
+    model: "C is a complex carbohydrate (a polysaccharide) made of many sugar units joined together. It takes longer to digest and break down into glucose, so the energy is released slowly.", hint: "Think about how much breaking down C needs before the body can use it.", card: "Simple vs complex" },
+  { fig: "glucose", q: "The graph shows blood sugar after eating two foods, X and Y. Which is the high GI food?", a: "X, because blood sugar rises sharply and then falls", w: ["Y, because blood sugar rises slowly", "X, because blood sugar stays steady", "Y, because blood sugar stays high for longer"],
+    why: "High GI foods are digested quickly and cause a sharp rise in blood sugar, followed by a fall. That is line X.", hint: "High GI means a fast, sharp rise.", card: "Glycaemic Index (GI)" },
+  { type: "num", fig: "glucose", q: "Use the graph. What was the highest blood sugar level after eating food X?", ans: 9, tol: 0.25, unit: "mmol/L",
+    why: "The top of line X is at 9 mmol/L.", hint: "Find the peak of the solid line and read across to the y-axis.", card: "Glycaemic Index (GI)" },
+  { type: "num", fig: "glucose", q: "How many minutes after eating did food X reach its highest level?", ans: 30, tol: 3, unit: "minutes",
+    why: "Line X peaks at 30 minutes, then falls quickly.", hint: "Go down from the peak of the solid line to the x-axis.", card: "Glycaemic Index (GI)" },
+  { type: "text", fig: "glucose", q: "Explain why food Y is a better choice for someone who wants energy to last all morning.", marks: [
+      { p: "Y is low GI: it is digested / releases energy slowly", k: [["digest", "broken", "break", "absorb", "release", "low gi"], ["slow", "gradual", "low gi"]] },
+      { p: "So blood sugar rises gently, without a sharp spike and drop", k: [["gentle", "spike", "sharp", "surge", "crash", "drop", "fall", "steady", "steadi", "longer", "last"]] }],
+    model: "Food Y is low GI, so it is digested slowly. Blood sugar rises gently and stays steady for longer, without a sharp spike and then a drop that would leave the person hungry and tired.", hint: "Compare the shapes of the two lines.", card: "Glycaemic Index (GI)" },
+  { type: "text", any: 2, q: "Give two health problems linked to eating too much sugar.", marks: [
+      { p: "Tooth decay (dental caries)", k: [["tooth", "teeth", "dental", "caries", "decay", "cavit"]] },
+      { p: "Weight gain / obesity", k: [["obes", "weight", "overweight", "fat"]] },
+      { p: "Type 2 diabetes", k: [["diabet"]] }],
+    model: "Tooth decay (dental caries) and type 2 diabetes. Extra sugar is also stored as fat, which can lead to obesity.", hint: "Think teeth, weight and blood sugar.", card: "Too much carbohydrate" },
+],
+protein: [
+  { fig: "amino", q: "The diagram shows part of a protein. What does each bead, such as A, represent?", a: "An amino acid", w: ["A fatty acid", "A glucose molecule", "A vitamin"],
+    why: "Proteins are long chains of amino acids. Each bead is one amino acid.", hint: "Proteins are chains of these.", card: "Amino acids" },
+  { type: "text", fig: "amino", q: "Name the type of molecule shown by the whole chain, B.", marks: [{ p: "Protein (polypeptide)", k: [["protein", "polypeptide", "potein"]] }],
+    model: "A protein.", hint: "A chain of amino acids makes a…", card: "Amino acids" },
+  { type: "num", fig: "protein", q: "Use the bar chart. How much protein is in 100 g of chicken?", ans: 31, tol: 1, unit: "g",
+    why: "The chicken bar ends at 31 g.", hint: "Follow the end of the chicken bar down to the scale. Each small square is 1 g.", card: "HBV vs LBV" },
+  { type: "num", fig: "protein", mk: 2, q: "Use the bar chart. How much more protein per 100 g does chicken have than lentils?", ans: 22, tol: 1.5, unit: "g",
+    why: "Chicken has 31 g and lentils have 9 g. 31 − 9 = 22 g more.", hint: "Read both bars, then subtract.", card: "HBV vs LBV" },
+  { fig: "protein", q: "Which food on the chart is a low biological value (LBV) protein?", a: "Lentils", w: ["Chicken", "Eggs", "Tofu"],
+    why: "Lentils are a plant protein missing some essential amino acids, so they're LBV. Chicken and eggs are HBV, and tofu is made from soya, a plant HBV protein.", hint: "LBV proteins only come from plants, but soya is the exception.", card: "HBV vs LBV" },
+  { type: "text", q: "Explain what protein complementation is, and give an example.", marks: [
+      { p: "Combining two or more LBV (plant) proteins", k: [["combin", "mix", "together", "eat", "pair"], ["lbv", "low biological", "plant", "different", "two"]] },
+      { p: "so the meal has all the essential amino acids", k: [["essential", "all the amino", "all amino"]] },
+      { p: "Example: beans on toast, houmous and pitta, rice and dhal", k: [["toast", "pitta", "pita", "houmous", "hummus", "rice", "dal", "dhal", "bread", "chilli", "lentil", "chickpea"]] }],
+    model: "Protein complementation is combining two LBV proteins in a meal so that, together, they provide all the essential amino acids. For example, houmous and pitta bread, or beans on toast.", hint: "Two incomplete proteins can make a complete set.", card: "Protein complementation" },
+  { type: "num", mk: 2, q: "An average female needs 45 g of protein a day. Her lunch contains 18 g. What percentage of her daily protein is that?", ans: 40, tol: 0.5, unit: "%",
+    why: "18 ÷ 45 × 100 = 40%.", hint: "Percentage = part ÷ whole × 100.", card: "How much protein" },
+  { type: "text", any: 2, q: "Give two effects of protein deficiency in children.", marks: [
+      { p: "Slow / stunted growth", k: [["growth", "grow", "stunt"]] },
+      { p: "Oedema (fluid build-up, swollen abdomen) / kwashiorkor", k: [["oedema", "edema", "swell", "swollen", "fluid", "kwashiorkor", "abdomen", "belly", "stomach"]] },
+      { p: "Weak immune system / wounds heal slowly", k: [["immun", "infection", "ill", "heal", "wound", "sick"]] },
+      { p: "Poor hair, skin and nails", k: [["hair", "skin", "nail"]] },
+      { p: "Muscle loss / weakness", k: [["muscle", "weak"]] }],
+    model: "Their growth is slowed, and they may develop kwashiorkor, with oedema causing a swollen abdomen.", hint: "Protein is for growth, repair and the immune system.", card: "Too little protein" },
+  { type: "text", q: "Explain why vegans need to plan their protein carefully.", marks: [
+      { p: "Most plant proteins are LBV: missing some essential amino acids", k: [["lbv", "low biological", "missing", "lack", "not all", "don't have all", "doesn't have all", "incomplete"]] },
+      { p: "So they combine proteins, or eat soya, tofu, quinoa or mycoprotein", k: [["combin", "complement", "soya", "soy", "quinoa", "tofu", "tvp", "mycoprotein", "quorn", "mix", "variety"]] }],
+    model: "Most plant proteins are LBV, so they are missing some essential amino acids. Vegans need to combine proteins (complementation) or eat HBV plant proteins such as soya, tofu or quinoa.", hint: "They don't eat any animal (HBV) protein.", card: "Alternative proteins" },
+],
+fats: [
+  { fig: "trig", q: "The diagram shows a fat molecule. What is part A?", a: "Glycerol", w: ["A fatty acid", "An amino acid", "Glucose"],
+    why: "A fat molecule is three fatty acids (B) attached to a glycerol backbone (A).", hint: "It's the backbone the three chains are attached to.", card: "What fat is" },
+  { type: "text", fig: "trig", q: "Name the whole molecule shown in the diagram.", marks: [{ p: "Triglyceride", k: [["triglycer", "tri glycer", "triglycr"]] }],
+    model: "A triglyceride.", hint: "Tri = three fatty acids, on glycerol.", card: "What fat is" },
+  { fig: "trig", q: "Fatty acid C has a bend in it. What does this show?", a: "It is unsaturated", w: ["It is saturated", "It is a protein", "It is solid at room temperature"],
+    why: "In an unsaturated fatty acid, some carbon atoms are joined by double bonds instead of holding hydrogen. This puts a bend in the chain, so the molecules can't pack tightly, and the fat is liquid (an oil).", hint: "Straight chains pack tightly into a solid fat. Bent chains don't.", card: "Saturated vs unsaturated" },
+  { type: "num", fig: "satfat", q: "Use the bar chart. How much saturated fat is in 100 g of butter?", ans: 51, tol: 1.5, unit: "g",
+    why: "The butter bar ends at 51 g.", hint: "Each small square is 2 g.", card: "Foods high in saturated fat" },
+  { type: "text", fig: "satfat", q: "Using the chart, explain why cooking with sunflower oil instead of butter is healthier.", marks: [
+      { p: "Sunflower oil has much less saturated fat (11 g vs 51 g)", k: [["less", "lower", "fewer", "40", "only 11", "11g", "11 g"], ["saturat", "fat"]] },
+      { p: "Less saturated fat lowers blood cholesterol / risk of heart disease", k: [["cholesterol", "heart", "cardiovascular", "stroke", "blood pressure", "arter"]] }],
+    model: "Sunflower oil has 11 g of saturated fat per 100 g, compared with 51 g in butter. Less saturated fat helps lower blood cholesterol, which reduces the risk of heart disease and stroke.", hint: "Use numbers from the chart, then say what saturated fat does to the body.", card: "Too much fat" },
+  { type: "num", q: "1 g of fat provides 9 kcal. A snack contains 12 g of fat. How many kcal come from the fat?", ans: 108, tol: 0.5, unit: "kcal",
+    why: "12 × 9 = 108 kcal.", hint: "Multiply the grams of fat by 9.", card: "Energy in fat" },
+  { type: "num", mk: 2, q: "A meal provides 600 kcal, and 270 kcal come from fat. What percentage of the meal's energy comes from fat?", ans: 45, tol: 0.5, unit: "%",
+    why: "270 ÷ 600 × 100 = 45%. That's more than the 35% guideline for total fat.", hint: "Percentage = part ÷ whole × 100.", card: "How much fat" },
+  { type: "text", any: 2, q: "Give two functions of fat in the body.", marks: [
+      { p: "Provides energy", k: [["energy"]] },
+      { p: "Keeps us warm (insulation)", k: [["warm", "insulat", "heat", "cold"]] },
+      { p: "Protects / cushions the organs", k: [["protect", "cushion", "organ"]] },
+      { p: "Carries vitamins A, D, E and K", k: [["vitamin", "ade", "a d e"]] },
+      { p: "Makes cell membranes, hormones and cholesterol", k: [["membran", "hormon", "cholesterol", "cell"]] }],
+    model: "Fat provides energy and keeps us warm with a layer under the skin. It also cushions the organs and carries vitamins A, D, E and K.", hint: "Think energy, warmth, protection and vitamins.", card: "What fat does" },
+  { type: "text", q: "Explain how eating too much saturated fat can lead to heart disease.", marks: [
+      { p: "It raises blood cholesterol", k: [["cholesterol"]] },
+      { p: "which narrows / blocks arteries, restricting blood flow (high blood pressure)", k: [["block", "narrow", "restrict", "clog", "blood flow", "blood pressure", "fur", "build up", "builds up"]] }],
+    model: "Too much saturated fat raises blood cholesterol. Cholesterol builds up in the arteries, narrowing them and restricting blood flow, which raises blood pressure and the risk of heart disease and stroke.", hint: "What does saturated fat raise in the blood, and where does it build up?", card: "Too much fat" },
+],
+pastry: [
+  { fig: "pastry", q: "Diagram P shows flour and fat rubbed together for shortcrust pastry. What is the fat (B) doing?", a: "Coating the flour particles so they are waterproof", w: ["Helping long gluten strands to form", "Turning to steam to make layers", "Adding sweetness"],
+    why: "Rubbing in coats each flour particle with fat. This waterproof coating stops water reaching the proteins, so long gluten strands can't form.", hint: "Look at the ring around each particle.", card: "What fat does in pastry" },
+  { type: "text", fig: "pastry", q: "Explain how the fat in diagram P gives shortcrust pastry a short texture.", marks: [
+      { p: "Fat coats the flour particles, making them waterproof", k: [["coat", "waterproof", "cover", "surround"]] },
+      { p: "This stops long gluten strands forming", k: [["gluten"]] },
+      { p: "So the pastry is crumbly / firm / tender, not stretchy", k: [["crumbl", "tender", "melt", "firm", "break", "not stretch", "isn't stretch", "crisp"]] }],
+    model: "The fat coats the flour particles and makes them waterproof. This stops water reaching the proteins, so long gluten strands can't form. The pastry is firm and crumbly instead of stretchy.", hint: "Fat → waterproof → gluten → texture.", card: "What fat does in pastry" },
+  { fig: "pastry", q: "Diagram Q shows layers in puff pastry. What happens to them in a hot oven?", a: "Water turns to steam and pushes the layers apart", w: ["The fat sets hard and joins the layers", "The layers dissolve into a paste", "Sugar caramelises and glues them together"],
+    why: "The fat (B) keeps the dough layers (A) apart. In a hot oven, water turns to steam, which pushes the layers up and apart, so the pastry rises in flaky layers.", hint: "This is why the oven must be hot and the door kept shut.", card: "What fat does in pastry" },
+  { type: "text", fig: "pastry", q: "Explain why strong flour is used for the dough layers (A) in diagram Q.", marks: [
+      { p: "Strong flour has a high protein content", k: [["protein"]] },
+      { p: "so more gluten develops, giving the strength and structure to hold the layers", k: [["gluten", "stretch", "structure", "elastic", "hold"]] }],
+    model: "Strong flour has a high protein content, so more gluten develops. The gluten gives the dough strength and structure to stretch and hold the layers as they rise.", hint: "What do the proteins in flour form when water is added?", card: "Gluten" },
+  { type: "num", q: "Shortcrust pastry uses half fat to flour. How much fat is needed for 200 g of flour?", ans: 100, tol: 0.5, unit: "g",
+    why: "Half of 200 g is 100 g of fat.", hint: "Half fat to flour.", card: "Flour and fat for each pastry" },
+  { type: "num", mk: 2, q: "Puff pastry uses three-quarters fat to flour. How much fat is needed for 240 g of flour?", ans: 180, tol: 0.5, unit: "g",
+    why: "240 ÷ 4 = 60, and 60 × 3 = 180 g of fat.", hint: "Find a quarter first, then multiply by 3.", card: "Flour and fat for each pastry" },
+  { type: "text", any: 2, q: "A student's shortcrust pastry was tough and shrank in the dish. Give two possible causes.", marks: [
+      { p: "Too much water / too wet", k: [["wet", "water", "liquid"]] },
+      { p: "Stretched when rolling or lining the dish", k: [["stretch"]] },
+      { p: "Over-kneaded / over-handled", k: [["knead", "handl", "work", "mix"]] },
+      { p: "Not rested before baking", k: [["rest", "fridge", "chill"]] }],
+    model: "The pastry was too wet, and it was stretched when the dish was lined.", hint: "Think about what makes gluten develop too much.", card: "Pastry problems" },
+  { type: "text", q: "Explain why pastry is rested in the fridge before it is rolled and baked.", marks: [
+      { p: "It lets the gluten relax", k: [["relax", "gluten"]] },
+      { p: "so it doesn't shrink when baked / the fat firms up, making it easier to roll", k: [["shrink", "shrank", "firm", "harden", "hard", "easier", "solid", "melt"]] }],
+    model: "Resting lets the gluten relax, so the pastry doesn't shrink when it's baked. Chilling also firms up the fat, so the pastry is easier to roll.", hint: "Think about the gluten, and about the fat.", card: "Methods" },
+],
+photo: [
+  { fig: "cell", q: "The diagram shows a plant cell. Which letter labels a chloroplast?", a: "D", w: ["A", "C", "E"], why: "D is a chloroplast. A is the cell wall, C is the nucleus and E is the permanent vacuole.", hint: "Chloroplasts are small, green and oval, and there are lots of them.", card: "Chloroplasts" },
+  { type: "text", fig: "cell", q: "Name structure E and give its function.", marks: [
+      { p: "Permanent vacuole", k: [["vacuol", "vacule"]] },
+      { p: "Contains cell sap / keeps the cell firm (turgid)", k: [["sap", "firm", "turgid", "rigid", "support", "pressure", "store"]] }],
+    model: "E is the permanent vacuole. It contains cell sap, which keeps the cell firm.", hint: "It's the big space in the middle of the cell.", card: "Plant cell parts" },
+  { type: "text", fig: "cell", any: 2, q: "Give two structures labelled on the diagram that are found in plant cells but not in animal cells.", marks: [
+      { p: "Cell wall", k: [["wall"]] }, { p: "Chloroplast(s)", k: [["chloroplast", "chlorplast"]] }, { p: "Permanent vacuole", k: [["vacuol", "vacule"]] }],
+    model: "Cell wall and chloroplasts (or permanent vacuole).", hint: "Animal cells have a nucleus, cytoplasm and cell membrane too, so it's not those.", card: "Plant cell parts" },
+  { type: "text", q: "Write the word equation for photosynthesis.", marks: [
+      { p: "Carbon dioxide + water (reactants)", k: [["carbon dioxide", "co2"], ["water", "h2o"]] },
+      { p: "→ glucose + oxygen (products)", k: [["glucose", "sugar"], ["oxygen", "o2"]] }],
+    model: "carbon dioxide + water → glucose + oxygen", hint: "Two reactants, two products. Light goes over the arrow.", card: "The equations" },
+  { type: "num", fig: "light", q: "Use the graph. What is the rate of photosynthesis at 0.04% CO₂ when the light intensity is 4?", ans: 25, tol: 1, unit: "arbitrary units",
+    why: "Go up from 4 on the x-axis to the 0.04% line, then across to the y-axis: 25.", hint: "Find 4 on the x-axis, go up to the solid line, then read across.", card: "Limiting factors" },
+  { fig: "light", q: "Look at the 0.01% CO₂ line at a light intensity of 8. What is limiting the rate?", a: "CO₂ concentration", w: ["Light intensity", "The amount of chlorophyll", "Oxygen concentration"],
+    why: "The line is flat, so more light makes no difference. The 0.04% line is higher, so raising CO₂ increases the rate: CO₂ is the limiting factor.", hint: "The line is flat here. Which change on the graph makes the rate go higher?", card: "Limiting factors" },
+  { type: "text", fig: "light", q: "Describe and explain the shape of the 0.04% CO₂ line.", marks: [
+      { p: "The rate increases as light intensity increases", k: [["increas", "rise", "rises", "goes up", "higher", "faster", "more"], ["light"]] },
+      { p: "Then it levels off / plateaus", k: [["level", "plateau", "flat", "constant", "stays the same", "stops increas", "no longer", "doesn't increase", "does not increase"]] },
+      { p: "Because another factor (CO₂ or temperature) becomes limiting", k: [["co2", "carbon dioxide", "temperatur", "limit"]] }],
+    model: "As light intensity increases, the rate of photosynthesis increases, because light is the limiting factor. Then the line levels off, because another factor such as temperature or CO₂ is now limiting.", hint: "Describe it in two parts (going up, then flat), then say why it goes flat.", card: "Limiting factors" },
+  { type: "num", fig: "temp", q: "Use the graph. What is the optimum temperature for photosynthesis in this plant?", ans: 35, tol: 2, unit: "°C",
+    why: "The optimum is the temperature at the peak of the curve: 35 °C.", hint: "Optimum means best. Find the highest point.", card: "Limiting factors" },
+  { type: "text", fig: "temp", q: "Explain why the rate of photosynthesis falls above 35 °C.", marks: [
+      { p: "Enzymes (that control photosynthesis)", k: [["enzym", "enzime"]] },
+      { p: "are denatured / the active site changes shape", k: [["denatur", "active site", "shape"]] }],
+    model: "Photosynthesis is controlled by enzymes. Above 35 °C the enzymes are denatured: the active site changes shape, so the rate falls.", hint: "What controls the reaction, and what happens to it when it gets too hot?", card: "Limiting factors" },
+],
+leaf: [
+  { fig: "leaf", q: "The diagram shows a cross-section of a leaf. Which letter labels the palisade mesophyll?", a: "C", w: ["B", "D", "F"], why: "C is the palisade mesophyll: tall, tightly packed cells full of chloroplasts, just under the upper epidermis (B).", hint: "Look for tall cells packed with chloroplasts near the top.", card: "Leaf layers, top to bottom" },
+  { fig: "leaf", q: "Which letter labels a stoma?", a: "E", w: ["A", "D", "F"], why: "E is a stoma: the gap between two guard cells in the lower epidermis.", hint: "Stomata are mostly on the underside of the leaf.", card: "Guard cells and stomata" },
+  { type: "text", fig: "leaf", q: "Name the layer labelled D.", marks: [{ p: "Spongy mesophyll", k: [["spong"]] }],
+    model: "Spongy mesophyll.", hint: "Its cells are round, with air spaces between them.", card: "Leaf layers, top to bottom" },
+  { type: "text", fig: "leaf", q: "Explain how layer C is adapted for photosynthesis.", marks: [
+      { p: "Lots of chloroplasts (to absorb light)", k: [["chloroplast", "chlorplast", "chlorophyl"]] },
+      { p: "Near the top of the leaf / tall and tightly packed, so it gets the most light", k: [["top", "upper", "surface", "tight", "packed", "tall", "column", "most light", "lots of light"]] }],
+    model: "The palisade cells are packed with chloroplasts to absorb light. They are near the top of the leaf and tightly packed, so they get the most light.", hint: "Think about what is inside the cells, and where the layer is.", card: "Leaf layers, top to bottom" },
+  { type: "text", fig: "leaf", q: "Explain how the air spaces in layer D help the leaf.", marks: [
+      { p: "Gases can diffuse easily / gas exchange", k: [["diffus", "gas exchange", "gases", "gas"]] },
+      { p: "CO₂ reaches the cells (or O₂ leaves), over a large surface area", k: [["co2", "carbon dioxide", "oxygen", "o2", "surface area"]] }],
+    model: "The air spaces let gases diffuse easily. CO₂ can reach the photosynthesising cells and oxygen can leave, and they give a large surface area for gas exchange.", hint: "Which gases move in and out of a leaf, and how do they move?", card: "Gas exchange" },
+  { fig: "stomata", q: "The diagram shows two stomata, P and Q. Why is stoma P open?", a: "Its guard cells have taken in water by osmosis and swollen", w: ["Its guard cells have lost water and gone limp", "Its guard cells are dead", "Its guard cells have no chloroplasts"],
+    why: "When guard cells take in water by osmosis they swell (become turgid). Their thick inner walls make them curve apart, opening the stoma.", hint: "Swollen or limp?", card: "Guard cells and stomata" },
+  { type: "text", fig: "stomata", q: "Explain how the guard cells close a stoma, like Q, when the plant is short of water.", marks: [
+      { p: "Guard cells lose water", k: [["lose", "lost", "loses", "losing", "leave", "leaves", "out"], ["water"]] },
+      { p: "by osmosis", k: [["osmos"]] },
+      { p: "so they become flaccid / limp and straighten", k: [["flaccid", "limp", "shrink", "shrank", "soft", "straight", "floppy", "less turgid", "deflat"]] }],
+    model: "The guard cells lose water by osmosis. They become flaccid (limp) and straighten, so they close the stoma and less water is lost.", hint: "It's the opposite of opening: water moves the other way.", card: "Guard cells and stomata" },
+  { type: "text", fig: "leaf", any: 2, q: "Water vapour is lost through E. Give two ways the leaves of plants in hot, dry places are adapted to lose less water.", marks: [
+      { p: "Thicker waxy cuticle", k: [["cuticle", "wax"]] },
+      { p: "Fewer or smaller stomata", k: [["fewer", "less", "smaller", "small", "reduced", "not many"], ["stoma"]] },
+      { p: "Stomata sunken in pits / only on the underside", k: [["sunken", "pit", "underside", "under side", "bottom", "lower"]] },
+      { p: "Hairs on the leaf", k: [["hair"]] },
+      { p: "Small, rolled or needle-like leaves", k: [["roll", "needle", "spine", "small leaves", "smaller leaves", "small leaf"]] }],
+    model: "A thicker waxy cuticle, and fewer, smaller stomata.", hint: "Think about the waterproof layer, and the holes the water vapour leaves through.", card: "How the leaf is adapted" },
+],
+transport: [
+  { fig: "roothair", q: "The diagram shows a root hair cell in the soil. How does water move from the soil into the cell?", a: "By osmosis, as the cell sap is more concentrated than the soil water", w: ["By active transport, using energy", "By osmosis, as the soil water is more concentrated than the cell sap", "By translocation through the phloem"],
+    why: "Water moves by osmosis from the dilute soil water into the more concentrated cell sap, through the partially permeable membrane.", hint: "Water moves from a dilute solution to a more concentrated one.", card: "Osmosis vs active transport" },
+  { type: "text", fig: "roothair", q: "Explain how the root hair cell is adapted to absorb water.", marks: [
+      { p: "Long hair gives a large surface area", k: [["surface area", "long", "large area", "big area", "hair", "extension"]] },
+      { p: "Vacuole with concentrated cell sap, so water enters by osmosis", k: [["sap", "vacuol", "concentrat", "osmos"]] }],
+    model: "The long 'hair' gives a large surface area for absorbing water. The vacuole contains concentrated cell sap, so water moves in by osmosis.", hint: "Think about its shape, and what's inside it.", card: "Root hair cells" },
+  { type: "text", fig: "roothair", q: "Nitrate ions are absorbed by active transport. Explain why active transport is needed and where the energy comes from.", marks: [
+      { p: "Nitrate concentration is higher in the root than in the soil (against the gradient)", k: [["against", "low to high", "lower to higher", "low concentration to", "higher in", "more concentrated in", "higher concentration in", "higher inside", "low in the soil", "lower in the soil"]] },
+      { p: "Active transport needs energy", k: [["energy"]] },
+      { p: "Energy comes from respiration (in mitochondria)", k: [["respir", "mitochond"]] }],
+    model: "The concentration of nitrate ions is higher inside the root hair cell than in the soil, so they must move against the concentration gradient. This needs energy, which comes from respiration in the mitochondria.", hint: "Compare the concentration inside and outside the cell.", card: "Osmosis vs active transport" },
+  { fig: "vessels", q: "The diagram shows two transport tissues, X and Y. Which is xylem?", a: "X, because it is a hollow tube with no end walls", w: ["Y, because it has end walls with pores", "X, because it has companion cells", "Y, because it is made of dead cells"],
+    why: "X is xylem: dead cells joined end to end into a hollow tube, strengthened by lignin (the spiral). Y is phloem: living cells with sieve plates (pores in the end walls) and companion cells.", hint: "Water needs a clear, hollow pipe.", card: "Xylem and transpiration" },
+  { type: "text", fig: "vessels", any: 2, q: "Describe two differences between the structure of X and Y.", marks: [
+      { p: "X is made of dead cells; Y is living", k: [["dead", "living", "alive", "live"]] },
+      { p: "X has no end walls; Y has end walls with pores (sieve plates)", k: [["end wall", "endwall", "sieve", "pore", "holes"]] },
+      { p: "X has lignin (spiral thickening)", k: [["lignin", "spiral", "ring"]] },
+      { p: "Y has companion cells", k: [["companion"]] },
+      { p: "X carries water and minerals; Y carries sugars", k: [["sugar", "sucrose", "glucose", "food"]] }],
+    model: "X is made of dead cells but Y is made of living cells. X has no end walls, but Y has end walls with pores (sieve plates).", hint: "Look at the ends of the cells, and the spiral.", card: "Phloem and translocation" },
+  { type: "num", fig: "potometer", mk: 2, q: "Use the graph. Calculate the rate of water uptake in still air.", ans: 2, tol: 0.1, unit: "mm per minute",
+    why: "In still air the bubble moved 20 mm in 10 minutes. 20 ÷ 10 = 2 mm per minute.", hint: "Rate = distance ÷ time. Read the distance at 10 minutes.", card: "Factors affecting transpiration" },
+  { type: "num", fig: "potometer", q: "Use the graph. How far had the bubble moved after 6 minutes in windy air?", ans: 30, tol: 1, unit: "mm",
+    why: "Go up from 6 minutes to the windy line, then across: 30 mm.", hint: "The windy line is the steeper one.", card: "Factors affecting transpiration" },
+  { type: "text", fig: "potometer", q: "Explain why the rate of water uptake is higher in windy air.", marks: [
+      { p: "Wind blows water vapour away from the leaf", k: [["blow", "blew", "away", "removed", "remove", "carried", "moves the water vapour"]] },
+      { p: "Steeper concentration gradient, so more water evaporates / diffuses out of the stomata", k: [["gradient", "diffus", "evaporat"]] }],
+    model: "The wind blows water vapour away from the leaf. This keeps the concentration gradient steep, so water vapour diffuses out of the stomata faster and the plant takes up more water.", hint: "What does wind do to the water vapour just outside the stomata?", card: "Factors affecting transpiration" },
+],
+practical: [
+  { fig: "apparatus", q: "The diagram shows the apparatus. What is B used for?", a: "Measuring the distance between the lamp and the pondweed", w: ["Timing the 5 minutes", "Measuring the temperature of the water", "Collecting the oxygen"],
+    why: "B is a metre ruler. It measures the distance of the lamp from the pondweed, which is the independent variable.", hint: "It runs from the lamp to the beaker.", card: "Variables" },
+  { type: "text", fig: "apparatus", q: "The lamp also heats the water. Suggest how to improve the method so this doesn't happen, and why it matters.", marks: [
+      { p: "Use an LED lamp, or put a heat shield / glass tank of water between the lamp and the beaker", k: [["led", "heat shield", "shield", "tank", "glass of water", "beaker of water", "filter", "cold light", "water bath"]] },
+      { p: "So the temperature stays the same (it is a control variable / fair test)", k: [["temperatur", "constant", "same", "fair", "control"]] }],
+    model: "Use an LED lamp, or put a glass tank of water between the lamp and the beaker as a heat shield. This keeps the temperature the same, so only light intensity affects the rate.", hint: "The student in the homework suggested a fan. That doesn't stop the water warming.", card: "Improving the practical" },
+  { type: "num", fig: "bubbles", q: "Use the graph. What is the rate of photosynthesis at 20 cm?", ans: 11.2, tol: 0.6, unit: "bubbles per minute",
+    why: "Go up from 20 cm to the curve, then across: about 11.2 bubbles per minute.", hint: "Each small square on the y-axis is 1 bubble per minute.", card: "Results and conclusions" },
+  { fig: "bubbles", q: "Which result on the graph is anomalous?", a: "The result at 35 cm", w: ["The result at 10 cm", "The result at 30 cm", "The result at 50 cm"],
+    why: "The point at 35 cm is well above the line of best fit, so it doesn't fit the pattern.", hint: "Look for the cross that is far from the curve.", card: "Results and conclusions" },
+  { type: "text", fig: "bubbles", q: "Describe the relationship shown by the graph.", marks: [
+      { p: "As the distance increases, the rate decreases", k: [["distance", "further", "farther", "closer", "nearer", "away"], ["decreas", "fall", "lower", "less", "fewer", "drop", "down", "slower", "increas", "higher", "faster"]] },
+      { p: "It falls steeply at first, then levels off (not proportional)", k: [["steep", "level", "slow", "curve", "not proportional", "less quickly", "inverse", "quickly", "rapid"]] }],
+    model: "As the distance from the lamp increases, the rate of photosynthesis decreases. It falls steeply at first, then levels off.", hint: "Say what happens to the rate as the distance goes up, then describe the curve's shape.", card: "Results and conclusions" },
+  { type: "text", q: "Explain why the rate of photosynthesis falls as the lamp is moved further away.", marks: [
+      { p: "Light intensity decreases", k: [["light"], ["less", "lower", "decreas", "weaker", "fall", "reduc", "dimmer", "low"]] },
+      { p: "So less energy for photosynthesis / light is the limiting factor", k: [["energy", "limit"]] },
+      { p: "So less oxygen is produced (fewer bubbles)", k: [["oxygen", "o2", "bubble"]] }],
+    model: "Further away, the light intensity is lower, so there is less energy for photosynthesis: light is the limiting factor. Less oxygen is made, so there are fewer bubbles.", hint: "Light → energy → oxygen bubbles.", card: "Results and conclusions" },
+  { type: "num", mk: 2, q: "At 25 cm, a student counted 42 bubbles in 5 minutes. Calculate the rate in bubbles per minute.", ans: 8.4, tol: 0.05, unit: "bubbles per minute",
+    why: "Rate = bubbles ÷ time = 42 ÷ 5 = 8.4 bubbles per minute.", hint: "Divide the number of bubbles by the number of minutes.", card: "Calculating the rate" },
+  { type: "text", any: 2, q: "Give two variables that should be controlled in this practical.", marks: [
+      { p: "Temperature of the water", k: [["temperatur", "heat", "warm"]] },
+      { p: "CO₂ concentration (amount of sodium hydrogencarbonate)", k: [["co2", "carbon dioxide", "hydrogencarbonate", "hydrogen carbonate", "bicarbonate"]] },
+      { p: "The same pondweed (same length/mass)", k: [["pondweed", "plant", "same piece", "length", "mass", "weed"]] },
+      { p: "The time bubbles are counted for", k: [["time", "minute", "timing"]] },
+      { p: "The same lamp / bulb power", k: [["lamp", "bulb", "power", "watt"]] }],
+    model: "The temperature of the water and the concentration of CO₂.", hint: "What could change the rate apart from the light?", card: "Variables" },
+  { type: "num", q: "(Higher) Using light intensity = 1 ÷ distance², calculate the light intensity at 25 cm. Give your answer as a decimal.", ans: 0.0016, tol: 0.00005, unit: "arbitrary units",
+    why: "25² = 625, and 1 ÷ 625 = 0.0016.", hint: "Square the distance first, then divide 1 by it.", card: "(Higher) Inverse square law" },
+],
+};
+for (const k in EXAM) EXAM[k] = EXAM[k].map((x, n) => ({ type: "mcq", ...x, id: "x" + n }));
+const EXAM_PER_TEST = 6;
+const maxOf = item => item.type === "text" ? (item.any || item.marks.length) : item.type === "num" ? (item.mk || 1) : 1;
+const ansText = item => item.type === "num" ? `${item.ans} ${item.unit}` : item.type === "text" ? item.model : item.a;
+
+/* ---------- marking written answers ---------- */
+const norm = s => " " + s.toLowerCase().replace(/[₂²]/g, "2").replace(/co\s+2/g, "co2").replace(/[’']/g, "'").replace(/[^a-z0-9'%.]+/g, " ").trim() + " ";
+function lev(a, b) {
+  let prev = [...Array(b.length + 1).keys()];
+  for (let x = 1; x <= a.length; x++) {
+    const cur = [x];
+    for (let y = 1; y <= b.length; y++) cur[y] = Math.min(prev[y] + 1, cur[y - 1] + 1, prev[y - 1] + (a[x - 1] === b[y - 1] ? 0 : 1));
+    prev = cur;
+  }
+  return prev[b.length];
+}
+// A stem matches the start of a word (one typo allowed in longer stems); a stem with a space must appear as a phrase
+const hasStem = (t, words, st) => st.includes(" ") ? t.includes(" " + st) :
+  words.some(w => w.startsWith(st) || (st.length >= 5 && w.length >= st.length - 1 && lev(w.slice(0, st.length), st) <= 1));
+function markText(item, answer) {
+  const t = norm(answer), words = t.trim().split(" ");
+  const hits = item.marks.map(m => m.k.every(g => g.some(st => hasStem(t, words, st))));
+  return { hits, got: Math.min(hits.filter(Boolean).length, maxOf(item)) };
+}
+function parseNum(s) {
+  s = s.replace(/,/g, "").replace(/\s+/g, "");
+  const f = s.match(/^(-?\d*\.?\d+)\/(\d*\.?\d+)/);
+  if (f) return +f[1] / +f[2];
+  const m = s.match(/-?\d*\.?\d+/);
+  return m ? parseFloat(m[0]) : null;
+}
+
+/* ---------- diagrams and graphs (drawn here, no image files) ---------- */
+const svgOpen = (vb, label) => `<svg viewBox="${vb}" role="img" aria-label="${label}" xmlns="http://www.w3.org/2000/svg">`;
+const label = (x, y, t, anchor = "middle") => `<text x="${x}" y="${y}" class="lbl" text-anchor="${anchor}" dominant-baseline="middle">${t}</text>`;
+const lead = (x1, y1, x2, y2) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="lead"/><circle cx="${x2}" cy="${y2}" r="2.5" class="dot"/>`;
+
+// Monotone cubic through screen points, so curves never overshoot the data
+function smoothPath(P) {
+  const n = P.length, d = [], t = [];
+  for (let k = 0; k < n - 1; k++) d.push((P[k + 1][1] - P[k][1]) / (P[k + 1][0] - P[k][0]));
+  t[0] = d[0]; t[n - 1] = d[n - 2];
+  for (let k = 1; k < n - 1; k++) t[k] = d[k - 1] * d[k] <= 0 ? 0 : (d[k - 1] + d[k]) / 2;
+  for (let k = 0; k < n - 1; k++) {
+    if (d[k] === 0) { t[k] = t[k + 1] = 0; continue; }
+    const a = t[k] / d[k], b = t[k + 1] / d[k], h = a * a + b * b;
+    if (h > 9) { const r = 3 / Math.sqrt(h); t[k] = r * a * d[k]; t[k + 1] = r * b * d[k]; }
+  }
+  let p = `M${P[0][0]},${P[0][1]}`;
+  for (let k = 0; k < n - 1; k++) {
+    const dx = (P[k + 1][0] - P[k][0]) / 3;
+    p += ` C${P[k][0] + dx},${P[k][1] + t[k] * dx} ${P[k + 1][0] - dx},${P[k + 1][1] - t[k + 1] * dx} ${P[k + 1][0]},${P[k + 1][1]}`;
+  }
+  return p;
+}
+
+// Exam-style line graph on graph paper. No hover values: reading the graph is the question.
+function lineChart({ title, x, y, series }) {
+  const W = 520, H = 340, m = { l: 62, r: series.length > 1 ? 112 : 24, t: 14, b: 58 }, pw = W - m.l - m.r, ph = H - m.t - m.b;
+  const X = v => +(m.l + (v - x.min) / (x.max - x.min) * pw).toFixed(1), Y = v => +(m.t + ph - (v - y.min) / (y.max - y.min) * ph).toFixed(1);
+  let s = svgOpen(`0 0 ${W} ${H}`, title), minor = "", major = "", ticks = "";
+  const axis = (a, horiz) => {
+    const sub = a.minor || 5, n = Math.round((a.max - a.min) / a.step * sub);
+    for (let k = 0; k <= n; k++) {
+      const v = a.min + k * a.step / sub, line = horiz ? `<line x1="${X(v)}" y1="${m.t}" x2="${X(v)}" y2="${m.t + ph}"/>` : `<line x1="${m.l}" y1="${Y(v)}" x2="${m.l + pw}" y2="${Y(v)}"/>`;
+      if (k % sub) { minor += line; continue; }
+      major += line;
+      const txt = +v.toFixed(4);
+      ticks += horiz ? `<text x="${X(v)}" y="${m.t + ph + 18}" text-anchor="middle">${txt}</text>` : `<text x="${m.l - 8}" y="${Y(v)}" text-anchor="end" dominant-baseline="middle">${txt}</text>`;
+    }
+  };
+  axis(x, true); axis(y, false);
+  s += `<g class="g-minor">${minor}</g><g class="g-major">${major}</g>`;
+  s += `<path d="M${m.l},${m.t} V${m.t + ph} H${m.l + pw}" class="axis"/><g class="ticks">${ticks}</g>`;
+  s += `<text x="${m.l + pw / 2}" y="${H - 10}" class="axis-t" text-anchor="middle">${x.label}</text>`;
+  s += `<text transform="translate(16 ${m.t + ph / 2}) rotate(-90)" class="axis-t" text-anchor="middle">${y.label}</text>`;
+  series.forEach((sr, n) => {
+    const P = sr.line.map(([a, b]) => [X(a), Y(b)]);
+    s += `<path d="${sr.curve ? smoothPath(P) : "M" + P.join(" L")}" class="series s${n + 1}"/>`;
+    (sr.crosses || []).forEach(([a, b]) => { const cx = X(a), cy = Y(b); s += `<path d="M${cx - 5},${cy - 5} L${cx + 5},${cy + 5} M${cx + 5},${cy - 5} L${cx - 5},${cy + 5}" class="cross"/>`; });
+    if (series.length > 1) {
+      const [lx, ly] = P[P.length - 1], dy = sr.labelDy || 0;
+      s += `<line x1="${lx + 8}" y1="${ly + dy}" x2="${lx + 26}" y2="${ly + dy}" class="series s${n + 1}"/><text x="${lx + 32}" y="${ly + dy}" class="key" dominant-baseline="middle">${sr.name}</text>`;
+    }
+  });
+  return s + "</svg>";
+}
+
+// Exam-style horizontal bar chart: bars end on graph paper, values are read off the scale
+function barChart({ title, x, bars, note }) {
+  const W = 520, bh = 34, m = { l: 128, r: 24, t: 10, b: note ? 70 : 56 }, pw = W - m.l - m.r, ph = bars.length * bh, H = m.t + ph + m.b;
+  const X = v => +(m.l + (v - x.min) / (x.max - x.min) * pw).toFixed(1);
+  let s = svgOpen(`0 0 ${W} ${H}`, title), minor = "", major = "", ticks = "";
+  const sub = x.minor || 5, n = Math.round((x.max - x.min) / x.step * sub);
+  for (let k = 0; k <= n; k++) {
+    const v = x.min + k * x.step / sub, line = `<line x1="${X(v)}" y1="${m.t}" x2="${X(v)}" y2="${m.t + ph}"/>`;
+    if (k % sub) minor += line; else { major += line; ticks += `<text x="${X(v)}" y="${m.t + ph + 18}" text-anchor="middle">${+v.toFixed(4)}</text>`; }
+  }
+  s += `<g class="g-minor">${minor}</g><g class="g-major">${major}</g>`;
+  bars.forEach(([name, v], k) => {
+    const y = m.t + k * bh + 7;
+    s += `<rect x="${m.l}" y="${y}" width="${X(v) - m.l}" height="${bh - 14}" rx="2" class="bar"/><text x="${m.l - 10}" y="${y + (bh - 14) / 2}" class="key" text-anchor="end" dominant-baseline="middle">${name}</text>`;
+  });
+  s += `<path d="M${m.l},${m.t} V${m.t + ph} H${m.l + pw}" class="axis"/><g class="ticks">${ticks}</g>`;
+  s += `<text x="${m.l + pw / 2}" y="${m.t + ph + 42}" class="axis-t" text-anchor="middle">${x.label}</text>`;
+  if (note) s += `<text x="${m.l + pw / 2}" y="${H - 8}" class="note" text-anchor="middle">${note}</text>`;
+  return s + "</svg>";
+}
+const hexPath = (cx, cy, r) => "M" + [0, 1, 2, 3, 4, 5].map(k => `${(cx + r * Math.cos(k * Math.PI / 3)).toFixed(1)},${(cy + r * Math.sin(k * Math.PI / 3)).toFixed(1)}`).join(" L") + " Z";
+
+const FIGS = {
+  sugars() {
+    let s = svgOpen("0 0 520 210", "Three carbohydrates made of sugar units, labelled A, B and C");
+    const hex = (x, y, r = 17) => `<path d="${hexPath(x, y, r)}" class="sug"/>`, bond = (x1, y1, x2, y2) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="bond"/>`;
+    s += hex(60, 90);
+    s += bond(167, 90, 183, 90) + hex(150, 90) + hex(200, 90);
+    const top = [290, 330, 370, 410, 450, 490], low = [[390, 140], [430, 140], [470, 140]];
+    top.forEach((x, k) => { if (k) s += bond(x - 26, 90, x - 14, 90); });
+    s += bond(370, 104, 384, 128); low.forEach(([x, y], k) => { if (k) s += bond(x - 26, y, x - 14, y); });
+    top.forEach(x => s += hex(x, 90, 14)); low.forEach(([x, y]) => s += hex(x, y, 14));
+    s += label(60, 190, "A") + label(175, 190, "B") + label(390, 190, "C");
+    return s + "</svg>";
+  },
+  amino() {
+    let s = svgOpen("0 0 520 200", "A chain of beads, with one bead labelled A and the whole chain labelled B");
+    const P = [...Array(12).keys()].map(k => [50 + k * 38, +(84 + 20 * Math.sin(k * .9)).toFixed(1)]), cls = ["b1", "b2", "b3", "b4", "b2", "b1", "b4", "b3", "b1", "b3", "b2", "b4"];
+    s += `<path d="M${P.join(" L")}" class="bond"/>`;
+    P.forEach(([x, y], k) => s += `<circle cx="${x}" cy="${y}" r="14" class="${cls[k]}"/>`);
+    s += lead(P[3][0], 24, P[3][0], P[3][1] - 14) + label(P[3][0], 12, "A");
+    s += `<path d="M36,136 V146 H484 V136 M260,146 V156" class="ink"/>` + label(260, 176, "B");
+    return s + "</svg>";
+  },
+  trig() {
+    let s = svgOpen("0 0 520 250", "A fat molecule: part A with three chains attached, two labelled B and one with a bend labelled C");
+    const tail = (y0, kinkAt) => {
+      let x = 96, y = y0, dx = 1, dy = 0; const pts = [];
+      for (let k = 0; k < 16; k++) {
+        if (k === kinkAt) { dx = Math.cos(.6); dy = Math.sin(.6); }
+        x += dx * 21; y += dy * 21;
+        const o = k % 2 ? 6 : -6; pts.push([+(x - dy * o).toFixed(1), +(y + dx * o).toFixed(1)]);
+      }
+      return pts;
+    };
+    s += `<rect x="62" y="24" width="34" height="164" rx="6" class="gly"/>`;
+    const t1 = tail(50), t2 = tail(106), t3 = tail(158, 10);
+    [t1, t2, t3].forEach(t => s += `<path d="M96,${t === t1 ? 50 : t === t2 ? 106 : 158} L${t.join(" L")}" class="chain"/>`);
+    s += lead(28, 106, 62, 106) + label(16, 106, "A");
+    s += lead(t1.at(-1)[0] + 8, t1.at(-1)[1], t1.at(-1)[0] + 4, t1.at(-1)[1]) + label(t1.at(-1)[0] + 22, t1.at(-1)[1], "B");
+    s += lead(t2.at(-1)[0] + 8, t2.at(-1)[1], t2.at(-1)[0] + 4, t2.at(-1)[1]) + label(t2.at(-1)[0] + 22, t2.at(-1)[1], "B");
+    s += label(t3.at(-1)[0] + 18, t3.at(-1)[1] + 4, "C");
+    return s + "</svg>";
+  },
+  pastry() {
+    let s = svgOpen("0 0 520 270", "Diagram P: flour particles with a coating, labelled A and B. Diagram Q: layers, labelled A and B");
+    s += label(130, 14, "P").replace('class="lbl"', 'class="lbl big"') + label(390, 14, "Q").replace('class="lbl"', 'class="lbl big"');
+    s += `<rect x="8" y="30" width="244" height="196" rx="12" class="panel"/><rect x="268" y="30" width="244" height="196" rx="12" class="panel"/>`;
+    const R = rng(5), r0 = [];
+    for (let row = 0; row < 3; row++) for (let c = 0; c < 4; c++) {
+      const x = 44 + c * 52 + (row % 2) * 22, y = 72 + row * 54, r = 14 + R() * 3; r0.push(r);
+      s += `<circle cx="${x}" cy="${y}" r="${(r + 6).toFixed(1)}" class="fatc"/><circle cx="${x}" cy="${y}" r="${r.toFixed(1)}" class="flour"/>`;
+    }
+    s += lead(96, 246, 96, 180) + label(96, 258, "A") + lead(200, 246, 200, 180 + r0[11] + 3) + label(200, 258, "B");
+    for (let k = 0; k < 7; k++) s += `<rect x="290" y="${54 + k * 22}" width="170" height="${k % 2 ? 8 : 14}" class="${k % 2 ? "fatl" : "dough"}"/>`;
+    s += lead(476, 61, 452, 61) + label(492, 61, "A") + lead(476, 80, 452, 80) + label(492, 80, "B");
+    s += `<text x="378" y="214" class="key" text-anchor="middle">puff pastry (side view)</text>`;
+    return s + "</svg>";
+  },
+  glucose: () => lineChart({ title: "Line graph of blood sugar against time after eating food X and food Y",
+    x: { label: "Time after eating (minutes)", min: 0, max: 180, step: 30, minor: 3 }, y: { label: "Blood sugar (mmol/L)", min: 0, max: 10, step: 2, minor: 4 },
+    series: [{ name: "Food X", curve: true, line: [[0, 5], [30, 9], [60, 7], [90, 5], [120, 4.2], [150, 4.6], [180, 5]], labelDy: -10 },
+             { name: "Food Y", curve: true, line: [[0, 5], [30, 6.2], [60, 6.6], [90, 6.3], [120, 5.9], [150, 5.5], [180, 5.3]], labelDy: 10 }] }),
+  protein: () => barChart({ title: "Bar chart of protein per 100 g in six foods", note: "Approximate values for cooked foods",
+    x: { label: "Protein per 100 g (g)", min: 0, max: 35, step: 5 },
+    bars: [["Chicken", 31], ["Mycoprotein", 14], ["Eggs", 13], ["Tofu", 12], ["Lentils", 9], ["Quinoa", 4]] }),
+  satfat: () => barChart({ title: "Bar chart of saturated fat per 100 g in six foods", note: "Approximate values",
+    x: { label: "Saturated fat per 100 g (g)", min: 0, max: 60, step: 10 },
+    bars: [["Butter", 51], ["Lard", 40], ["Cheddar", 22], ["Olive oil", 14], ["Sunflower oil", 11], ["Avocado", 2]] }),
+  leaf() {
+    const R = rng(11), L = 40, RT = 440;
+    let s = svgOpen("0 0 520 300", "Cross-section of a leaf with parts labelled A to F");
+    s += `<rect x="${L}" y="16" width="400" height="10" class="wax"/>`;
+    for (let x = L; x < RT; x += 25) s += `<rect x="${x}" y="26" width="25" height="22" class="cell"/>`;
+    for (let x = L; x < RT; x += 20) {
+      s += `<rect x="${x + 1.5}" y="50" width="17" height="76" rx="7" class="cell"/>`;
+      for (let k = 0; k < 5; k++) s += `<ellipse cx="${x + 6 + (k % 2) * 8}" cy="${60 + k * 14}" rx="3.6" ry="2.6" class="chl"/>`;
+    }
+    for (let row = 0, y = 142; y < 214; y += 25, row++) for (let x = L + 14 + (row % 2) * 17; x < RT - 10; x += 34) {
+      if (Math.hypot(x - 230, y - 172) < 46 || (Math.abs(x - 352) < 22 && y > 190)) continue;
+      const cx = (x + (R() - .5) * 6).toFixed(1), cy = (y + (R() - .5) * 5).toFixed(1);
+      s += `<ellipse cx="${cx}" cy="${cy}" rx="${(12 + R() * 3).toFixed(1)}" ry="${(8 + R() * 3).toFixed(1)}" class="cell"/><circle cx="${cx - 4}" cy="${cy - 2}" r="2.4" class="chl"/><circle cx="${+cx + 4}" cy="${+cy + 2}" r="2.4" class="chl"/>`;
+    }
+    s += `<circle cx="230" cy="172" r="33" class="cell"/>`;
+    [[214, 160], [230, 153], [246, 160]].forEach(([x, y]) => s += `<circle cx="${x}" cy="${y}" r="7.5" class="xy"/>`);
+    [[218, 187], [230, 192], [242, 187]].forEach(([x, y]) => s += `<circle cx="${x}" cy="${y}" r="4.2" class="cellline"/>`);
+    for (let x = L; x < RT; x += 25) if (x !== 340) s += `<rect x="${x}" y="222" width="25" height="22" class="cell"/>`;
+    s += `<rect x="${L}" y="244" width="304" height="7" class="wax"/><rect x="360" y="244" width="80" height="7" class="wax"/>`;
+    s += `<ellipse cx="344" cy="233" rx="7.5" ry="12" class="cell"/><ellipse cx="360" cy="233" rx="7.5" ry="12" class="cell"/><circle cx="343" cy="230" r="2" class="chl"/><circle cx="361" cy="236" r="2" class="chl"/>`;
+    s += lead(466, 21, 432, 21) + label(482, 21, "A") + lead(466, 40, 428, 37) + label(482, 40, "B") + lead(466, 88, 425, 88) + label(482, 88, "C");
+    s += lead(466, 182, 402, 182) + label(482, 182, "D") + lead(352, 278, 352, 238) + label(352, 292, "E") + lead(30, 172, 200, 172) + label(16, 172, "F");
+    return s + "</svg>";
+  },
+  cell() {
+    let s = svgOpen("0 0 520 290", "A plant cell with parts labelled A to F");
+    s += `<rect x="120" y="22" width="260" height="246" rx="20" class="wall"/><rect x="129" y="31" width="242" height="228" rx="14" class="cyto"/>`;
+    s += `<rect x="178" y="80" width="150" height="132" rx="48" class="sap"/>`;
+    s += `<circle cx="324" cy="62" r="22" class="nuc"/><circle cx="328" cy="58" r="6" class="nucleolus"/>`;
+    [[160, 62, -20], [150, 120, 80], [160, 222, 15], [345, 232, -10], [252, 242, 0], [350, 140, 90]].forEach(([x, y, r]) =>
+      s += `<g transform="translate(${x} ${y}) rotate(${r})"><ellipse rx="15" ry="8" class="chl-big"/><path d="M-9,-2 H9 M-9,2 H9" class="grana"/></g>`);
+    s += lead(444, 40, 377, 40) + label(458, 40, "A") + lead(444, 62, 346, 62) + label(458, 62, "C") + lead(444, 110, 371, 110) + label(458, 110, "B");
+    s += lead(444, 232, 360, 232) + label(458, 232, "D") + lead(76, 160, 182, 160) + label(62, 160, "E") + lead(76, 190, 138, 190) + label(62, 190, "F");
+    return s + "</svg>";
+  },
+  stomata() {
+    let s = svgOpen("0 0 520 230", "Two stomata seen from below the leaf, labelled P and Q");
+    const pair = (cx, ox, ix) => {
+      let g = `<rect x="${cx - 105}" y="14" width="210" height="178" rx="14" class="panel"/>` + (ix > 4 ? `<ellipse cx="${cx}" cy="103" rx="${ix * .7}" ry="50" class="pore"/>` : "");
+      [-1, 1].forEach(d => {
+        g += `<path d="M${cx},${103 - 66} C${cx + d * ox},${103 - 66} ${cx + d * ox},${103 + 66} ${cx},${103 + 66} C${cx + d * ix},${103 + 44} ${cx + d * ix},${103 - 44} ${cx},${103 - 66} Z" class="cell"/>`;
+        [-30, -8, 14, 36].forEach((dy, k) => g += `<circle cx="${cx + d * (ix * .75 + (ox - ix) * .45 + (k % 2) * 6 - 3)}" cy="${103 + dy}" r="3.2" class="chl"/>`);
+      });
+      return g;
+    };
+    s += pair(140, 62, 22) + pair(380, 40, 1) + label(140, 214, "P") + label(380, 214, "Q");
+    return s + "</svg>";
+  },
+  roothair() {
+    let s = svgOpen("0 0 520 250", "A root hair cell growing between soil particles");
+    const soil = [[200, 146, 22], [262, 154, 17], [330, 138, 19], [404, 146, 24], [228, 48, 18], [300, 44, 22], [382, 52, 18], [478, 94, 20], [180, 204, 20], [300, 208, 18], [420, 210, 22], [140, 30, 14]];
+    soil.forEach(([x, y, r]) => s += `<circle cx="${x}" cy="${y}" r="${r + 5}" class="film"/>`);
+    soil.forEach(([x, y, r]) => s += `<circle cx="${x}" cy="${y}" r="${r}" class="soil"/>`);
+    s += `<path d="M30,52 Q30,40 42,40 H140 Q152,40 152,52 V78 L426,82 Q452,93 426,106 L152,110 V138 Q152,150 140,150 H42 Q30,150 30,138 Z" class="cell"/>`;
+    s += `<path d="M56,90 Q56,64 84,64 H124 Q140,64 140,86 L150,90 H410 Q420,94 410,98 H150 L140,104 Q140,128 120,128 H84 Q56,128 56,104 Z" class="sap"/>`;
+    s += `<circle cx="104" cy="58" r="11" class="nuc"/>`;
+    s += `<path d="M300,180 V124" class="arrow"/><path d="M293,130 L300,116 L307,130 Z" class="arrow-h"/>` + `<text x="308" y="174" class="key" dominant-baseline="middle">water</text>`;
+    s += `<text x="90" y="172" class="key" text-anchor="middle">root hair cell</text>` + lead(470, 150, 420, 146) + `<text x="478" y="152" class="key" dominant-baseline="middle">soil</text>`;
+    return s + "</svg>";
+  },
+  vessels() {
+    let s = svgOpen("0 0 520 290", "Two plant transport tissues, labelled X and Y");
+    s += `<rect x="100" y="16" width="70" height="244" class="hollow"/>`;
+    for (let y = 16; y < 252; y += 16) s += `<path d="M102,${y} L168,${y + 10}" class="lig"/>`;
+    s += `<path d="M100,10 V266 M170,10 V266" class="vwall"/>`;
+    s += `<rect x="300" y="16" width="56" height="244" class="cell"/>`;
+    [16, 96, 176].forEach(y => s += `<rect x="356" y="${y}" width="26" height="80" rx="6" class="cell"/><circle cx="369" cy="${y + 40}" r="5" class="nuc"/>`);
+    [96, 176].forEach(y => s += `<line x1="300" y1="${y}" x2="356" y2="${y}" class="sieve"/>`);
+    s += label(135, 280, "X") + label(340, 280, "Y");
+    return s + "</svg>";
+  },
+  apparatus() {
+    let s = svgOpen("0 0 520 290", "Pondweed in a beaker of water with a lamp beside it, parts labelled A to D");
+    s += `<path d="M70,236 V128 M50,236 H90" class="ink"/><path d="M62,84 L104,92 V146 L62,154 Z" class="shade"/><circle cx="112" cy="119" r="16" class="bulb"/>`;
+    for (let k = -2; k <= 2; k++) s += `<line x1="136" y1="${119 + k * 14}" x2="${180}" y2="${119 + k * 22}" class="ray"/>`;
+    s += `<rect x="96" y="244" width="330" height="14" class="ruler"/>`;
+    for (let x = 100; x <= 420; x += 10) s += `<line x1="${x}" y1="244" x2="${x}" y2="${x % 50 ? 249 : 253}" class="ink"/>`;
+    s += `<rect x="330" y="112" width="90" height="128" class="sap"/><path d="M326,84 V236 Q326,240 330,240 H420 Q424,240 424,236 V84" class="ink"/>`;
+    s += `<path d="M372,236 C362,214 384,196 372,176 C362,160 380,150 374,138 M384,236 C394,212 376,198 388,178 C396,164 384,154 390,142" class="weed"/>`;
+    [[374, 128, 3], [380, 116, 2.5], [372, 104, 3.2], [388, 132, 2.4], [384, 100, 2.6], [376, 90, 2.2]].forEach(([x, y, r]) => s += `<circle cx="${x}" cy="${y}" r="${r}" class="bubble"/>`);
+    s += lead(112, 52, 112, 101) + label(112, 38, "A") + lead(260, 276, 260, 252) + label(260, 284, "B") + lead(470, 196, 420, 196) + label(484, 196, "C") + lead(470, 162, 384, 162) + label(484, 162, "D");
+    return s + "</svg>";
+  },
+  light: () => lineChart({ title: "Line graph of rate of photosynthesis against light intensity at two CO₂ concentrations",
+    x: { label: "Light intensity (arbitrary units)", min: 0, max: 10, step: 2, minor: 4 }, y: { label: "Rate (arbitrary units)", min: 0, max: 30, step: 5 },
+    series: [{ name: "0.04% CO₂", curve: true, line: [[0, 0], [1, 8], [2, 15], [3, 21], [4, 25], [5, 27.3], [6, 28], [7, 28], [8, 28], [9, 28], [10, 28]] },
+             { name: "0.01% CO₂", curve: true, line: [[0, 0], [1, 7.6], [2, 12.6], [3, 15.2], [4, 16], [5, 16], [6, 16], [7, 16], [8, 16], [9, 16], [10, 16]] }] }),
+  temp: () => lineChart({ title: "Line graph of rate of photosynthesis against temperature",
+    x: { label: "Temperature (°C)", min: 0, max: 50, step: 10 }, y: { label: "Rate (arbitrary units)", min: 0, max: 35, step: 5 },
+    series: [{ name: "", curve: true, line: [[0, 1], [10, 7], [20, 16], [30, 27], [35, 30], [40, 22], [45, 9], [50, 1]] }] }),
+  potometer: () => lineChart({ title: "Line graph of distance moved by the potometer bubble against time, in still and windy air",
+    x: { label: "Time (minutes)", min: 0, max: 10, step: 2, minor: 4 }, y: { label: "Distance moved by bubble (mm)", min: 0, max: 50, step: 10 },
+    series: [{ name: "Windy", line: [[0, 0], [10, 50]] }, { name: "Still air", line: [[0, 0], [10, 20]] }] }),
+  bubbles: () => lineChart({ title: "Line graph of rate of photosynthesis against distance from the lamp, with plotted results",
+    x: { label: "Distance from lamp (cm)", min: 0, max: 60, step: 10 }, y: { label: "Rate (bubbles per minute)", min: 0, max: 25, step: 5 },
+    series: [{ name: "", curve: true, line: [[10, 24], [20, 11.2], [30, 6.2], [40, 3.2], [50, 2]], crosses: [[10, 24], [20, 11.2], [30, 6.2], [35, 9], [40, 3.2], [50, 2]] }] }),
+};
+const figCache = {};
+const figure = key => figCache[key] ||= FIGS[key]();
+
+const memoryFor = (key, item) => item.card ? MEMORY[key].find(m => m.title === item.card) : MEMORY[key].find(m => m.ids.includes(item.id));
 
 // Seeded random so each test always has the same questions; questions run in slide order
 function rng(seed) { return () => { seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t ^= t + Math.imul(t ^ (t >>> 7), 61 | t); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
 function shuffle(a, r = Math.random) { a = a.slice(); for (let k = a.length - 1; k > 0; k--) { const j = Math.floor(r() * (k + 1)); [a[k], a[j]] = [a[j], a[k]]; } return a; }
 function seedFor(s) { let h = 0; for (const ch of s) h = (h * 31 + ch.charCodeAt(0)) | 0; return h; }
 
-// Each test gets its own share of questions (up to 10) found in no other test, topped up to 20 from the rest
-function buildVersions(key, bank) {
-  const s = seedFor(key), uniq = Math.min(10, Math.floor(bank.length / 5));
-  const base = shuffle(bank.map(b => b.id), rng(s + 2026));
+// Each test gets its own share of questions found in no other test, topped up from the rest; returns sorted indexes
+function pickTests(n, count, s) {
+  const uniq = Math.min(Math.floor(count / 2), Math.floor(n / 5));
+  const base = shuffle([...Array(n).keys()], rng(s + 2026));
   return [0, 1, 2, 3, 4].map(v => {
     const own = base.slice(v * uniq, v * uniq + uniq);
-    const rest = shuffle(base.filter(n => !own.includes(n)), rng(s + 100 + v)).slice(0, PER_QUIZ - own.length);
-    const r = rng(s + 500 + v);
-    return [...own, ...rest].sort((x, y) => x - y).map(n => ({ ...bank[n], opts: shuffle([bank[n].a, ...bank[n].w], r) }));
+    const rest = shuffle(base.filter(k => !own.includes(k)), rng(s + 100 + v)).slice(0, count - own.length);
+    return [...own, ...rest].sort((x, y) => x - y);
+  });
+}
+// Multiple choice in slide order; any exam-style questions go in every third slot
+function buildVersions(key, bank) {
+  const s = seedFor(key), exam = EXAM[key] || [], nx = exam.length ? EXAM_PER_TEST : 0;
+  const mcq = pickTests(bank.length, PER_QUIZ - nx, s), xs = nx ? pickTests(exam.length, nx, s + 7) : [];
+  return [0, 1, 2, 3, 4].map(v => {
+    const r = rng(s + 500 + v), withOpts = it => it.type === "mcq" || !it.type ? { ...it, type: "mcq", opts: shuffle([it.a, ...it.w], r) } : { ...it };
+    const a = mcq[v].map(n => withOpts(bank[n])), b = nx ? xs[v].map(n => withOpts(exam[n])) : [];
+    const out = [];
+    for (let k = 0; k < PER_QUIZ; k++) out.push((k % 3 === 2 && b.length) || !a.length ? b.shift() : a.shift());
+    return out;
   });
 }
 
 const $ = id => document.getElementById(id);
 const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
-let topic = "fats", VERSIONS, version = 1, quiz, i, results, answered, hintUsed;
-let player = store.get("nutritionQuizPlayer") || "", started = false;
+let subject = "foodtech", topic = "fats", VERSIONS, version = 1, quiz, i, results, answered, hintUsed;
+let player = store.get("nutritionQuizPlayer") || "", started = false, nextTimer;
 
 /* ---------- high scores ----------
    Paste your Firebase project's settings here to share one board between everyone.
    Left empty (or if the database can't be reached), scores are kept on this device only. */
-const LEADERBOARD = { projectId: "nutritionquiz-25fcd", apiKey: "AIzaSyCH2oiy54DdkLwZ8aBBGaBFYwSZHAuIZSE" };
+const LEADERBOARD = { projectId: "", apiKey: "" };
 const ONLINE = !!(LEADERBOARD.projectId && LEADERBOARD.apiKey);
 const FS = `https://firestore.googleapis.com/v1/projects/${LEADERBOARD.projectId}/databases/(default)/documents`;
 let allScores = [], scoresFrom = "device", boardTab = "overall";
@@ -603,7 +1458,7 @@ async function loadScores() {
       if (!res.ok) throw new Error(res.status);
       const rows = await res.json();
       allScores = rows.filter(r => r.document).map(r => { const f = r.document.fields;
-        return { name: f.name.stringValue, topic: f.topic.stringValue, test: +f.test.integerValue, score: +f.score.integerValue, hints: +(f.hints?.integerValue || 0), at: f.createdAt?.timestampValue || "" }; });
+        return { name: f.name.stringValue, topic: f.topic.stringValue, test: +f.test.integerValue, score: +f.score.integerValue, max: +(f.max?.integerValue || 20), hints: +(f.hints?.integerValue || 0), at: f.createdAt?.timestampValue || "" }; });
       scoresFrom = "online"; return;
     } catch (e) { scoresFrom = "offline"; }
   } else scoresFrom = "device";
@@ -615,7 +1470,7 @@ async function saveScore(rec) {
     try {
       const res = await fetch(`${FS}/scores?key=${LEADERBOARD.apiKey}`, { method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ fields: { name: { stringValue: rec.name }, topic: { stringValue: rec.topic }, test: { integerValue: String(rec.test) },
-          score: { integerValue: String(rec.score) }, hints: { integerValue: String(rec.hints) }, createdAt: { timestampValue: rec.at } } }) });
+          score: { integerValue: String(rec.score) }, max: { integerValue: String(rec.max) }, hints: { integerValue: String(rec.hints) }, createdAt: { timestampValue: rec.at } } }) });
       if (!res.ok) throw new Error(res.status);
       return "online";
     } catch (e) { saveLocal(rec); return "offline"; }
@@ -623,8 +1478,9 @@ async function saveScore(rec) {
   saveLocal(rec); return "device";
 }
 
-// Best attempt per person: higher score, then fewer hints, then earlier
-const better = (a, b) => a.score !== b.score ? a.score > b.score : a.hints !== b.hints ? a.hints < b.hints : a.at < b.at;
+// Best attempt per person: higher percentage, then fewer hints, then earlier (old scores without max were out of 20)
+const pctOf = s => s.score / (s.max || 20);
+const better = (a, b) => pctOf(a) !== pctOf(b) ? pctOf(a) > pctOf(b) : a.hints !== b.hints ? a.hints < b.hints : a.at < b.at;
 function topicBoard(key) {
   const best = new Map(), tries = new Map();
   allScores.filter(s => s.topic === key).forEach(s => {
@@ -632,14 +1488,16 @@ function topicBoard(key) {
     if (!best.has(k) || better(s, best.get(k))) best.set(k, s);
   });
   return [...best.entries()].map(([k, s]) => ({ ...s, key: k, tries: tries.get(k) }))
-    .sort((a, b) => b.score - a.score || a.hints - b.hints || (a.at < b.at ? -1 : 1));
+    .sort((a, b) => pctOf(b) - pctOf(a) || a.hints - b.hints || (a.at < b.at ? -1 : 1));
 }
-function overallBoard() {
+function overallBoard(subj = subject) {
   const people = new Map();
-  for (const key of Object.keys(TOPICS)) topicBoard(key).forEach(s => {
-    const p = people.get(s.key) || { key: s.key, name: s.name, total: 0, done: 0, by: {} };
-    p.by[key] = s.score; p.total += s.score; p.done++; people.set(s.key, p);
+  for (const key of SUBJECTS[subj].topics) topicBoard(key).forEach(s => {
+    const p = people.get(s.key) || { key: s.key, name: s.name, sum: 0, done: 0, by: {} };
+    p.by[key] = Math.round(pctOf(s) * 100); p.sum += pctOf(s) * 100; p.done++; people.set(s.key, p);
   });
+  // Overall = average of each person's best % across all the subject's topics (a topic not tried counts as 0)
+  people.forEach(p => p.total = Math.round(p.sum / SUBJECTS[subj].topics.length));
   return [...people.values()].sort((a, b) => b.total - a.total || b.done - a.done || a.name.localeCompare(b.name));
 }
 
@@ -657,7 +1515,7 @@ function fillTable(table, head, rows, empty) {
 }
 const me = k => player && k === nameKey(player);
 function topicRows(key, limit) {
-  return topicBoard(key).slice(0, limit).map((s, n) => ({ me: me(s.key), cells: [[medal(n + 1), "", true], [s.name, "name"], [`${s.score}/20`, "big"], [`Test ${s.test}`], [s.hints ? `${s.hints}` : "–"], [String(s.tries)]] }));
+  return topicBoard(key).slice(0, limit).map((s, n) => ({ me: me(s.key), cells: [[medal(n + 1), "", true], [s.name, "name"], [`${s.score}/${s.max || 20}`, "big"], [`Test ${s.test}`], [s.hints ? `${s.hints}` : "–"], [String(s.tries)]] }));
 }
 const TOPIC_HEAD = ["#", "Name", "Best", "Test", "Hints", "Tries"];
 function sourceNote() {
@@ -667,13 +1525,21 @@ function sourceNote() {
 }
 
 function renderBoard() {
-  document.querySelectorAll(".hs-tab").forEach(b => b.setAttribute("aria-selected", String(b.dataset.board === boardTab)));
+  $("hsTitle").textContent = `High scores · ${SUBJECTS[subject].name}`;
+  $("hsTabs").innerHTML = "";
+  ["overall", ...SUBJECTS[subject].topics].forEach(k => {
+    const b = document.createElement("button");
+    b.className = "hs-tab"; b.setAttribute("role", "tab"); b.dataset.board = k;
+    b.textContent = k === "overall" ? `Overall ${SUBJECTS[subject].name}` : TOPICS[k].name;
+    b.setAttribute("aria-selected", String(k === boardTab));
+    $("hsTabs").appendChild(b);
+  });
   $("hsNote").textContent = sourceNote();
   if (boardTab === "overall") {
-    const keys = Object.keys(TOPICS);
-    const SHORT = { carbs: "Carbs", protein: "Protein", fats: "Fats", pastry: "Pastry" };
-    fillTable($("hsTable"), ["#", "Name", "Total /80", ...keys.map(k => SHORT[k])],
-      overallBoard().slice(0, 50).map((p, n) => ({ me: me(p.key), cells: [[medal(n + 1), "", true], [p.name, "name"], [String(p.total), "big"], ...keys.map(k => [p.by[k] ?? "–"])] })),
+    const keys = SUBJECTS[subject].topics;
+    $("hsNote").textContent += " Overall is the average of your best % on each topic, so try them all.";
+    fillTable($("hsTable"), ["#", "Name", "Overall", ...keys.map(k => SHORT[k])],
+      overallBoard().slice(0, 50).map((p, n) => ({ me: me(p.key), cells: [[medal(n + 1), "", true], [p.name, "name"], [`${p.total}%`, "big"], ...keys.map(k => [p.by[k] != null ? `${p.by[k]}%` : "–"])] })),
       "No scores yet. Finish a test to get on the board.");
   } else fillTable($("hsTable"), TOPIC_HEAD, topicRows(boardTab, 50), `No ${TOPICS[boardTab].name.toLowerCase()} scores yet.`);
 }
@@ -685,10 +1551,10 @@ async function openBoard(tab) {
 function closeBoard() { $("hsModal").hidden = true; $("hsBtn").focus(); }
 function updateCta() {
   const top = topicBoard(topic)[0];
-  $("hsTop").textContent = top ? `${TOPICS[topic].name}: ${top.name} ${top.score}/20` : `${TOPICS[topic].name}: no scores yet`;
+  $("hsTop").textContent = top ? `${TOPICS[topic].name}: ${top.name} ${top.score}/${top.max || 20}` : `${TOPICS[topic].name}: no scores yet`;
 }
-async function postResult(n, hints) {
-  const rec = { name: player, topic, test: version, score: n, hints, at: new Date().toISOString() };
+async function postResult(n, max, hints) {
+  const rec = { name: player, topic, test: version, score: n, max, hints, at: new Date().toISOString() };
   $("miniTitle").textContent = `High scores · ${TOPICS[topic].name}`;
   $("rankLine").textContent = "Saving your score…"; $("saveStatus").textContent = "";
   const where = await saveScore(rec);
@@ -696,7 +1562,7 @@ async function postResult(n, hints) {
   const board = topicBoard(topic), pos = board.findIndex(s => s.key === nameKey(player)) + 1, best = board[pos - 1];
   const o = overallBoard(), opos = o.findIndex(p => p.key === nameKey(player)) + 1;
   $("rankLine").textContent = pos ? `${player}, you're #${pos} of ${board.length} on ${TOPICS[topic].name}` +
-    (best && best.score > n ? ` (your best is ${best.score}/20)` : "") + (opos ? ` and #${opos} overall.` : ".") : "";
+    (best && pctOf(best) > n / max ? ` (your best is ${best.score}/${best.max || 20})` : "") + (opos ? ` and #${opos} overall in ${SUBJECTS[subject].name}.` : ".") : "";
   fillTable($("miniBoard"), TOPIC_HEAD, topicRows(topic, 5), "No scores yet.");
   $("saveStatus").textContent = where === "online" ? "Your score was added to the class board." :
     where === "offline" ? "Couldn't reach the class board. Your score was saved on this device instead." : "Your score was saved on this device.";
@@ -742,12 +1608,20 @@ function setSound(on) {
 }
 
 /* ---------- topic + test ---------- */
+function setSubject(subj, key) {
+  subject = subj; store.set("quizSubject", subj);
+  document.querySelectorAll(".subj").forEach(b => b.dataset.subject === subj ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current"));
+  $("topic").innerHTML = "";
+  SUBJECTS[subj].topics.forEach(k => { const o = document.createElement("option"); o.value = k; o.textContent = TOPICS[k].name; $("topic").appendChild(o); });
+  const saved = store.get("quizTopic_" + subj);
+  setTopic(key || (SUBJECTS[subj].topics.includes(saved) ? saved : SUBJECTS[subj].topics[0]));
+}
 function setTopic(key) {
-  topic = key; store.set("nutritionQuizTopic", key);
+  topic = key; store.set("nutritionQuizTopic", key); store.set("quizTopic_" + subject, key);
   const t = TOPICS[key];
   $("topic").value = key;
   $("title").textContent = `${t.name} Quiz`;
-  $("kicker").textContent = `Food & nutrition · ${t.bank.length} questions`;
+  $("kicker").textContent = `${SUBJECTS[subject].kicker} · ${t.bank.length + (EXAM[key]?.length || 0)} questions`;
   VERSIONS = buildVersions(key, t.bank);
   setVersion(version);
   updateCta();
@@ -765,13 +1639,19 @@ function startQuiz() {
   $("done").hidden = true; $("play").hidden = !started;
   show();
 }
+function updateRunning() {
+  const got = results.reduce((t, r) => t + r.got, 0), max = results.reduce((t, r) => t + r.max, 0);
+  $("running").textContent = max ? `${got}/${max}` : "0";
+}
 function show() {
-  const item = quiz[i]; answered = false; hintUsed = false;
-  $("qnum").textContent = `Test ${version} · Question ${i + 1} of ${quiz.length}`;
-  $("running").textContent = results.filter(r => r.ok).length;
+  const item = quiz[i], max = maxOf(item); answered = false; hintUsed = false;
+  clearTimeout(nextTimer); $("next").disabled = false;
+  $("qnum").textContent = `Test ${version} · Question ${i + 1} of ${quiz.length}` + (item.type === "mcq" ? "" : ` · ${max} mark${max > 1 ? "s" : ""}`);
+  updateRunning();
   $("qtext").textContent = item.q;
-  $("opts").innerHTML = "";
-  item.opts.forEach((txt, n) => {
+  $("qfig").hidden = !item.fig; $("qfig").innerHTML = item.fig ? figure(item.fig) : "";
+  $("opts").innerHTML = ""; $("opts").hidden = item.type !== "mcq"; $("answer").hidden = item.type === "mcq";
+  if (item.type === "mcq") item.opts.forEach((txt, n) => {
     const b = document.createElement("button");
     b.className = "opt"; b.id = "opt" + n;
     b.innerHTML = `<kbd>${n + 1}</kbd><span></span>`;
@@ -779,6 +1659,13 @@ function show() {
     b.onclick = () => choose(txt);
     $("opts").appendChild(b);
   });
+  else {
+    const num = item.type === "num";
+    $("ansField").innerHTML = num ? `<input class="name-input ans-num" id="ansIn" inputmode="decimal" autocomplete="off" spellcheck="false">` : `<textarea class="name-input ans-text${max > 1 ? "" : " short"}" id="ansIn" rows="${max > 1 ? 4 : 2}"></textarea>`;
+    if (item.unit) { const u = document.createElement("span"); u.className = "unit"; u.textContent = item.unit; $("ansField").appendChild(u); }
+    $("ansTip").textContent = num ? "Numbers only. Press Enter to mark." : "Write in full sentences. Ctrl + Enter to mark.";
+    $("markBtn").hidden = false; $("ansErr").hidden = true;
+  }
   $("hintBox").hidden = true; $("hintBtn").hidden = false; $("hintBtn").disabled = false;
   $("feedback").hidden = true; $("next").hidden = true;
   $("rememberBtn").hidden = true; $("memory").hidden = true; $("rememberBtn").setAttribute("aria-expanded", "false");
@@ -792,10 +1679,8 @@ function showHint() {
   $("hintBox").hidden = false; $("hintBtn").disabled = true;
 }
 function choose(txt) {
-  if (answered) return; answered = true;
+  if (answered) return;
   const item = quiz[i], ok = txt === item.a;
-  results.push({ item, txt, ok, hint: hintUsed });
-  playSound(ok);
   [...$("opts").children].forEach(b => {
     b.disabled = true;
     const t = b.querySelector("span").textContent;
@@ -803,15 +1688,59 @@ function choose(txt) {
     if (t === item.a) { mark("correct", "✓", "Correct answer"); if (ok) b.insertBefore(pixelBuddy(), b.querySelector(".tick")); }
     else if (t === txt) mark("wrong", "✗", "Wrong answer");
   });
-  $("progress").children[i].className = ok ? "ok" : "no";
-  $("running").textContent = results.filter(r => r.ok).length;
-  $("feedback").innerHTML = "<strong></strong> ";
-  $("feedback").firstChild.textContent = ok ? "Correct." : `Not quite. The answer is ${item.a}.`;
-  $("feedback").append(item.why);
-  $("feedback").hidden = false; $("hintBtn").hidden = true;
+  settle(item, txt, ok ? 1 : 0);
+}
+function markWritten() {
+  if (answered) return;
+  const item = quiz[i], txt = $("ansIn").value.trim();
+  if (!txt) { $("ansErr").textContent = "Type your answer first."; $("ansErr").hidden = false; $("ansIn").focus(); return; }
+  let got, hits;
+  if (item.type === "num") {
+    const v = parseNum(txt);
+    if (v === null) { $("ansErr").textContent = "Type a number, e.g. 12.5"; $("ansErr").hidden = false; $("ansIn").focus(); return; }
+    got = Math.abs(v - item.ans) <= item.tol + 1e-9 ? maxOf(item) : 0;
+  } else ({ got, hits } = markText(item, txt));
+  $("ansIn").readOnly = true; $("markBtn").hidden = true; $("ansErr").hidden = true;
+  $("ansIn").classList.add(got === maxOf(item) ? "correct" : got ? "part" : "wrong");
+  if (got === maxOf(item)) $("ansTip").replaceChildren(pixelBuddy()); else $("ansTip").textContent = "";
+  settle(item, txt, got, hits);
+}
+// Record the mark and show feedback, the mark scheme and the memory card
+function settle(item, txt, got, hits) {
+  answered = true;
+  const max = maxOf(item), ok = got === max;
+  results.push({ item, txt, got, max, ok, hint: hintUsed });
+  playSound(got > 0);
+  $("progress").children[i].className = ok ? "ok" : got ? "part" : "no";
+  updateRunning();
+  // Feedback panel: coloured by result, with a big verdict so the explanation isn't skipped
+  const fb = $("feedback"), para = (cls, lead, text) => { const p = document.createElement("p"); p.className = cls; if (lead) p.append(Object.assign(document.createElement("strong"), { textContent: lead }), " "); p.append(text); fb.append(p); return p; };
+  fb.innerHTML = ""; fb.className = "feedback " + (ok ? "is-ok" : got ? "is-part" : "is-no");
+  const head = document.createElement("div"); head.className = "fb-head";
+  head.innerHTML = `<i aria-hidden="true">${ok ? "✓" : got ? "◐" : "✗"}</i><span></span>`;
+  head.querySelector("span").textContent = item.type === "text" ? `${got}/${max} mark${max > 1 ? "s" : ""}${ok ? " · full marks" : ""}` : ok ? "Correct!" : "Not quite";
+  fb.append(head);
+  if (item.type === "text") {
+    para("eyebrow", "", item.any ? `Mark scheme · any ${item.any}` : "Mark scheme");
+    const ul = document.createElement("ul"); ul.className = "scheme";
+    item.marks.forEach((m, n) => { const li = document.createElement("li"); li.className = hits[n] ? "hit" : "miss";
+      li.innerHTML = `<i aria-label="${hits[n] ? "You got this point" : "Missed"}">${hits[n] ? "✓" : "✗"}</i><span></span>`; li.querySelector("span").textContent = m.p; ul.appendChild(li); });
+    fb.append(ul);
+    para("model", "Model answer:", item.model);
+    if (item.why) para("why", "Why:", item.why);
+  } else {
+    if (!ok) para("answer-line", "The answer is", ansText(item) + ".");
+    para("why", "Why:", item.why);
+  }
+  fb.hidden = false; $("hintBtn").hidden = true;
   $("next").textContent = i === quiz.length - 1 ? "See my score" : "Next question";
-  $("next").hidden = false; $("next").focus({ preventScroll: true });
-  const mem = memoryFor(topic, item.id);
+  $("next").hidden = false;
+  // After a miss, pause briefly on the explanation before moving on is possible
+  if (!ok) { $("next").disabled = true; nextTimer = setTimeout(() => { $("next").disabled = false; $("next").focus({ preventScroll: true }); }, 1500); }
+  else $("next").focus({ preventScroll: true });
+  const r = fb.getBoundingClientRect();
+  if (r.bottom > innerHeight) fb.scrollIntoView({ block: "center", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  const mem = memoryFor(topic, item);
   if (mem) {
     $("memTitle").textContent = mem.title;
     $("memVisual").innerHTML = "";
@@ -868,31 +1797,37 @@ function pixelBuddy() {
 function next() { i++; i < quiz.length ? show() : finish(); }
 function finish() {
   $("play").hidden = true; $("done").hidden = false;
-  const n = results.filter(r => r.ok).length, total = quiz.length, hints = results.filter(r => r.hint).length;
-  $("doneLabel").textContent = `${TOPICS[topic].name} · Test ${version} · Total score`;
+  const n = results.reduce((t, r) => t + r.got, 0), total = results.reduce((t, r) => t + r.max, 0), hints = results.filter(r => r.hint).length;
+  const pct = Math.round(n / total * 100), allMcq = results.every(r => r.item.type === "mcq");
+  $("doneLabel").textContent = `${TOPICS[topic].name} · Test ${version} · Total ${allMcq ? "score" : "marks"}`;
   $("score").textContent = `${n}/${total}`;
-  $("pct").textContent = `${Math.round(n / total * 100)}% · ${n} right, ${total - n} wrong`;
-  const v = n === total ? `Perfect score. You know your ${TOPICS[topic].name.toLowerCase()}.` : n >= 15 ? "Strong work. Check the ones you missed below." : n >= 10 ? "A good start. Revise the missed questions and try again." : "Look back over the slides, use the hints, then have another go.";
+  $("pct").textContent = allMcq ? `${pct}% · ${n} right, ${total - n} wrong` : `${pct}% · ${n} of ${total} marks`;
+  const v = n === total ? `Perfect score. You know your ${TOPICS[topic].name.toLowerCase()}.` : pct >= 75 ? "Strong work. Check the ones you missed below." : pct >= 50 ? "A good start. Revise the missed questions and try again." : "Look back over the slides, use the hints, then have another go.";
   $("verdict").textContent = v + (hints ? ` You used ${hints} hint${hints > 1 ? "s" : ""}.` : "");
   $("nextVersion").textContent = `Try test ${version % 5 + 1}`;
   $("review").innerHTML = "";
   results.forEach((r, k) => {
     const li = document.createElement("li");
-    li.innerHTML = `<span class="mark ${r.ok ? "ok" : "no"}">${k + 1}</span><div><span></span><small></small></div>`;
+    li.innerHTML = `<span class="mark ${r.ok ? "ok" : r.got ? "part" : "no"}">${k + 1}</span><div><span></span><small></small></div>`;
     li.querySelector("div span").textContent = r.item.q;
-    li.querySelector("small").textContent = (r.ok ? `✓ ${r.item.a}` : `✗ Answer: ${r.item.a} (you said ${r.txt})`) + (r.hint ? " · hint used" : "");
+    const it = r.item;
+    li.querySelector("small").textContent = (it.type === "text" ? `${r.got}/${r.max} marks · Model answer: ${it.model}` :
+      r.ok ? `✓ ${ansText(it)}` : `✗ Answer: ${ansText(it)} (you said ${r.txt})`) + (r.max > 1 && it.type === "num" ? ` · ${r.got}/${r.max} marks` : "") + (r.hint ? " · hint used" : "");
     $("review").appendChild(li);
   });
-  postResult(n, hints);
+  postResult(n, total, hints);
 }
 
 
 /* ---------- wiring ---------- */
 $("topic").onchange = e => setTopic(e.target.value);
+document.querySelectorAll(".subj").forEach(b => b.onclick = () => { if (b.dataset.subject !== subject) setSubject(b.dataset.subject); });
 document.querySelectorAll(".v").forEach(b => b.onclick = () => setVersion(+b.dataset.v));
 $("hintBtn").onclick = showHint;
 $("rememberBtn").onclick = toggleMemory;
 $("next").onclick = next;
+$("markBtn").onclick = markWritten;
+$("ansField").addEventListener("keydown", e => { if (e.key === "Enter" && (e.target.tagName === "INPUT" || e.metaKey || e.ctrlKey)) { e.preventDefault(); markWritten(); } });
 $("again").onclick = () => startQuiz();
 $("nextVersion").onclick = () => setVersion(version % 5 + 1);
 $("start").onsubmit = e => { e.preventDefault(); beginAs($("nameInput").value); };
@@ -901,22 +1836,24 @@ $("hsBtn").onclick = () => openBoard("overall");
 $("seeAll").onclick = () => openBoard(topic);
 $("hsClose").onclick = closeBoard;
 $("hsModal").onclick = e => { if (e.target === $("hsModal")) closeBoard(); };
-document.querySelectorAll(".hs-tab").forEach(b => b.onclick = () => { boardTab = b.dataset.board; renderBoard(); });
+$("hsTabs").onclick = e => { const b = e.target.closest(".hs-tab"); if (b) { boardTab = b.dataset.board; renderBoard(); } };
 $("soundBtn").onclick = () => { setSound(!soundOn); if (soundOn) playSound(true); };
 
 document.addEventListener("keydown", e => {
   if (!$("hsModal").hidden) { if (e.key === "Escape") closeBoard(); return; }
-  if (e.target.closest(".versions, .topicbar, form")) return;
+  if (e.target.closest(".versions, .topicbar, .subjects, form, input, textarea")) return;
   if ($("play").hidden || answered) return;
   const n = parseInt(e.key, 10);
-  if (n >= 1 && n <= 4) choose(quiz[i].opts[n - 1]);
+  if (n >= 1 && n <= 4 && quiz[i].type === "mcq") choose(quiz[i].opts[n - 1]);
   else if (e.key.toLowerCase() === "h") showHint();
 });
 
 const sv = +store.get("fatsQuizVersion");
 version = sv >= 1 && sv <= 5 ? sv : 1;
-const st = store.get("nutritionQuizTopic");
-setTopic(TOPICS[st] ? st : "fats");
+const st = store.get("nutritionQuizTopic"), ss = store.get("quizSubject");
+if (SUBJECTS[ss]) setSubject(ss);
+else if (TOPICS[st]) setSubject(subjectOf(st), st);
+else setSubject("foodtech");
 setSound(soundOn);
 showStart();
 loadScores().then(updateCta);
