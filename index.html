@@ -1441,7 +1441,7 @@ let player = store.get("nutritionQuizPlayer") || "", started = false, nextTimer;
 /* ---------- high scores ----------
    Paste your Firebase project's settings here to share one board between everyone.
    Left empty (or if the database can't be reached), scores are kept on this device only. */
-const LEADERBOARD = { projectId: "", apiKey: "" };
+const LEADERBOARD = { projectId: "nutritionquiz-25fcd", apiKey: "AIzaSyCH2oiy54DdkLwZ8aBBGaBFYwSZHAuIZSE" };
 const ONLINE = !!(LEADERBOARD.projectId && LEADERBOARD.apiKey);
 const FS = `https://firestore.googleapis.com/v1/projects/${LEADERBOARD.projectId}/databases/(default)/documents`;
 let allScores = [], scoresFrom = "device", boardTab = "overall";
