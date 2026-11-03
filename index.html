@@ -196,6 +196,13 @@ h1, h2 { font-family: var(--display); text-wrap: balance; margin: 0 }
 .fig .flour { fill: var(--surface); stroke: var(--fg); stroke-width: 1.2 } .fig .fatc { fill: var(--wax); stroke: var(--fg); stroke-width: .8 }
 .fig .dough { fill: var(--dough); stroke: var(--fg); stroke-width: 1 } .fig .fatl { fill: var(--fat); stroke: var(--fg); stroke-width: 1 }
 .fig .lbl.big { font-size: 20px }
+.fig .guide { fill: none; stroke: var(--fg); stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw .55s ease-in-out forwards }
+.fig .rdot { fill: var(--surface); stroke: var(--fg); stroke-width: 3 }
+.fig .pill rect { fill: var(--fg) } .fig .pill text { fill: var(--surface); font: 800 13px var(--body); font-variant-numeric: tabular-nums }
+.fig .pill, .fig .rdot { opacity: 0; animation: fadein .3s ease-out forwards }
+@keyframes draw { to { stroke-dashoffset: 0 } }
+@keyframes fadein { to { opacity: 1 } }
+@media (prefers-reduced-motion: reduce) { .fig .guide { animation: none; stroke-dashoffset: 0 } .fig .pill, .fig .rdot { animation: none; opacity: 1 } }
 
 </style>
 </head>
@@ -904,9 +911,9 @@ carbs: [
     model: "C is a complex carbohydrate (a polysaccharide) made of many sugar units joined together. It takes longer to digest and break down into glucose, so the energy is released slowly.", hint: "Think about how much breaking down C needs before the body can use it.", card: "Simple vs complex" },
   { fig: "glucose", q: "The graph shows blood sugar after eating two foods, X and Y. Which is the high GI food?", a: "X, because blood sugar rises sharply and then falls", w: ["Y, because blood sugar rises slowly", "X, because blood sugar stays steady", "Y, because blood sugar stays high for longer"],
     why: "High GI foods are digested quickly and cause a sharp rise in blood sugar, followed by a fall. That is line X.", hint: "High GI means a fast, sharp rise.", card: "Glycaemic Index (GI)" },
-  { type: "num", fig: "glucose", q: "Use the graph. What was the highest blood sugar level after eating food X?", ans: 9, tol: 0.25, unit: "mmol/L",
+  { type: "num", fig: "glucose", read: [[30, 9, "py"]], q: "Use the graph. What was the highest blood sugar level after eating food X?", ans: 9, tol: 0.25, unit: "mmol/L",
     why: "The top of line X is at 9 mmol/L.", hint: "Find the peak of the solid line and read across to the y-axis.", card: "Glycaemic Index (GI)" },
-  { type: "num", fig: "glucose", q: "How many minutes after eating did food X reach its highest level?", ans: 30, tol: 3, unit: "minutes",
+  { type: "num", fig: "glucose", read: [[30, 9, "px"]], q: "How many minutes after eating did food X reach its highest level?", ans: 30, tol: 3, unit: "minutes",
     why: "Line X peaks at 30 minutes, then falls quickly.", hint: "Go down from the peak of the solid line to the x-axis.", card: "Glycaemic Index (GI)" },
   { type: "text", fig: "glucose", q: "Explain why food Y is a better choice for someone who wants energy to last all morning.", marks: [
       { p: "Y is low GI: it is digested / releases energy slowly", k: [["digest", "broken", "break", "absorb", "release", "low gi"], ["slow", "gradual", "low gi"]] },
@@ -923,9 +930,9 @@ protein: [
     why: "Proteins are long chains of amino acids. Each bead is one amino acid.", hint: "Proteins are chains of these.", card: "Amino acids" },
   { type: "text", fig: "amino", q: "Name the type of molecule shown by the whole chain, B.", marks: [{ p: "Protein (polypeptide)", k: [["protein", "polypeptide", "potein"]] }],
     model: "A protein.", hint: "A chain of amino acids makes a…", card: "Amino acids" },
-  { type: "num", fig: "protein", q: "Use the bar chart. How much protein is in 100 g of chicken?", ans: 31, tol: 1, unit: "g",
+  { type: "num", fig: "protein", read: ["Chicken"], q: "Use the bar chart. How much protein is in 100 g of chicken?", ans: 31, tol: 1, unit: "g",
     why: "The chicken bar ends at 31 g.", hint: "Follow the end of the chicken bar down to the scale. Each small square is 1 g.", card: "HBV vs LBV" },
-  { type: "num", fig: "protein", mk: 2, q: "Use the bar chart. How much more protein per 100 g does chicken have than lentils?", ans: 22, tol: 1.5, unit: "g",
+  { type: "num", fig: "protein", mk: 2, read: ["Chicken", "Lentils"], q: "Use the bar chart. How much more protein per 100 g does chicken have than lentils?", ans: 22, tol: 1.5, unit: "g",
     why: "Chicken has 31 g and lentils have 9 g. 31 − 9 = 22 g more.", hint: "Read both bars, then subtract.", card: "HBV vs LBV" },
   { fig: "protein", q: "Which food on the chart is a low biological value (LBV) protein?", a: "Lentils", w: ["Chicken", "Eggs", "Tofu"],
     why: "Lentils are a plant protein missing some essential amino acids, so they're LBV. Chicken and eggs are HBV, and tofu is made from soya, a plant HBV protein.", hint: "LBV proteins only come from plants, but soya is the exception.", card: "HBV vs LBV" },
@@ -955,7 +962,7 @@ fats: [
     model: "A triglyceride.", hint: "Tri = three fatty acids, on glycerol.", card: "What fat is" },
   { fig: "trig", q: "Fatty acid C has a bend in it. What does this show?", a: "It is unsaturated", w: ["It is saturated", "It is a protein", "It is solid at room temperature"],
     why: "In an unsaturated fatty acid, some carbon atoms are joined by double bonds instead of holding hydrogen. This puts a bend in the chain, so the molecules can't pack tightly, and the fat is liquid (an oil).", hint: "Straight chains pack tightly into a solid fat. Bent chains don't.", card: "Saturated vs unsaturated" },
-  { type: "num", fig: "satfat", q: "Use the bar chart. How much saturated fat is in 100 g of butter?", ans: 51, tol: 1.5, unit: "g",
+  { type: "num", fig: "satfat", read: ["Butter"], q: "Use the bar chart. How much saturated fat is in 100 g of butter?", ans: 51, tol: 1.5, unit: "g",
     why: "The butter bar ends at 51 g.", hint: "Each small square is 2 g.", card: "Foods high in saturated fat" },
   { type: "text", fig: "satfat", q: "Using the chart, explain why cooking with sunflower oil instead of butter is healthier.", marks: [
       { p: "Sunflower oil has much less saturated fat (11 g vs 51 g)", k: [["less", "lower", "fewer", "40", "only 11", "11g", "11 g"], ["saturat", "fat"]] },
@@ -1019,7 +1026,7 @@ photo: [
       { p: "Carbon dioxide + water (reactants)", k: [["carbon dioxide", "co2"], ["water", "h2o"]] },
       { p: "→ glucose + oxygen (products)", k: [["glucose", "sugar"], ["oxygen", "o2"]] }],
     model: "carbon dioxide + water → glucose + oxygen", hint: "Two reactants, two products. Light goes over the arrow.", card: "The equations" },
-  { type: "num", fig: "light", q: "Use the graph. What is the rate of photosynthesis at 0.04% CO₂ when the light intensity is 4?", ans: 25, tol: 1, unit: "arbitrary units",
+  { type: "num", fig: "light", read: [[4, 25]], q: "Use the graph. What is the rate of photosynthesis at 0.04% CO₂ when the light intensity is 4?", ans: 25, tol: 1, unit: "arbitrary units",
     why: "Go up from 4 on the x-axis to the 0.04% line, then across to the y-axis: 25.", hint: "Find 4 on the x-axis, go up to the solid line, then read across.", card: "Limiting factors" },
   { fig: "light", q: "Look at the 0.01% CO₂ line at a light intensity of 8. What is limiting the rate?", a: "CO₂ concentration", w: ["Light intensity", "The amount of chlorophyll", "Oxygen concentration"],
     why: "The line is flat, so more light makes no difference. The 0.04% line is higher, so raising CO₂ increases the rate: CO₂ is the limiting factor.", hint: "The line is flat here. Which change on the graph makes the rate go higher?", card: "Limiting factors" },
@@ -1028,7 +1035,7 @@ photo: [
       { p: "Then it levels off / plateaus", k: [["level", "plateau", "flat", "constant", "stays the same", "stops increas", "no longer", "doesn't increase", "does not increase"]] },
       { p: "Because another factor (CO₂ or temperature) becomes limiting", k: [["co2", "carbon dioxide", "temperatur", "limit"]] }],
     model: "As light intensity increases, the rate of photosynthesis increases, because light is the limiting factor. Then the line levels off, because another factor such as temperature or CO₂ is now limiting.", hint: "Describe it in two parts (going up, then flat), then say why it goes flat.", card: "Limiting factors" },
-  { type: "num", fig: "temp", q: "Use the graph. What is the optimum temperature for photosynthesis in this plant?", ans: 35, tol: 2, unit: "°C",
+  { type: "num", fig: "temp", read: [[35, 30, "px"]], q: "Use the graph. What is the optimum temperature for photosynthesis in this plant?", ans: 35, tol: 2, unit: "°C",
     why: "The optimum is the temperature at the peak of the curve: 35 °C.", hint: "Optimum means best. Find the highest point.", card: "Limiting factors" },
   { type: "text", fig: "temp", q: "Explain why the rate of photosynthesis falls above 35 °C.", marks: [
       { p: "Enzymes (that control photosynthesis)", k: [["enzym", "enzime"]] },
@@ -1084,9 +1091,9 @@ transport: [
       { p: "Y has companion cells", k: [["companion"]] },
       { p: "X carries water and minerals; Y carries sugars", k: [["sugar", "sucrose", "glucose", "food"]] }],
     model: "X is made of dead cells but Y is made of living cells. X has no end walls, but Y has end walls with pores (sieve plates).", hint: "Look at the ends of the cells, and the spiral.", card: "Phloem and translocation" },
-  { type: "num", fig: "potometer", mk: 2, q: "Use the graph. Calculate the rate of water uptake in still air.", ans: 2, tol: 0.1, unit: "mm per minute",
+  { type: "num", fig: "potometer", mk: 2, read: [[10, 20]], q: "Use the graph. Calculate the rate of water uptake in still air.", ans: 2, tol: 0.1, unit: "mm per minute",
     why: "In still air the bubble moved 20 mm in 10 minutes. 20 ÷ 10 = 2 mm per minute.", hint: "Rate = distance ÷ time. Read the distance at 10 minutes.", card: "Factors affecting transpiration" },
-  { type: "num", fig: "potometer", q: "Use the graph. How far had the bubble moved after 6 minutes in windy air?", ans: 30, tol: 1, unit: "mm",
+  { type: "num", fig: "potometer", read: [[6, 30]], q: "Use the graph. How far had the bubble moved after 6 minutes in windy air?", ans: 30, tol: 1, unit: "mm",
     why: "Go up from 6 minutes to the windy line, then across: 30 mm.", hint: "The windy line is the steeper one.", card: "Factors affecting transpiration" },
   { type: "text", fig: "potometer", q: "Explain why the rate of water uptake is higher in windy air.", marks: [
       { p: "Wind blows water vapour away from the leaf", k: [["blow", "blew", "away", "removed", "remove", "carried", "moves the water vapour"]] },
@@ -1100,7 +1107,7 @@ practical: [
       { p: "Use an LED lamp, or put a heat shield / glass tank of water between the lamp and the beaker", k: [["led", "heat shield", "shield", "tank", "glass of water", "beaker of water", "filter", "cold light", "water bath"]] },
       { p: "So the temperature stays the same (it is a control variable / fair test)", k: [["temperatur", "constant", "same", "fair", "control"]] }],
     model: "Use an LED lamp, or put a glass tank of water between the lamp and the beaker as a heat shield. This keeps the temperature the same, so only light intensity affects the rate.", hint: "The student in the homework suggested a fan. That doesn't stop the water warming.", card: "Improving the practical" },
-  { type: "num", fig: "bubbles", q: "Use the graph. What is the rate of photosynthesis at 20 cm?", ans: 11.2, tol: 0.6, unit: "bubbles per minute",
+  { type: "num", fig: "bubbles", read: [[20, 11.2]], q: "Use the graph. What is the rate of photosynthesis at 20 cm?", ans: 11.2, tol: 0.6, unit: "bubbles per minute",
     why: "Go up from 20 cm to the curve, then across: about 11.2 bubbles per minute.", hint: "Each small square on the y-axis is 1 bubble per minute.", card: "Results and conclusions" },
   { fig: "bubbles", q: "Which result on the graph is anomalous?", a: "The result at 35 cm", w: ["The result at 10 cm", "The result at 30 cm", "The result at 50 cm"],
     why: "The point at 35 cm is well above the line of best fit, so it doesn't fit the pattern.", hint: "Look for the cross that is far from the curve.", card: "Results and conclusions" },
@@ -1182,8 +1189,26 @@ function smoothPath(P) {
   return p;
 }
 
+// Reading guide shown after a graph question is answered: animated lines from axis to line to axis, with the values.
+// Each read is [x, y, mode]: "xy" = up from the x value then across to y; "py" = from the point across to y; "px" = from the point down to x.
+function readGuides(read, X, Y, left, bottom) {
+  let s = '<g class="read" aria-hidden="true">', t = 0;
+  const seg = (x1, y1, x2, y2) => { const d = `<path d="M${x1},${y1} L${x2},${y2}" pathLength="1" class="guide" style="animation-delay:${t}s"/>`; t += .55; return d; };
+  const pill = (x, y, txt, anchor) => { const w = String(txt).length * 8 + 16, rx = anchor === "end" ? x - w : anchor === "start" ? x : x - w / 2;
+    return `<g class="pill" style="animation-delay:${t}s"><rect x="${rx}" y="${y - 11}" width="${w}" height="22" rx="11"/><text x="${rx + w / 2}" y="${y + 1}" text-anchor="middle" dominant-baseline="middle">${txt}</text></g>`; };
+  const dot = (x, y) => `<circle cx="${x}" cy="${y}" r="5.5" class="rdot" style="animation-delay:${t}s"/>`;
+  read.forEach(([vx, vy, mode = "xy"]) => {
+    const px = X(vx), py = Y(vy);
+    if (mode === "xy") s += pill(px, bottom + 18, vx) + seg(px, bottom, px, py) + dot(px, py) + seg(px, py, left, py) + pill(left + 6, py - 16, vy, "start");
+    else if (mode === "py") s += dot(px, py) + seg(px, py, left, py) + pill(left + 6, py - 16, vy, "start");
+    else s += dot(px, py) + seg(px, py, px, bottom) + pill(px, bottom + 18, vx);
+    t += .2;
+  });
+  return s + "</g>";
+}
+
 // Exam-style line graph on graph paper. No hover values: reading the graph is the question.
-function lineChart({ title, x, y, series }) {
+function lineChart({ title, x, y, series }, read) {
   const W = 520, H = 340, m = { l: 62, r: series.length > 1 ? 112 : 24, t: 14, b: 58 }, pw = W - m.l - m.r, ph = H - m.t - m.b;
   const X = v => +(m.l + (v - x.min) / (x.max - x.min) * pw).toFixed(1), Y = v => +(m.t + ph - (v - y.min) / (y.max - y.min) * ph).toFixed(1);
   let s = svgOpen(`0 0 ${W} ${H}`, title), minor = "", major = "", ticks = "";
@@ -1211,11 +1236,12 @@ function lineChart({ title, x, y, series }) {
       s += `<line x1="${lx + 8}" y1="${ly + dy}" x2="${lx + 26}" y2="${ly + dy}" class="series s${n + 1}"/><text x="${lx + 32}" y="${ly + dy}" class="key" dominant-baseline="middle">${sr.name}</text>`;
     }
   });
+  if (read) s += readGuides(read, X, Y, m.l, m.t + ph);
   return s + "</svg>";
 }
 
 // Exam-style horizontal bar chart: bars end on graph paper, values are read off the scale
-function barChart({ title, x, bars, note }) {
+function barChart({ title, x, bars, note }, read) {
   const W = 520, bh = 34, m = { l: 128, r: 24, t: 10, b: note ? 70 : 56 }, pw = W - m.l - m.r, ph = bars.length * bh, H = m.t + ph + m.b;
   const X = v => +(m.l + (v - x.min) / (x.max - x.min) * pw).toFixed(1);
   let s = svgOpen(`0 0 ${W} ${H}`, title), minor = "", major = "", ticks = "";
@@ -1232,6 +1258,9 @@ function barChart({ title, x, bars, note }) {
   s += `<path d="M${m.l},${m.t} V${m.t + ph} H${m.l + pw}" class="axis"/><g class="ticks">${ticks}</g>`;
   s += `<text x="${m.l + pw / 2}" y="${m.t + ph + 42}" class="axis-t" text-anchor="middle">${x.label}</text>`;
   if (note) s += `<text x="${m.l + pw / 2}" y="${H - 8}" class="note" text-anchor="middle">${note}</text>`;
+  // Reading guide: from the end of each named bar down to the scale
+  if (read) s += readGuides(read.map(name => [bars.find(b => b[0] === name)[1], name, "px"]), X,
+    name => m.t + bars.findIndex(b => b[0] === name) * bh + bh / 2, m.l, m.t + ph);
   return s + "</svg>";
 }
 const hexPath = (cx, cy, r) => "M" + [0, 1, 2, 3, 4, 5].map(k => `${(cx + r * Math.cos(k * Math.PI / 3)).toFixed(1)},${(cy + r * Math.sin(k * Math.PI / 3)).toFixed(1)}`).join(" L") + " Z";
@@ -1293,16 +1322,16 @@ const FIGS = {
     s += `<text x="378" y="214" class="key" text-anchor="middle">puff pastry (side view)</text>`;
     return s + "</svg>";
   },
-  glucose: () => lineChart({ title: "Line graph of blood sugar against time after eating food X and food Y",
+  glucose: read => lineChart({ title: "Line graph of blood sugar against time after eating food X and food Y",
     x: { label: "Time after eating (minutes)", min: 0, max: 180, step: 30, minor: 3 }, y: { label: "Blood sugar (mmol/L)", min: 0, max: 10, step: 2, minor: 4 },
-    series: [{ name: "Food X", curve: true, line: [[0, 5], [30, 9], [60, 7], [90, 5], [120, 4.2], [150, 4.6], [180, 5]], labelDy: -10 },
-             { name: "Food Y", curve: true, line: [[0, 5], [30, 6.2], [60, 6.6], [90, 6.3], [120, 5.9], [150, 5.5], [180, 5.3]], labelDy: 10 }] }),
-  protein: () => barChart({ title: "Bar chart of protein per 100 g in six foods", note: "Approximate values for cooked foods",
+    series: [{ name: "Food X", curve: true, line: [[0, 5], [30, 9], [60, 7], [90, 5], [120, 4.2], [150, 4.6], [180, 5]], labelDy: 9 },
+             { name: "Food Y", curve: true, line: [[0, 5], [30, 6.2], [60, 6.6], [90, 6.3], [120, 5.9], [150, 5.5], [180, 5.3]], labelDy: -9 }] }, read),
+  protein: read => barChart({ title: "Bar chart of protein per 100 g in six foods", note: "Approximate values for cooked foods",
     x: { label: "Protein per 100 g (g)", min: 0, max: 35, step: 5 },
-    bars: [["Chicken", 31], ["Mycoprotein", 14], ["Eggs", 13], ["Tofu", 12], ["Lentils", 9], ["Quinoa", 4]] }),
-  satfat: () => barChart({ title: "Bar chart of saturated fat per 100 g in six foods", note: "Approximate values",
+    bars: [["Chicken", 31], ["Mycoprotein", 14], ["Eggs", 13], ["Tofu", 12], ["Lentils", 9], ["Quinoa", 4]] }, read),
+  satfat: read => barChart({ title: "Bar chart of saturated fat per 100 g in six foods", note: "Approximate values",
     x: { label: "Saturated fat per 100 g (g)", min: 0, max: 60, step: 10 },
-    bars: [["Butter", 51], ["Lard", 40], ["Cheddar", 22], ["Olive oil", 14], ["Sunflower oil", 11], ["Avocado", 2]] }),
+    bars: [["Butter", 51], ["Lard", 40], ["Cheddar", 22], ["Olive oil", 14], ["Sunflower oil", 11], ["Avocado", 2]] }, read),
   leaf() {
     const R = rng(11), L = 40, RT = 440;
     let s = svgOpen("0 0 520 300", "Cross-section of a leaf with parts labelled A to F");
@@ -1386,22 +1415,22 @@ const FIGS = {
     s += lead(112, 52, 112, 101) + label(112, 38, "A") + lead(260, 276, 260, 252) + label(260, 284, "B") + lead(470, 196, 420, 196) + label(484, 196, "C") + lead(470, 162, 384, 162) + label(484, 162, "D");
     return s + "</svg>";
   },
-  light: () => lineChart({ title: "Line graph of rate of photosynthesis against light intensity at two CO₂ concentrations",
+  light: read => lineChart({ title: "Line graph of rate of photosynthesis against light intensity at two CO₂ concentrations",
     x: { label: "Light intensity (arbitrary units)", min: 0, max: 10, step: 2, minor: 4 }, y: { label: "Rate (arbitrary units)", min: 0, max: 30, step: 5 },
     series: [{ name: "0.04% CO₂", curve: true, line: [[0, 0], [1, 8], [2, 15], [3, 21], [4, 25], [5, 27.3], [6, 28], [7, 28], [8, 28], [9, 28], [10, 28]] },
-             { name: "0.01% CO₂", curve: true, line: [[0, 0], [1, 7.6], [2, 12.6], [3, 15.2], [4, 16], [5, 16], [6, 16], [7, 16], [8, 16], [9, 16], [10, 16]] }] }),
-  temp: () => lineChart({ title: "Line graph of rate of photosynthesis against temperature",
+             { name: "0.01% CO₂", curve: true, line: [[0, 0], [1, 7.6], [2, 12.6], [3, 15.2], [4, 16], [5, 16], [6, 16], [7, 16], [8, 16], [9, 16], [10, 16]] }] }, read),
+  temp: read => lineChart({ title: "Line graph of rate of photosynthesis against temperature",
     x: { label: "Temperature (°C)", min: 0, max: 50, step: 10 }, y: { label: "Rate (arbitrary units)", min: 0, max: 35, step: 5 },
-    series: [{ name: "", curve: true, line: [[0, 1], [10, 7], [20, 16], [30, 27], [35, 30], [40, 22], [45, 9], [50, 1]] }] }),
-  potometer: () => lineChart({ title: "Line graph of distance moved by the potometer bubble against time, in still and windy air",
+    series: [{ name: "", curve: true, line: [[0, 1], [10, 7], [20, 16], [30, 27], [35, 30], [40, 22], [45, 9], [50, 1]] }] }, read),
+  potometer: read => lineChart({ title: "Line graph of distance moved by the potometer bubble against time, in still and windy air",
     x: { label: "Time (minutes)", min: 0, max: 10, step: 2, minor: 4 }, y: { label: "Distance moved by bubble (mm)", min: 0, max: 50, step: 10 },
-    series: [{ name: "Windy", line: [[0, 0], [10, 50]] }, { name: "Still air", line: [[0, 0], [10, 20]] }] }),
-  bubbles: () => lineChart({ title: "Line graph of rate of photosynthesis against distance from the lamp, with plotted results",
+    series: [{ name: "Windy", line: [[0, 0], [10, 50]] }, { name: "Still air", line: [[0, 0], [10, 20]] }] }, read),
+  bubbles: read => lineChart({ title: "Line graph of rate of photosynthesis against distance from the lamp, with plotted results",
     x: { label: "Distance from lamp (cm)", min: 0, max: 60, step: 10 }, y: { label: "Rate (bubbles per minute)", min: 0, max: 25, step: 5 },
-    series: [{ name: "", curve: true, line: [[10, 24], [20, 11.2], [30, 6.2], [40, 3.2], [50, 2]], crosses: [[10, 24], [20, 11.2], [30, 6.2], [35, 9], [40, 3.2], [50, 2]] }] }),
+    series: [{ name: "", curve: true, line: [[10, 24], [20, 11.2], [30, 6.2], [40, 3.2], [50, 2]], crosses: [[10, 24], [20, 11.2], [30, 6.2], [35, 9], [40, 3.2], [50, 2]] }] }, read),
 };
 const figCache = {};
-const figure = key => figCache[key] ||= FIGS[key]();
+const figure = (key, read) => read ? FIGS[key](read) : (figCache[key] ||= FIGS[key]());
 
 const memoryFor = (key, item) => item.card ? MEMORY[key].find(m => m.title === item.card) : MEMORY[key].find(m => m.ids.includes(item.id));
 
@@ -1436,7 +1465,7 @@ function buildVersions(key, bank) {
 const $ = id => document.getElementById(id);
 const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
 let subject = "foodtech", topic = "fats", VERSIONS, version = 1, quiz, i, results, answered, hintUsed;
-let player = store.get("nutritionQuizPlayer") || "", started = false, nextTimer;
+let player = store.get("nutritionQuizPlayer") || "", started = false;
 
 /* ---------- high scores ----------
    Paste your Firebase project's settings here to share one board between everyone.
@@ -1644,9 +1673,7 @@ function updateRunning() {
   $("running").textContent = max ? `${got}/${max}` : "0";
 }
 function show() {
-  const item = quiz[i], max = maxOf(item); answered = false; hintUsed = false;
-  clearTimeout(nextTimer); $("next").disabled = false;
-  $("qnum").textContent = `Test ${version} · Question ${i + 1} of ${quiz.length}` + (item.type === "mcq" ? "" : ` · ${max} mark${max > 1 ? "s" : ""}`);
+  const item = quiz[i], max = maxOf(item); answered = false; hintUsed = false;  $("qnum").textContent = `Test ${version} · Question ${i + 1} of ${quiz.length}` + (item.type === "mcq" ? "" : ` · ${max} mark${max > 1 ? "s" : ""}`);
   updateRunning();
   $("qtext").textContent = item.q;
   $("qfig").hidden = !item.fig; $("qfig").innerHTML = item.fig ? figure(item.fig) : "";
@@ -1703,6 +1730,7 @@ function markWritten() {
   $("ansIn").readOnly = true; $("markBtn").hidden = true; $("ansErr").hidden = true;
   $("ansIn").classList.add(got === maxOf(item) ? "correct" : got ? "part" : "wrong");
   if (got === maxOf(item)) $("ansTip").replaceChildren(pixelBuddy()); else $("ansTip").textContent = "";
+  if (item.read) $("qfig").innerHTML = figure(item.fig, item.read);
   settle(item, txt, got, hits);
 }
 // Record the mark and show feedback, the mark scheme and the memory card
@@ -1735,9 +1763,7 @@ function settle(item, txt, got, hits) {
   fb.hidden = false; $("hintBtn").hidden = true;
   $("next").textContent = i === quiz.length - 1 ? "See my score" : "Next question";
   $("next").hidden = false;
-  // After a miss, pause briefly on the explanation before moving on is possible
-  if (!ok) { $("next").disabled = true; nextTimer = setTimeout(() => { $("next").disabled = false; $("next").focus({ preventScroll: true }); }, 1500); }
-  else $("next").focus({ preventScroll: true });
+  $("next").focus({ preventScroll: true });
   const r = fb.getBoundingClientRect();
   if (r.bottom > innerHeight) fb.scrollIntoView({ block: "center", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
   const mem = memoryFor(topic, item);
